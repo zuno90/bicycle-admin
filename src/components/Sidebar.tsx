@@ -1,60 +1,39 @@
 import React from "react";
-import {
-  DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu } from "antd";
 const { Sider } = Layout;
 type MenuItem = Required<MenuProps>["items"][number];
+import { useNavigate } from "react-router-dom";
 
-function getItem(
+const getItem = (
   label: React.ReactNode,
   key: React.Key,
-  icon?: React.ReactNode,
   children?: MenuItem[],
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  } as MenuItem;
-}
+): MenuItem => {
+  return { key, children, label } as MenuItem;
+};
 
 const items: MenuItem[] = [
-  getItem("Option 1", "1", <PieChartOutlined />),
-  getItem("Option 2", "2", <DesktopOutlined />),
-  getItem("User", "sub1", <UserOutlined />, [
-    getItem("Tom", "3"),
-    getItem("Bill", "4"),
-    getItem("Alex", "5"),
-  ]),
-  getItem("Team", "sub2", <TeamOutlined />, [
-    getItem("Team 1", "6"),
-    getItem("Team 2", "8"),
-  ]),
-  getItem("Files", "9", <FileOutlined />),
+  getItem("Trang chủ", "/"),
+  getItem("Danh mục", "category"),
+  getItem("Sản phẩm", "product"),
+  getItem("Khuyến mãi", "voucher"),
+  getItem("Chat", "chat"),
+  getItem("Quản lý người dùng", "user"),
 ];
 
 const Sidebar: React.FC = () => {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = React.useState(false);
 
   return (
-    <Sider
-      collapsible
-      collapsed={collapsed}
-      onCollapse={(value) => setCollapsed(value)}
-    >
+    <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
       <div className="demo-logo-vertical" />
       <Menu
-        theme="light"
-        defaultSelectedKeys={["1"]}
+        defaultSelectedKeys={["/"]}
         mode="inline"
         items={items}
+        onClick={({ key }) => navigate(key)}
       />
     </Sider>
   );

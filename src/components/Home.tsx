@@ -2,7 +2,7 @@ import React from "react";
 import { Breadcrumb, Layout, theme } from "antd";
 const { Header, Content, Footer } = Layout;
 
-const Main: React.FC = () => {
+const Home: React.FC = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -28,4 +28,4 @@ const Main: React.FC = () => {
   );
 };
 
-export default Main;
+export default Home;
