@@ -1,29 +1,38 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { Layout as AntdLayout } from "antd";
-const Sidebar = React.lazy(() => import("./Sidebar"));
-const Home = React.lazy(() => import("./Home"));
-const Category = React.lazy(() => import("./Category"));
-const Product = React.lazy(() => import("./Product"));
-const Voucher = React.lazy(() => import("./Voucher"));
-const Chat = React.lazy(() => import("./Chat"));
-const User = React.lazy(() => import("./User"));
+import Loader from "./Loader";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+import routes from "../routes";
 
 const Layout: React.FC = () => {
+  const [sidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
   return (
-    <AntdLayout style={{ minHeight: "100vh" }}>
-      <React.Suspense>
-        <Sidebar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/category" element={<Category />} />
-          <Route path="/product" element={<Product />} />
-          <Route path="/voucher" element={<Voucher />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/user" element={<User />} />
-        </Routes>
-      </React.Suspense>
-    </AntdLayout>
+    <div className="dark:bg-boxdark-2 dark:text-bodydark">
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+          <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <main>
+            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+              <Routes>
+                {routes.map(({ path, element: Component }) => (
+                  <Route
+                    key={path}
+                    path={path}
+                    element={
+                      <React.Suspense fallback={<Loader />}>
+                        <Component />
+                      </React.Suspense>
+                    }
+                  />
+                ))}
+              </Routes>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
   );
 };
 
