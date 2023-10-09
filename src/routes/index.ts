@@ -3,6 +3,7 @@ import React from "react";
 const Home = React.lazy(() => import("../pages/home/Home"));
 const Category = React.lazy(() => import("../pages/home/Category"));
 const Product = React.lazy(() => import("../pages/home/Product"));
+const CreateProduct = React.lazy(() => import("../pages/home/CreateProduct"));
 const Voucher = React.lazy(() => import("../pages/home/Voucher"));
 const Chat = React.lazy(() => import("../pages/home/Chat"));
 const User = React.lazy(() => import("../pages/home/User"));
@@ -22,6 +23,11 @@ const dashboardRoutes = [
     path: "/product",
     title: "Sản phẩm",
     element: Product,
+  },
+  {
+    path: "/product/create",
+    title: "Thêm Sản phẩm",
+    element: CreateProduct,
   },
   {
     path: "/voucher",

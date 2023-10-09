@@ -1,6 +1,6 @@
 import React from "react";
 import Card from "../../components/Card";
-import Table from "../../components/Table";
+import HomeTable from "../../components/HomeTable";
 
 const Home: React.FC = () => {
   return (
@@ -11,7 +11,7 @@ const Home: React.FC = () => {
         <Card />
       </section>
       <section className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
-        <Table title="Đơn hàng" />
+        <HomeTable title="Đơn hàng" data={1} />
       </section>
     </>
   );
