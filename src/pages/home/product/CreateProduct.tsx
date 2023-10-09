@@ -1,12 +1,12 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
-import TinyMce from "../../components/TinyMce";
-import { useQueries, useQuery } from "@tanstack/react-query";
-import { getSizes } from "../../query/size.query";
-import Loader from "../../components/Loader";
-import { getColors } from "../../query/color.query";
-import { getCategories } from "../../query/category.query";
+import TinyMce from "../../../components/TinyMce";
+import { useQueries } from "@tanstack/react-query";
+import { getSizes } from "../../../query/size.query";
+import Loader from "../../../components/Loader";
+import { getColors } from "../../../query/color.query";
+import { getCategories } from "../../../query/category.query";
 
 const CreateProduct: React.FC = () => {
   // handle images
@@ -106,13 +106,13 @@ const CreateProduct: React.FC = () => {
                     clipRule="evenodd"
                     d="M0.833984 9.99935C0.833984 9.53911 1.20708 9.16602 1.66732 9.16602H18.334C18.7942 9.16602 19.1673 9.53911 19.1673 9.99935C19.1673 10.4596 18.7942 10.8327 18.334 10.8327H1.66732C1.20708 10.8327 0.833984 10.4596 0.833984 9.99935Z"
                     fill="#637381"
-                  ></path>
+                  />
                   <path
                     fillRule="evenodd"
                     clipRule="evenodd"
                     d="M7.50084 10.0008C7.55796 12.5632 8.4392 15.0301 10.0006 17.0418C11.5621 15.0301 12.4433 12.5632 12.5005 10.0008C12.4433 7.43845 11.5621 4.97153 10.0007 2.95982C8.4392 4.97153 7.55796 7.43845 7.50084 10.0008ZM10.0007 1.66749L9.38536 1.10547C7.16473 3.53658 5.90275 6.69153 5.83417 9.98346C5.83392 9.99503 5.83392 10.0066 5.83417 10.0182C5.90275 13.3101 7.16473 16.4651 9.38536 18.8962C9.54325 19.069 9.76655 19.1675 10.0007 19.1675C10.2348 19.1675 10.4581 19.069 10.6159 18.8962C12.8366 16.4651 14.0986 13.3101 14.1671 10.0182C14.1674 10.0066 14.1674 9.99503 14.1671 9.98346C14.0986 6.69153 12.8366 3.53658 10.6159 1.10547L10.0007 1.66749Z"
                     fill="#637381"
-                  ></path>
+                  />
                 </g>
               </svg>
             </span>
@@ -347,8 +347,7 @@ const CreateProduct: React.FC = () => {
             ))}
 
             <label
-              {...getRootProps()}
-              htmlFor="upload-file"
+              {...getRootProps({ className: "dropzone" })}
               className="bg-[#D9D9D9]"
             >
               <div className="flex justify-center items-center box-border h-20 w-20 border-2 cursor-pointer">
@@ -363,12 +362,7 @@ const CreateProduct: React.FC = () => {
                 </svg>
               </div>
             </label>
-            <input
-              {...getInputProps()}
-              id="upload-file"
-              type="file"
-              className="hidden"
-            />
+            <input {...getInputProps()} />
           </div>
         </div>
 

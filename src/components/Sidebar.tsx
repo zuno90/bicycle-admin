@@ -17,7 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   const storedSidebarExpanded = localStorage.getItem("sidebar-expanded");
   const [sidebarExpanded, setSidebarExpanded] = React.useState(
-    storedSidebarExpanded === null ? false : storedSidebarExpanded === "true",
+    storedSidebarExpanded === null ? false : storedSidebarExpanded === "true"
   );
 
   // close on click outside
@@ -142,7 +142,9 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
               <NavLink
                 to="/category"
                 className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                  pathname === "/category" && "bg-graydark dark:bg-meta-4"
+                  (pathname === "/category" ||
+                    pathname.includes("/category")) &&
+                  "bg-graydark dark:bg-meta-4"
                 }`}
               >
                 <svg
@@ -168,7 +170,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
               <NavLink
                 to="/product"
                 className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                  pathname === "/product" && "bg-graydark dark:bg-meta-4"
+                  (pathname === "/product" || pathname.includes("/product")) &&
+                  "bg-graydark dark:bg-meta-4"
                 }`}
               >
                 <svg
@@ -191,7 +194,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
               <NavLink
                 to="/voucher"
                 className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                  pathname === "/voucher" && "bg-graydark dark:bg-meta-4"
+                  (pathname === "/voucher" || pathname.includes("/voucher")) &&
+                  "bg-graydark dark:bg-meta-4"
                 }`}
               >
                 <svg
@@ -214,7 +218,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
               <NavLink
                 to="/chat"
                 className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                  pathname === "/chat" && "bg-graydark dark:bg-meta-4"
+                  (pathname === "/chat" || pathname.includes("/chat")) &&
+                  "bg-graydark dark:bg-meta-4"
                 }`}
               >
                 <svg
