@@ -1,6 +1,6 @@
 import React from "react";
 import { IProductTable } from "../__types__";
-import { formatNumber } from "../utils/helper";
+import { formatNumber } from "../utils/helper.util";
 import Pagination from "./Pagination";
 
 type THomeTable = {

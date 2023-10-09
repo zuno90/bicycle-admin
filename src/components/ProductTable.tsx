@@ -1,6 +1,6 @@
 import React from "react";
 import { IProductTable } from "../__types__";
-import { formatNumber } from "../utils/helper";
+import { formatNumber } from "../utils/helper.util";
 import ProductTwo from "../assets/images/product/product-02.png";
 import Pagination from "./Pagination";
 import { useNavigate } from "react-router-dom";

@@ -2,6 +2,11 @@ import React from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import TinyMce from "../../components/TinyMce";
+import { useQueries, useQuery } from "@tanstack/react-query";
+import { getSizes } from "../../query/size.query";
+import Loader from "../../components/Loader";
+import { getColors } from "../../query/color.query";
+import { getCategories } from "../../query/category.query";
 
 const CreateProduct: React.FC = () => {
   // handle images
@@ -41,6 +46,16 @@ const CreateProduct: React.FC = () => {
   } = useForm();
   const handleContent = (content: string) => setValue("content", content);
 
+  const [categories, sizes, colors] = useQueries({
+    queries: [
+      { queryKey: ["categories"], queryFn: () => getCategories() },
+      { queryKey: ["sizes"], queryFn: () => getSizes() },
+      { queryKey: ["values"], queryFn: () => getColors() },
+    ],
+  });
+  if (categories.isLoading || sizes.isLoading || colors.isLoading)
+    return <Loader />;
+
   const handleCreatePost = async (data) => {
     console.log(data);
   };
@@ -49,8 +64,8 @@ const CreateProduct: React.FC = () => {
     <form onSubmit={handleSubmit(handleCreatePost)}>
       <h1 className="mb-6 text-xl">Sản phẩm {">"} Thêm sản phẩm</h1>
       <div className="space-y-4">
-        <div className="w-full inline-flex items-center">
-          <div className="w-[30%]">
+        <div className="w-full sm:inline-flex items-center">
+          <div className="sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
               <span>Tên</span>
               <span className="text-meta-1">*</span>
@@ -59,18 +74,18 @@ const CreateProduct: React.FC = () => {
           <input
             type="text"
             placeholder="Tên sản phẩm"
-            className="w-[70%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            className="w-full sm:w-[70%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
           />
         </div>
 
-        <div className="w-full inline-flex items-center">
-          <div className="w-[30%]">
+        <div className="w-full sm:inline-flex items-center">
+          <div className="w-full sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
               <span>Danh mục</span>
               <span className="text-meta-1">*</span>
             </label>
           </div>
-          <div className="w-[35%] relative z-20 dark:bg-form-input">
+          <div className="w-full sm:w-[50%] relative z-20 dark:bg-form-input">
             <span className="absolute top-1/2 left-4 z-30 -translate-y-1/2">
               <svg
                 width="20"
@@ -102,9 +117,12 @@ const CreateProduct: React.FC = () => {
               </svg>
             </span>
             <select className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
-              <option value="">USA</option>
-              <option value="">UK</option>
-              <option value="">Canada</option>
+              {categories.data.length > 0 &&
+                categories.data.map((category, index) => (
+                  <option key={index} value={category.slug}>
+                    {category.name}
+                  </option>
+                ))}
             </select>
             <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
               <svg
@@ -127,14 +145,14 @@ const CreateProduct: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full inline-flex items-center">
-          <div className="w-[30%]">
+        <div className="w-full sm:inline-flex items-center">
+          <div className="sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
               <span>Size</span>
               <span className="text-meta-1">*</span>
             </label>
           </div>
-          <div className="w-[35%] relative z-20 dark:bg-form-input">
+          <div className="w-full sm:w-[50%] relative z-20 dark:bg-form-input">
             <span className="absolute top-1/2 left-4 z-30 -translate-y-1/2">
               <svg
                 width="20"
@@ -166,9 +184,12 @@ const CreateProduct: React.FC = () => {
               </svg>
             </span>
             <select className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
-              <option value="">USA</option>
-              <option value="">UK</option>
-              <option value="">Canada</option>
+              {sizes.data.length > 0 &&
+                sizes.data.map((size, index) => (
+                  <option key={index} value={size.value}>
+                    {size.title}
+                  </option>
+                ))}
             </select>
             <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
               <svg
@@ -191,14 +212,14 @@ const CreateProduct: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full inline-flex items-center">
-          <div className="w-[30%]">
+        <div className="w-full sm:inline-flex items-center">
+          <div className="sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
               <span>Màu</span>
               <span className="text-meta-1">*</span>
             </label>
           </div>
-          <div className="w-[35%] relative z-20 dark:bg-form-input">
+          <div className="w-full sm:w-[50%] relative z-20 dark:bg-form-input">
             <span className="absolute top-1/2 left-4 z-30 -translate-y-1/2">
               <svg
                 width="20"
@@ -230,9 +251,12 @@ const CreateProduct: React.FC = () => {
               </svg>
             </span>
             <select className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
-              <option value="">USA</option>
-              <option value="">UK</option>
-              <option value="">Canada</option>
+              {colors.data.length > 0 &&
+                colors.data.map((color, index) => (
+                  <option key={index} value={color.value}>
+                    {color.title}
+                  </option>
+                ))}
             </select>
             <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
               <svg
@@ -255,8 +279,8 @@ const CreateProduct: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full inline-flex items-center">
-          <div className="w-[30%]">
+        <div className="w-full sm:inline-flex items-center">
+          <div className="sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
               <span>Giá gốc</span>
               <span className="text-meta-1">*</span>
@@ -265,12 +289,12 @@ const CreateProduct: React.FC = () => {
           <input
             type="text"
             placeholder="Nhập giá"
-            className="rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            className="w-full sm:w-[35%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
           />
         </div>
 
-        <div className="w-full inline-flex items-center">
-          <div className="w-[30%]">
+        <div className="w-full sm:inline-flex items-center">
+          <div className="sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
               <span>Giá khuyến mãi</span>
             </label>
@@ -278,12 +302,12 @@ const CreateProduct: React.FC = () => {
           <input
             type="text"
             placeholder="Nhập giá"
-            className="rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            className="w-full sm:w-[35%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
           />
         </div>
 
-        <div className="w-full inline-flex items-center">
-          <div className="w-[30%]">
+        <div className="w-full sm:inline-flex items-center">
+          <div className="sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
               <span>Tồn kho</span>
             </label>
@@ -291,12 +315,12 @@ const CreateProduct: React.FC = () => {
           <input
             type="text"
             placeholder="Nhập tồn kho"
-            className="rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            className="w-full sm:w-[35%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
           />
         </div>
 
-        <div className="w-full inline-flex">
-          <div className="w-[30%]">
+        <div className="w-full sm:inline-flex">
+          <div className="sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
               <span>Hình ảnh</span>
               <span className="text-meta-1">*</span>
@@ -348,14 +372,14 @@ const CreateProduct: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full inline-flex">
-          <div className="w-[30%]">
+        <div className="w-full sm:inline-flex">
+          <div className="sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
               <span>Mô tả</span>
               <span className="text-meta-1">*</span>
             </label>
           </div>
-          <div {...register("content")} className="w-[70%]">
+          <div {...register("content")} className="w-full sm:w-[70%]">
             <TinyMce getContent={handleContent} />
           </div>
         </div>

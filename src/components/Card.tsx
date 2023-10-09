@@ -1,4 +1,4 @@
-import { formatNumber } from "../utils/helper";
+import { formatNumber } from "../utils/helper.util";
 
 const Card: React.FC = () => {
   return (
