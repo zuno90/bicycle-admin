@@ -8,9 +8,9 @@ const Notification: React.FC = () => {
     title: "",
     body: "",
   });
-  const notify = () => toast.success(<ToastDisplay />);
+  const notify = () => toast.error(<ToastDisplay />);
   const ToastDisplay = (): JSX.Element => (
-    <div>
+    <div className="">
       <p>
         <b>{notification.title}</b>
       </p>

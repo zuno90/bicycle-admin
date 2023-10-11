@@ -3,7 +3,7 @@ import { formatNumber } from "../utils/helper.util";
 const Card: React.FC = () => {
   return (
     <div className="rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="flex items-center justify-between dark:bg-meta-4">
+      <div className="flex items-center justify-between">
         <p>Doanh thu</p>
         <p className="inline-flex items-center space-x-2">
           <svg
