@@ -1,3 +1,6 @@
+// channel receives message from service worker
+export const channel = new BroadcastChannel("notifications");
+
 export const formatNumber = (x: number) => {
   return Math.round(x)
     .toString()

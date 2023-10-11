@@ -34,7 +34,7 @@ const Chat: React.FC = () => {
       </div>
 
       <div
-        className="w-full mb-4 inline-flex justify-between items-center space-x-4"
+        className="w-full mb-4 inline-flex justify-between items-center space-x-4 cursor-pointer"
         onClick={() => navigate(`/chat/${id}`)}
       >
         <img

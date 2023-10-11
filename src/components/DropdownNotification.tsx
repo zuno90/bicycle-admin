@@ -1,13 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
+import { channel } from "../utils/helper.util";
 
 const DropdownNotification: React.FC = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [hasNewNoti, setHasNewNoti] = React.useState(false);
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
-  const trigger = useRef<any>(null);
-  const dropdown = useRef<any>(null);
+  const trigger = React.useRef<any>(null);
+  const dropdown = React.useRef<any>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
+    channel.addEventListener("message", (event) => {
+      console.log(event.data, "trong cai chuong");
+      setHasNewNoti(true);
+    });
     const clickHandler = ({ target }: MouseEvent) => {
       if (!dropdown.current) return;
       if (
@@ -23,7 +29,7 @@ const DropdownNotification: React.FC = () => {
   });
 
   // close if the esc key is pressed
-  useEffect(() => {
+  React.useEffect(() => {
     const keyHandler = ({ keyCode }: KeyboardEvent) => {
       if (!dropdownOpen || keyCode !== 27) return;
       setDropdownOpen(false);
@@ -36,13 +42,18 @@ const DropdownNotification: React.FC = () => {
     <li className="relative">
       <Link
         ref={trigger}
-        onClick={() => setDropdownOpen(!dropdownOpen)}
+        onClick={() => {
+          setHasNewNoti(false);
+          setDropdownOpen(!dropdownOpen);
+        }}
         to="#"
         className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
       >
-        <span className="absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1">
-          <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
-        </span>
+        {hasNewNoti && (
+          <span className="absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1">
+            <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
+          </span>
+        )}
 
         <svg
           className="fill-current duration-300 ease-in-out"
