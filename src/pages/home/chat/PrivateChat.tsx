@@ -46,7 +46,7 @@ const PrivateChat: React.FC = () => {
     []
   );
 
-  const c = collection(db, "chat/user1/chats");
+  const c = collection(db, "chat/user45/chats");
   const getUsers = () => {
     const usersQ = query(c, orderBy("createdAt", "desc"));
 
@@ -56,11 +56,6 @@ const PrivateChat: React.FC = () => {
   const getIncommingMessages = async () => {
     const inCommingQ = query(c, orderBy("createdAt", "desc"));
 
-    const chatsByUser = await getDocs(inCommingQ);
-    const arr = [];
-    chatsByUser.docs.map((doc) => arr.push(doc.data()));
-    console.log(arr, 8788);
-    return;
     onSnapshot(inCommingQ, (snapshot) => {
       setIncommingMessage(
         snapshot.docs.map((doc) => ({

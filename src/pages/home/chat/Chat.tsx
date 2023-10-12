@@ -6,7 +6,6 @@ const Chat: React.FC = () => {
   const id = 10;
   const navigate = useNavigate();
 
-  
   return (
     <section className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="mb-4 space-y-4">
