@@ -20,6 +20,7 @@ import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   addDoc,
   collection,
+  doc,
   getDocs,
   onSnapshot,
   orderBy,
@@ -46,15 +47,21 @@ const PrivateChat: React.FC = () => {
     []
   );
 
-  const c = collection(db, "chat/user45/chats");
-  const getUsers = () => {
-    const usersQ = query(c, orderBy("createdAt", "desc"));
-
-    onSnapshot(usersQ, (snapshot) => {});
+  const userCollection = collection(db, "chat");
+  const chatCollectionByUser = collection(db, `chat/user${id}/chats`);
+  const getUsers = async () => {
+    const allDoc = await getDocs(userCollection);
+    const usersQ = query(userCollection);
+    onSnapshot(usersQ, (doc) =>
+      console.log(doc.docs.map((d) => console.log(d.data())))
+    );
   };
 
   const getIncommingMessages = async () => {
-    const inCommingQ = query(c, orderBy("createdAt", "desc"));
+    const inCommingQ = query(
+      chatCollectionByUser,
+      orderBy("createdAt", "desc")
+    );
 
     onSnapshot(inCommingQ, (snapshot) => {
       setIncommingMessage(
