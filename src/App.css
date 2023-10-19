@@ -1,0 +1,44 @@
+/* CHAT CSS */
+
+/* change font family */
+.cs-conversation,
+.cs-conversation-header,
+.cs-message__content {
+  font-family: Montserrat, sans-serif !important;
+}
+
+.cs-conversation.cs-conversation--active {
+  background-color: transparent !important;
+}
+.cs-conversation.cs-conversation--active .cs-conversation__name,
+.cs-conversation.cs-conversation--active .cs-conversation__info {
+  color: black !important;
+}
+
+.cs-conversation-header,
+.cs-conversation-header__user-name,
+.cs-conversation-header__info {
+  background-color: white !important;
+}
+
+.cs-message-list {
+  background-color: #ececec !important;
+}
+
+.cs-message--incoming .cs-message__content {
+  background-color: #fffbee !important;
+  border: 1px solid #ffc700 !important;
+}
+
+.cs-message--outgoing .cs-message__content {
+  color: white !important;
+  background-color: #0c88fa !important;
+}
+
+.cs-message-input__content-editor-wrapper,
+.cs-message-input__content-editor-wrapper
+  .cs-message-input__content-editor-container,
+.cs-message-input__content-editor-wrapper .cs-message-input__content-editor {
+  background-color: transparent !important;
+  font-family: Montserrat, sans-serif !important;
+}

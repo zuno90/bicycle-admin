@@ -1,6 +1,6 @@
 import { combineReducers, createStore, applyMiddleware } from "redux";
 import thunkMiddleware from "redux-thunk";
-import { adminReducer } from "./admin/reducer";
+import { adminReducer } from "./admin/adminReducer";
 
 const rootReducer = combineReducers({
   admin: adminReducer,

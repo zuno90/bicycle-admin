@@ -8,7 +8,6 @@ const CreateProduct = React.lazy(
 );
 const Voucher = React.lazy(() => import("../pages/home/Voucher"));
 const Chat = React.lazy(() => import("../pages/home/chat/Chat"));
-const PrivateChat = React.lazy(() => import("../pages/home/chat/PrivateChat"));
 const User = React.lazy(() => import("../pages/home/User"));
 
 const dashboardRoutes = [
@@ -41,11 +40,6 @@ const dashboardRoutes = [
     path: "/chat",
     title: "Chat",
     element: Chat,
-  },
-  {
-    path: "/chat/:id",
-    title: "Private Chat",
-    element: PrivateChat,
   },
   {
     path: "/user",
