@@ -1,6 +1,8 @@
 export interface IUserList {
   user: IMessageUser;
   lastMsg: string;
+  sentAt: Date;
+  unreadMsg: number;
 }
 
 export interface IMessage {
@@ -26,5 +28,5 @@ export interface IMessageContent {
 export interface IMessageUser {
   _id: string | number;
   name: string;
-  createdAt: Date;
+  avatar: string;
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "../../../query/user.query";
 import {
@@ -26,13 +26,14 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
+import { IMessageContent, IMessageUser, IUserList } from "../../../__types__";
 import ChatWelcome1 from "../../../assets/chat-welcome1.jpeg";
 import UserAvatar from "../../../assets/images/user/user-03.png";
 import { db } from "../../../utils/firebase.util";
 import { v4 as uuidv4 } from "uuid";
-import { IMessageContent, IMessageUser, IUserList } from "../../../__types__";
-import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import Loader from "../../../components/Loader";
+import { formatTimeAgo, formatUnreadMsg } from "../../../utils/helper.util";
+import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 const ADMINID = 99;
 
@@ -43,6 +44,17 @@ const Chat: React.FC = () => {
   //   queryKey: ["id", id],
   //   queryFn: () => getUser(id),
   // });
+
+  // State
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [userList, setUserList] = React.useState<IUserList[]>([]);
+  const [currentUser, setCurrentUser] = React.useState<IMessageUser>();
+  const [messages, setMessages] = React.useState<MessageModel[]>([]);
+
+  const [inMessages, setInMessages] = React.useState<MessageModel[]>([]);
+  const [outMessages, setOutMessages] = React.useState<MessageModel[]>([]);
+
+  // Firebase collection & doc
   const userCollection = collection(db, "chat");
   const chatCollectionByAdmin = doc(db, "chat", `user:${ADMINID}`);
 
@@ -51,6 +63,7 @@ const Chat: React.FC = () => {
   };
 
   const sendMessage = async (message: string) => {
+    console.log(new Date());
     const msgPayload = {
       _id: uuidv4(),
       createdAt: new Date(),
@@ -78,39 +91,46 @@ const Chat: React.FC = () => {
     }
   };
 
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [userList, setUserList] = React.useState<IUserList[]>([]);
-  const [currentUser, setCurrentUser] = React.useState<IMessageUser>();
-  const [messages, setMessages] = React.useState<MessageModel[]>([]);
-
-  const [inMessages, setInMessages] = React.useState<MessageModel[]>([]);
-  const [outMessages, setOutMessages] = React.useState<MessageModel[]>([]);
-
   const initFetch = async () => {
     setIsLoading(true);
     try {
       const allDoc = await getDocs(userCollection);
       if (!allDoc) throw new Error("User Doc not found!");
-      const userL: IUserList[] = [];
-      allDoc.forEach((doc: DocumentData) => {
-        if (doc.data().user._id !== ADMINID) {
-          const lastM = doc
-            .data()
-            .messages.sort((a, b) => Number(a.createdAt) - Number(b.createdAt));
-          userL.push({
-            user: doc.data().user,
-            lastMsg: lastM[0].text || lastM[0].image,
-          });
-        }
-      });
-      setUserList(userL);
+      setUserList(takeLastMessage(allDoc));
       setIsLoading(false);
     } catch (error) {
       console.error(error);
     }
   };
+
+  const reRenderSidebar = () => {
+    const unsub = onSnapshot(userCollection, (snap) =>
+      setUserList(takeLastMessage(snap.docs))
+    );
+    return unsub;
+  };
+
+  const takeLastMessage = (docs: DocumentData) => {
+    const userL: IUserList[] = [];
+    docs.forEach((doc: DocumentData) => {
+      if (doc.data().user._id !== ADMINID) {
+        const lastM = doc
+          .data()
+          .messages.sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
+        userL.push({
+          user: doc.data().user,
+          lastMsg: lastM[0].text || lastM[0].image,
+          sentAt: lastM[0].createdAt,
+          unreadMsg: doc.data().messages.filter((msg) => msg.unread).length,
+        });
+      }
+    });
+    return userL;
+  };
+
   React.useEffect(() => {
     initFetch();
+    reRenderSidebar();
   }, []);
 
   const getUserById = async (id: number | string) => {
@@ -126,9 +146,6 @@ const Chat: React.FC = () => {
 
   const getMessages = async (userId: number | string) => {
     const chatCollectionByUser = doc(db, "chat", `user:${userId}`);
-    const unsub = onSnapshot(userCollection, (snap) => {
-      // snap.docs.map((doc) => console.log(doc.data(), 89898989));
-    });
     const unsubAdminDoc = onSnapshot(chatCollectionByAdmin, (outGoingDoc) => {
       // console.log("Current data admin: ", outGoingDoc.data());
       const outMessages =
@@ -158,15 +175,34 @@ const Chat: React.FC = () => {
         })) || [];
       setInMessages(inMessages);
     });
-    return [unsub, unsubAdminDoc, unsubUserDoc];
+    return [unsubAdminDoc, unsubUserDoc];
   };
 
   React.useEffect(() => {
     if (inMessages.length || outMessages.length) {
       const msgs = outMessages.concat(inMessages);
-      setMessages(msgs.sort((a, b) => Number(a.sentTime) - Number(b.sentTime)));
+      console.log(
+        msgs.sort(
+          (a, b) =>
+            new Date(a.sentTime.toDate()) - new Date(b.sentTime.toDate())
+        )
+      );
+      setMessages(
+        msgs.sort(
+          (a, b) =>
+            new Date(a.sentTime.toDate()) - new Date(b.sentTime.toDate())
+        )
+      );
     }
   }, [inMessages, outMessages]);
+
+  const renderUserStatus = () => {
+    const cUser = userList.filter((u) => u.user._id === currentUser?._id)[0];
+    const deltaTime = Math.floor(
+      (new Date() - new Date(cUser.sentAt.toDate())) / 1000
+    );
+    return formatTimeAgo(deltaTime);
+  };
 
   return (
     <div className="relative h-[85vh]">
@@ -179,7 +215,11 @@ const Chat: React.FC = () => {
                   key={user.user._id}
                   name={user.user.name}
                   info={user.lastMsg}
-                  active={true}
+                  // lastActivityTime={formatTimeAgo(
+                  //   (new Date() - new Date(user.sentAt.toDate())) / 1000
+                  // )}
+                  unreadCnt={user.unreadMsg || 5}
+                  active={currentUser?._id === user.user._id ?? false}
                   onClick={async () => {
                     setIsLoading(true);
                     await Promise.all([
@@ -215,8 +255,8 @@ const Chat: React.FC = () => {
                 <Avatar src={UserAvatar} />
                 <ConversationHeader.Content
                   userName={currentUser?.name}
-                  info="last active 10 mins ago"
-                ></ConversationHeader.Content>
+                  info={renderUserStatus()}
+                />
               </ConversationHeader>
               <MessageList>
                 {messages.length > 0 &&

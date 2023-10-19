@@ -8,10 +8,10 @@
 }
 
 .cs-conversation.cs-conversation--active {
-  background-color: transparent !important;
+  background-color: #fff7d9 !important;
 }
-.cs-conversation.cs-conversation--active .cs-conversation__name,
-.cs-conversation.cs-conversation--active .cs-conversation__info {
+.cs-conversation__name,
+.cs-conversation__info {
   color: black !important;
 }
 

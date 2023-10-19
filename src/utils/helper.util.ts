@@ -7,6 +7,32 @@ export const formatNumber = (x: number) => {
     .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
+export const formatTimeAgo = (deltaTime: number) => {
+  let interval = Math.floor(deltaTime / 31536000);
+  if (interval > 1) return interval + " năm trước";
+
+  interval = Math.floor(deltaTime / 2592000);
+  if (interval > 1) return interval + " tháng trước";
+
+  interval = Math.floor(deltaTime / 86400);
+  if (interval > 1) return interval + " ngày trước";
+
+  interval = Math.floor(deltaTime / 3600);
+  if (interval > 1) return interval + " giờ trước";
+
+  interval = Math.floor(deltaTime / 60);
+  if (interval > 1) return interval + " phút trước";
+
+  if (deltaTime < 10) return "Vừa mới truy cập";
+
+  return Math.floor(deltaTime) + " giây trước";
+};
+
+export const formatUnreadMsg = (num: number) => {
+  if (num > 5) return `${num}+`;
+  return num;
+};
+
 export const fetchGet = async (url: string, header?: any) => {
   try {
     const r = await fetch(url, {
