@@ -3,10 +3,7 @@ import { IProductTable } from "../__types__";
 import { formatNumber } from "../utils/helper.util";
 import Pagination from "./Pagination";
 
-type THomeTable = {
-  title: string;
-  data: IProductTable;
-};
+type THomeTable = { title: string; data: IProductTable };
 
 const HomeTable: React.FC<THomeTable> = ({ title, data }) => {
   return (

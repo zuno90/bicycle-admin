@@ -14,6 +14,7 @@ import {
   Avatar,
   ConversationHeader,
   MessageModel,
+  Loader,
 } from "@chatscope/chat-ui-kit-react";
 import {
   DocumentData,
@@ -29,10 +30,11 @@ import {
 import { IMessageContent, IMessageUser, IUserList } from "../../../__types__";
 import ChatWelcome1 from "../../../assets/chat-welcome1.jpeg";
 import UserAvatar from "../../../assets/images/user/user-03.png";
+import AdminAvatar from "../../../assets/zuno.png";
 import { db } from "../../../utils/firebase.util";
 import { v4 as uuidv4 } from "uuid";
-import Loader from "../../../components/Loader";
-import { formatTimeAgo, formatUnreadMsg } from "../../../utils/helper.util";
+// import Loader from "../../../components/Loader";
+import { formatTimeAgo } from "../../../utils/helper.util";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 const ADMINID = 99;
@@ -60,14 +62,14 @@ const Chat: React.FC = () => {
 
   const attachImage = () => {
     console.log(11);
+    const fileInput = document;
   };
 
   const sendMessage = async (message: string) => {
-    console.log(new Date());
     const msgPayload = {
       _id: uuidv4(),
       createdAt: new Date(),
-      text: message,
+      text: message.trim(),
       sendTo: currentUser?._id,
     };
     try {
@@ -75,7 +77,7 @@ const Chat: React.FC = () => {
         user: {
           _id: ADMINID,
           name: "ADMIN",
-          avatar: "https://i.pravatar.cc/50",
+          avatar: AdminAvatar,
         },
         messages: arrayUnion(msgPayload),
       });
@@ -84,7 +86,7 @@ const Chat: React.FC = () => {
         user: {
           _id: ADMINID,
           name: "ADMIN",
-          avatar: "https://i.pravatar.cc/50",
+          avatar: AdminAvatar,
         },
         messages: arrayUnion(msgPayload),
       });
@@ -181,12 +183,6 @@ const Chat: React.FC = () => {
   React.useEffect(() => {
     if (inMessages.length || outMessages.length) {
       const msgs = outMessages.concat(inMessages);
-      console.log(
-        msgs.sort(
-          (a, b) =>
-            new Date(a.sentTime.toDate()) - new Date(b.sentTime.toDate())
-        )
-      );
       setMessages(
         msgs.sort(
           (a, b) =>
@@ -281,15 +277,18 @@ const Chat: React.FC = () => {
               </MessageList>
               <MessageInput
                 placeholder="Nhập tin nhắn..."
+                autoFocus
                 // attachButton={false}
                 // sendButton={false}
                 onAttachClick={attachImage}
-                onSend={sendMessage}
+                onSend={(_, text) => sendMessage(text)}
               />
             </ChatContainer>
           )
         ) : (
-          <Loader />
+          <div className="w-full flex flex-col justify-center items-center">
+            <Loader />
+          </div>
         )}
       </MainContainer>
     </div>

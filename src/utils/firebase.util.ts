@@ -30,8 +30,7 @@ export const messaging = getMessaging(app);
 const getFcmToken = async () => {
   try {
     const token = await getToken(messaging, {
-      vapidKey:
-        "BGm1fmGzfJ1XJY6yTFW98LsuEwQHD5dVRX9XPtSnPvRtDZhaaIbXA_k51tH1ABMOmdENshgXWXUqxJf-DXECvKE",
+      vapidKey: import.meta.env.VITE_VAPID_KEY,
     });
     console.log(token);
     if (!token) throw new Error("Token not found!");

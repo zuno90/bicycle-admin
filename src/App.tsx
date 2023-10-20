@@ -1,10 +1,10 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "./App.css";
 import ProtectedRouter from "./private/ProtectedRouter";
 import Loader from "./components/Loader";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Notification from "./components/Notification";
+import "./App.css";
 
 const Login = React.lazy(() => import("./pages/auth/Login"));
 const Layout = React.lazy(() => import("./components/Layout"));
