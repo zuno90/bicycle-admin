@@ -6,3 +6,15 @@ export interface IProductTable {
   value: number;
   status: string;
 }
+
+export interface IProductInput {
+  name: string;
+  category: number;
+  size: number;
+  color: number;
+  originalPrice: number;
+  promotionPrice: number;
+  inventory: number;
+  images: File[];
+  content: string;
+}

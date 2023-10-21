@@ -1,4 +1,4 @@
-import { formatNumber } from "../utils/helper.util";
+import { formatNumber } from "../../utils/helper.util";
 
 const Card: React.FC = () => {
   return (
@@ -19,7 +19,7 @@ const Card: React.FC = () => {
         </p>
       </div>
 
-      <div className="mt-4 flex flex-col justify-between space-y-2">
+      <div className="mt-8 flex flex-col justify-between space-y-2">
         <h4 className="text-title-md font-bold text-black dark:text-white">
           <span className="underline">đ</span> {formatNumber(10000000)}
         </h4>

@@ -10,11 +10,18 @@ export interface IMessage {
   messages: IMessageContent[];
 }
 
+export interface IMessageUser {
+  _id: string | number;
+  name: string;
+  avatar: string;
+}
+
 export interface IMessageContent {
   _id: string | number;
-  sendTo: string | number;
-  text: string;
+  sendTo?: string | number;
+  unread?: boolean;
   createdAt: Date | number;
+  text: string;
   image?: string;
   video?: string;
   audio?: string;
@@ -23,10 +30,4 @@ export interface IMessageContent {
   received?: boolean;
   pending?: boolean;
   quickReplies?: any;
-}
-
-export interface IMessageUser {
-  _id: string | number;
-  name: string;
-  avatar: string;
 }

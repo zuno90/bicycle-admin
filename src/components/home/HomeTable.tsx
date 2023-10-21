@@ -1,17 +1,11 @@
 import React from "react";
-import { IProductTable } from "../__types__";
-import { formatNumber } from "../utils/helper.util";
-import ProductTwo from "../assets/images/product/product-02.png";
-import Pagination from "./Pagination";
-import { useNavigate } from "react-router-dom";
+import { IProductTable } from "../../__types__";
+import { formatNumber } from "../../utils/helper.util";
+import Pagination from "../Pagination";
 
-type TProductTable = {
-  title: string;
-  data: IProductTable;
-};
+type THomeTable = { title: string };
 
-const ProductTable: React.FC<TProductTable> = ({ title, data }) => {
-  const navigate = useNavigate();
+const HomeTable: React.FC<THomeTable> = ({ title }) => {
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -47,12 +41,12 @@ const ProductTable: React.FC<TProductTable> = ({ title, data }) => {
           </div>
         </div>
         <div className="hidden md:flex items-center gap-4">
+          <p className="text-meta-5 underline">Xuất đơn hàng</p>
           <button
             type="button"
             className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
-            onClick={() => navigate("/product/create")}
           >
-            Thêm sản phẩm
+            01/10 - 31/10
             <svg
               className="w-4 h-4 ml-4"
               aria-hidden="true"
@@ -60,63 +54,61 @@ const ProductTable: React.FC<TProductTable> = ({ title, data }) => {
               fill="currentColor"
               viewBox="0 0 24 24"
             >
-              <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+              <path d="M7,10L12,15L17,10H7Z" />
             </svg>
           </button>
         </div>
       </div>
       <div className="flex flex-col">
-        <div className="grid grid-cols-3 border-b border-stroke dark:border-strokedark sm:grid-cols-5">
+        <div className="grid grid-cols-3 rounded-sm dark:bg-meta-4 sm:grid-cols-6 border-b border-stroke">
+          <div className="hidden sm:block p-2.5 xl:p-5">
+            <h5 className="text-sm font-medium xsm:text-base">ID</h5>
+          </div>
           <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium xsm:text-base">Mã</h5>
+            <h5 className="text-sm font-medium  xsm:text-base">Ngày</h5>
           </div>
-          <div className="p-2.5 text-left xl:p-5">
-            <h5 className="text-sm font-medium  xsm:text-base">Sản phẩm</h5>
-          </div>
-          <div className="p-2.5 text-left xl:p-5">
-            <h5 className="text-sm font-medium  xsm:text-base">Giá</h5>
+          <div className="p-2.5 xl:p-5">
+            <h5 className="text-sm font-medium  xsm:text-base">Tên đơn hàng</h5>
           </div>
           <div className="hidden p-2.5 sm:block xl:p-5">
+            <h5 className="text-sm font-medium  xsm:text-base">Giá trị</h5>
+          </div>
+          <div className="p-2.5 xl:p-5">
             <h5 className="text-sm font-medium  xsm:text-base">Trạng thái</h5>
           </div>
-
           <div className="hidden p-2.5 text-right sm:block xl:p-5">
             <h5 className="text-sm font-medium  xsm:text-base">Hành động</h5>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 border-b border-stroke dark:border-strokedark sm:grid-cols-5">
-          <div className="flex items-center gap-3 p-2.5 xl:p-5">
-            <p className="hidden text-black dark:text-white sm:block">
+        <div className="grid grid-cols-3 border-b border-stroke dark:border-strokedark sm:grid-cols-6">
+          <div className="hidden sm:flex items-center gap-3 p-2.5 xl:p-5">
+            <p className="text-black dark:text-white sm:block">
               #123456
             </p>
           </div>
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="h-12.5 w-15 rounded-md">
-              <img src={ProductTwo} alt="Product" />
-            </div>
-            <p className="text-sm text-black dark:text-white">Macbook Pro M1</p>
+          <div className="flex items-center p-2.5 xl:p-5">
+            <p className="text-black dark:text-white">01/09/2023</p>
           </div>
 
-          <div className="hidden flex-col items-start justify-center p-2.5 sm:flex xl:p-5">
-            <p className="text-black dark:text-white">
-              <span className="underline">đ</span>
-              {formatNumber(10000000)}
-            </p>{" "}
+          <div className="flex items-center p-2.5 xl:p-5">
+            <p className="text-meta-3">Order Name</p>
+          </div>
+
+          <div className="hidden items-center p-2.5 sm:flex xl:p-5">
             <p className="text-black dark:text-white">
               <span className="underline">đ</span>
               {formatNumber(10000000)}
             </p>
           </div>
 
-          <div className="hidden flex-col items-start justify-center p-2.5 sm:flex xl:p-5">
-            <p className="text-meta-5">Đang hoạt động</p>
-            <p className="text-meta-5">Tồn : 12000</p>
+          <div className="flex items-center p-2.5 xl:p-5">
+            <p className="text-meta-5">Đã giao hàng</p>
           </div>
 
           <div className="hidden items-center justify-end p-2.5 sm:flex xl:p-5">
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex items-center justify-center gap-4">
               <button className="hover:text-primary">
                 <svg
                   width="18"
@@ -193,4 +185,4 @@ const ProductTable: React.FC<TProductTable> = ({ title, data }) => {
   );
 };
 
-export default ProductTable;
+export default HomeTable;
