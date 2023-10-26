@@ -29,8 +29,6 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
     queryFn: () => getProducts(page, limit, status),
   });
 
-  console.log(data);
-
   if (isLoading) return <Loader />;
   return (
     <>

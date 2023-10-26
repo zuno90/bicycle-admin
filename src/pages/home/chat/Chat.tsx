@@ -28,7 +28,6 @@ import {
 import {
   ENotificationType,
   IMessageContent,
-  IMessageUser,
   IUserList,
 } from "../../../__types__";
 import ChatWelcome1 from "../../../assets/chat-welcome1.jpeg";
@@ -40,6 +39,16 @@ import { formatTimeAgo, notify } from "../../../utils/helper.util";
 import AWS from "aws-sdk";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import { useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getUser } from "../../../query";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import {
+  checkUserFromFirebase,
+  handleImageUpload,
+  loadSidebar,
+  setCurrentUser,
+  setLoading,
+} from "../../../store/chat/chatSlice";
 
 AWS.config.update({
   accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
@@ -53,34 +62,31 @@ const ADMINID = "1698215035570UIHEzfO0vLTr";
 const imageMimeType = /image\/(png|jpg|jpeg|webp)/i;
 
 const Chat: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const chatState = useAppSelector((state) => state.chat);
   const [searchParams, setSearchParams] = useSearchParams();
   const uid = searchParams.get("uid");
 
   // State
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [userList, setUserList] = React.useState<IUserList[]>([]);
-  const [currentUser, setCurrentUser] = React.useState<IMessageUser>();
   const [messages, setMessages] = React.useState<MessageModel[]>([]);
-
   const [inMessages, setInMessages] = React.useState<MessageModel[]>([]);
   const [outMessages, setOutMessages] = React.useState<MessageModel[]>([]);
 
   // image preview
   const imgUploadRef = React.useRef(null); // image upload input
-  const [imageFile, setImageFile] = React.useState<File | null>(null);
-  const [previewImg, setPreviewImg] = React.useState<string>("");
 
-  const attachImage = (event) => {
+  const attachImage = (event: any) => {
     const file = event.target.files[0];
-    if (!file.type.match(imageMimeType)) return alert("Chỉ cho phép up ảnh");
+    if (!file.type.match(imageMimeType))
+      return notify(ENotificationType.error, "Chỉ cho phép up ảnh!");
     if (file) {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
-      fileReader.onload = (e) => {
+      fileReader.onload = (e: any) => {
         const { result } = e.target;
         const imgElement = document.createElement("img");
         imgElement.src = result;
-        imgElement.onload = async (ev) => {
+        imgElement.onload = async (ev: any) => {
           const maxW = 1000;
           try {
             const canvas = document.createElement(
@@ -100,8 +106,12 @@ const Chat: React.FC = () => {
             const imgFile = new File([blobFile], file.name, {
               type: "image/jpeg",
             });
-            setPreviewImg(srcEncoded);
-            setImageFile(imgFile);
+            dispatch(
+              handleImageUpload({
+                type: "show",
+                payload: { preview: srcEncoded, file: imgFile },
+              })
+            );
           } catch (error) {
             console.error(error);
           }
@@ -123,8 +133,7 @@ const Chat: React.FC = () => {
       const imgUrl = `${import.meta.env.VITE_AWS_CDN_CLOUDFONT}/${s3Img.Key}`;
       // send message
       await sendMessage(imgUrl, "image");
-      setImageFile(null);
-      setPreviewImg("");
+      dispatch(handleImageUpload({ type: "remove" }));
     } catch (error) {
       console.error(error);
     }
@@ -140,7 +149,7 @@ const Chat: React.FC = () => {
       createdAt: new Date(),
       text: !type || type === "text" ? message.trim() : "",
       image: type === "image" ? message.trim() : "",
-      sendTo: currentUser?._id,
+      sendTo: chatState.currentUser?._id,
     };
     try {
       await updateDoc(chatDocByAdmin, {
@@ -156,22 +165,22 @@ const Chat: React.FC = () => {
   };
 
   const initFetch = async () => {
-    setIsLoading(true);
+    dispatch(setLoading(true));
     try {
       const allDoc = await getDocs(userCollection);
       if (!allDoc) throw new Error("User Doc not found!");
-      setUserList(takeLastMessage(allDoc));
+      dispatch(loadSidebar(takeLastMessage(allDoc)));
       if (uid) await Promise.all([getUserById(uid), getMessages(uid)]);
     } catch (error: any) {
       notify(ENotificationType.error, error.message, "error");
     } finally {
-      setIsLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
   const reRenderSidebar = () => {
     const unsub = onSnapshot(userCollection, (snap) =>
-      setUserList(takeLastMessage(snap.docs))
+      dispatch(loadSidebar(takeLastMessage(snap.docs)))
     );
     return unsub;
   };
@@ -207,11 +216,28 @@ const Chat: React.FC = () => {
     try {
       const userDoc = await getDoc(chatDocByUser);
       if (!userDoc) throw new Error("User Doc not found!");
-      setCurrentUser(userDoc.data()?.user);
+      dispatch(setCurrentUser(userDoc.data()?.user));
       // update unread messages for user
       await updateDoc(chatDocByUser, { unread: 0 });
     } catch (error: any) {
-      notify(ENotificationType.error, "Không tìm thấy user!", "error");
+      // admin chat fisrt
+      const res = await getUser(uid);
+      if (!res)
+        notify(
+          ENotificationType.error,
+          "User không có hoặc không tồn tại! Vui lòng thử lại!",
+          "error"
+        );
+      else {
+        if (res.role === "admin")
+          return notify(
+            ENotificationType.warning,
+            "Chỉ cho phép chat với user",
+            "error"
+          );
+        const u = { _id: res.id, name: res.phoneNumber, avatar: "default" };
+        dispatch(setCurrentUser(u));
+      }
     }
   };
 
@@ -266,11 +292,15 @@ const Chat: React.FC = () => {
   }, [inMessages, outMessages]);
 
   const renderUserStatus = () => {
-    const cUser = userList.filter((u) => u.user._id === currentUser?._id)[0];
-    const deltaTime = Math.floor(
-      (new Date() - new Date(cUser.sentAt.toDate())) / 1000
-    );
-    return formatTimeAgo(deltaTime);
+    const cUser = chatState.userList.filter(
+      (u) => u.user._id === chatState.currentUser?._id
+    )[0];
+    if (cUser) {
+      const deltaTime = Math.floor(
+        (new Date() - new Date(cUser.sentAt.toDate())) / 1000
+      );
+      return formatTimeAgo(deltaTime);
+    }
   };
 
   return (
@@ -278,19 +308,17 @@ const Chat: React.FC = () => {
       <MainContainer className="text-meta-1">
         <Sidebar position="left" scrollable>
           <ConversationList>
-            {userList.length > 0 &&
-              userList.map((user) => (
+            {chatState.userList.length > 0 &&
+              chatState.userList.map((user) => (
                 <Conversation
                   key={user.user._id}
                   name={user.user.name}
                   info={user.lastMsg}
                   unreadCnt={user.unreadMsg}
-                  active={currentUser?._id === user.user._id ?? false}
+                  active={chatState.currentUser?._id === user.user._id ?? false}
                   onClick={async () => {
-                    if (currentUser?._id !== user.user._id) {
-                      setIsLoading(true);
-                      // updateReadMsg(user.user._id);
-                      setPreviewImg("");
+                    if (chatState.currentUser?._id !== user.user._id) {
+                      dispatch(setLoading(true));
                       setSearchParams((params) => {
                         params.delete("uid");
                         return params;
@@ -299,7 +327,8 @@ const Chat: React.FC = () => {
                         getUserById(user.user._id),
                         getMessages(user.user._id),
                       ]);
-                      setIsLoading(false);
+                      dispatch(handleImageUpload({ type: "remove" }));
+                      dispatch(setLoading(false));
                     }
                   }}
                 >
@@ -308,8 +337,8 @@ const Chat: React.FC = () => {
               ))}
           </ConversationList>
         </Sidebar>
-        {!isLoading ? (
-          !currentUser ? (
+        {!chatState.isLoading ? (
+          !chatState.currentUser ? (
             <div className="w-full flex flex-col justify-center items-center space-y-4">
               <div className="text-2xl">HELLO mấy ní!</div>
               <div className="text-xl">Bấm vào user để chat!</div>
@@ -322,6 +351,9 @@ const Chat: React.FC = () => {
                 Để thuận tiện, mấy ní nên thao tác trên <b>Desktop</b> hoặc{" "}
                 <b>Tablet</b>.
               </div>
+              <div className="text-xs italic">
+                * Phiên bản chat chỉ cho phép chat với User đã active trên app.
+              </div>
             </div>
           ) : (
             <>
@@ -332,7 +364,7 @@ const Chat: React.FC = () => {
                     onClick={() => console.log("go to user profile")}
                   />
                   <ConversationHeader.Content
-                    userName={currentUser?.name}
+                    userName={chatState.currentUser?.name}
                     info={renderUserStatus()}
                   />
                 </ConversationHeader>
@@ -386,12 +418,12 @@ const Chat: React.FC = () => {
               </ChatContainer>
               <Sidebar position="right">
                 <ExpansionPanel title="Ảnh Upload" open={true}>
-                  {previewImg && imageFile ? (
+                  {chatState.previewImg && chatState.imageFile ? (
                     <section className="w-full flex flex-col justify-center items-center space-y-4">
-                      <img className="object-fit" src={previewImg} />
+                      <img className="object-fit" src={chatState.previewImg} />
                       <div className="w-full flex flex-col items-center space-y-2">
                         <button
-                          onClick={() => uploadImageToS3(imageFile)}
+                          onClick={() => uploadImageToS3(chatState.imageFile)}
                           type="button"
                           className="w-full text-white bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none focus:ring-[#1da1f2]/50 font-medium rounded-full text-sm px-5 py-2.5 text-center inline-flex justify-center items-center dark:focus:ring-[#1da1f2]/55"
                         >
@@ -406,7 +438,9 @@ const Chat: React.FC = () => {
                           Gửi
                         </button>
                         <button
-                          onClick={() => setPreviewImg("")}
+                          onClick={() =>
+                            dispatch(handleImageUpload({ type: "remove" }))
+                          }
                           type="button"
                           className="w-full text-white bg-[#ff592f] hover:bg-[#f14e4e] focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-full text-sm px-5 py-2.5 text-center inline-flex justify-center items-center dark:focus:ring-[#3b5998]/55"
                         >

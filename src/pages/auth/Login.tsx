@@ -9,7 +9,7 @@ import { adminAction, loginAction } from "../../store/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { useLocation, useNavigate } from "react-router-dom";
 import { config } from "../../utils/config.util";
-import { getUser } from "../../query";
+import { getUserInfo } from "../../query";
 
 const Login: React.FC = () => {
   const { isAuth, user } = useAppSelector((state) => state.admin);
@@ -55,7 +55,7 @@ const Login: React.FC = () => {
 
   const { isFetching: isFetchingUser, data: userData } = useQuery({
     queryKey: ["user"],
-    queryFn: () => getUser(),
+    queryFn: () => getUserInfo(),
     enabled: isAuth,
   });
   if (userData) dispatch(adminAction(userData));

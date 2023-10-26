@@ -12,17 +12,19 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import chatSlice from "./chat/chatSlice";
 
 const persistConfig = { key: "root", version: 1, storage };
 
 const rootReducer = persistReducer(persistConfig, adminSlice);
 const store = configureStore({
-  reducer: { admin: rootReducer },
+  reducer: { admin: rootReducer, chat: chatSlice },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
+      // serializableCheck: {
+      //   ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      // },
+      serializableCheck: false,
     }),
 });
 

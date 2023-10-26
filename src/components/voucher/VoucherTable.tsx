@@ -2,7 +2,7 @@ import React from "react";
 import Pagination from "../Pagination";
 import Switcher from "../Switcher";
 import Loader from "../Loader";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ITable, IVoucher } from "../../__types__";
 import { formatNumber } from "../../utils/helper.util";
 import { config } from "../../utils/config.util";
