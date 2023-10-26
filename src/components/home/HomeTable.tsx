@@ -1,18 +1,25 @@
 import React from "react";
-import { IProductTable } from "../../__types__";
-import { formatNumber } from "../../utils/helper.util";
 import Pagination from "../Pagination";
+import { ITable } from "../../__types__";
+import { formatNumber } from "../../utils/helper.util";
+import { Link, useLocation } from "react-router-dom";
+import { config } from "../../utils/config.util";
 
-type THomeTable = { title: string };
+const HomeTable: React.FC<ITable> = ({ title }) => {
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+  const page = Number(queryParams.get("page")) || config.pagination.PAGE;
+  const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
 
-const HomeTable: React.FC<THomeTable> = ({ title }) => {
   return (
     <>
       <div className="flex justify-between items-center mb-4">
         <div className="space-y-4">
-          <h4 className="text-xl font-semibold text-black dark:text-white">
-            {title}
-          </h4>
+          <Link to={"/chat?uid=77"}>
+            <h4 className="text-xl font-semibold text-black dark:text-white">
+              {title}
+            </h4>
+          </Link>
           <div className="flex items-center gap-4">
             <button
               type="button"
@@ -83,9 +90,7 @@ const HomeTable: React.FC<THomeTable> = ({ title }) => {
 
         <div className="grid grid-cols-3 border-b border-stroke dark:border-strokedark sm:grid-cols-6">
           <div className="hidden sm:flex items-center gap-3 p-2.5 xl:p-5">
-            <p className="text-black dark:text-white sm:block">
-              #123456
-            </p>
+            <p className="text-black dark:text-white sm:block">#123456</p>
           </div>
 
           <div className="flex items-center p-2.5 xl:p-5">
@@ -177,8 +182,9 @@ const HomeTable: React.FC<THomeTable> = ({ title }) => {
             </div>
           </div>
         </div>
+
         <div className="flex justify-center items-center my-4">
-          <Pagination />
+          <Pagination page={page} limit={limit} total={31} />
         </div>
       </div>
     </>

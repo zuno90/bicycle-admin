@@ -1,9 +1,15 @@
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useAppSelector } from "../store";
 
 const ProtectedRouter: React.FC = () => {
-  const isAuth = true;
-  return !isAuth ? <Navigate to="/auth/login" /> : <Outlet />;
+  const location = useLocation();
+  const { isAuth } = useAppSelector((state) => state.admin);
+  return !isAuth ? (
+    <Navigate to="/auth/login" state={{ from: location }} replace />
+  ) : (
+    <Outlet />
+  );
 };
 
 export default ProtectedRouter;

@@ -1,7 +1,18 @@
+import queryString from "query-string";
 import { config } from "../utils/config.util";
-import { fetchGet } from "../utils/helper.util";
+import { fetchGet, getCache } from "../utils/helper.util";
 
-export const getProducts = async (page: number, limit?: number) => {
-  const res = await fetchGet(`${config.endpoint}/products?page=${page}`);
-  return res.data.products;
+export const getProducts = async (
+  page: number,
+  limit: number,
+  status: string | undefined
+) => {
+  const params = queryString.stringify(
+    { page, limit, status },
+    { skipNull: true, skipEmptyString: true }
+  );
+  const res = await fetchGet(`${config.endpoint}/products?${params}`, {
+    Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
+  });
+  if (res.success) return res.data;
 };

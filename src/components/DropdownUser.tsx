@@ -1,16 +1,21 @@
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import Zuno from "../assets/zuno.png";
+import { useAppDispatch, useAppSelector } from "../store";
+import { logoutAction } from "../store/auth/authSlice";
 
 const DropdownUser: React.FC = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user } = useAppSelector((state) => state.admin);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
-  const trigger = useRef<any>(null);
-  const dropdown = useRef<any>(null);
+  const trigger = React.useRef<any>(null);
+  const dropdown = React.useRef<any>(null);
 
   // close on click outside
-  useEffect(() => {
+  React.useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
       if (!dropdown.current) return;
       if (
@@ -26,7 +31,7 @@ const DropdownUser: React.FC = () => {
   });
 
   // close if the esc key is pressed
-  useEffect(() => {
+  React.useEffect(() => {
     const keyHandler = ({ keyCode }: KeyboardEvent) => {
       if (!dropdownOpen || keyCode !== 27) return;
       setDropdownOpen(false);
@@ -34,6 +39,12 @@ const DropdownUser: React.FC = () => {
     document.addEventListener("keydown", keyHandler);
     return () => document.removeEventListener("keydown", keyHandler);
   });
+
+  // handle logout
+  const handleLogout = () => {
+    dispatch(logoutAction(null));
+    navigate("/");
+  };
 
   return (
     <div className="relative">
@@ -45,7 +56,7 @@ const DropdownUser: React.FC = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            zuno
+            {user?.name ?? "ADMIN"}
           </span>
           <span className="block text-xs">Super Admin</span>
         </span>
@@ -155,7 +166,10 @@ const DropdownUser: React.FC = () => {
             </Link>
           </li>
         </ul>
-        <button className="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
+        >
           <svg
             className="fill-current"
             width="22"

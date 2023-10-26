@@ -1,3 +1,6 @@
+import { ToastPosition, toast } from "react-toastify";
+import { ENotificationType } from "../__types__";
+
 // channel receives message from service worker
 export const channel = new BroadcastChannel("notifications");
 
@@ -33,6 +36,20 @@ export const formatUnreadMsg = (num: number) => {
   return num;
 };
 
+export const notify = (
+  type: ENotificationType,
+  content: JSX.Element | string,
+  id?: string,
+  position?: ToastPosition
+) => {
+  if (type === ENotificationType.info)
+    return toast.info(content, { toastId: id, position });
+  if (type === ENotificationType.success)
+    return toast.success(content, { toastId: id, position });
+  if (type === ENotificationType.error)
+    return toast.error(content, { toastId: id, position });
+};
+
 export const fetchGet = async (url: string, header?: any) => {
   try {
     const r = await fetch(url, {
@@ -48,6 +65,14 @@ export const fetchGet = async (url: string, header?: any) => {
   }
 };
 
+// get local cache
+export const getCache = (key: string) => window.localStorage.getItem(key);
+export const setCache = (key: string, value: string) =>
+  window.localStorage.setItem(key, value);
+export const delCache = (key: string) => window.localStorage.removeItem(key);
+export const clearCache = () => window.localStorage.clear();
+
+// call api
 export const fetchPost = async (url: string, body: string, header?: any) => {
   try {
     const r = await fetch(url, {

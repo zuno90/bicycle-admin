@@ -1,16 +1,34 @@
-import { combineReducers, createStore, applyMiddleware } from "redux";
-import thunkMiddleware from "redux-thunk";
-import { adminReducer } from "./admin/adminReducer";
+import { configureStore } from "@reduxjs/toolkit";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import adminSlice from "./auth/authSlice";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
-const rootReducer = combineReducers({
-  admin: adminReducer,
+const persistConfig = { key: "root", version: 1, storage };
+
+const rootReducer = persistReducer(persistConfig, adminSlice);
+const store = configureStore({
+  reducer: { admin: rootReducer },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
 
-export type AppState = ReturnType<typeof rootReducer>;
+export type RootState = ReturnType<typeof store.getState>;
+export const useAppDispatch: () => typeof store.dispatch = useDispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-export default function configureStore() {
-  const middlewares = [thunkMiddleware];
-  const middlewareEnhancer = applyMiddleware(...middlewares);
-
-  return createStore(rootReducer, middlewareEnhancer);
-}
+export const persistor = persistStore(store);
+export default store;

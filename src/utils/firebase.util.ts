@@ -29,11 +29,12 @@ export const messaging = getMessaging(app);
 
 const getFcmToken = async () => {
   try {
-    const token = await getToken(messaging, {
+    const deviceToken = await getToken(messaging, {
       vapidKey: import.meta.env.VITE_VAPID_KEY,
     });
-    console.log(token);
-    if (!token) throw new Error("Token not found!");
+    console.log(deviceToken);
+    if (!deviceToken) throw new Error("Token not found!");
+    window.localStorage.setItem("deviceToken", deviceToken);
   } catch (error) {
     console.error(error);
   }

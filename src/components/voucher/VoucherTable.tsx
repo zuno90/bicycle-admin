@@ -1,35 +1,29 @@
 import React from "react";
 import Pagination from "../Pagination";
+import Switcher from "../Switcher";
 import Loader from "../Loader";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { ITable, IVoucher } from "../../__types__";
 import { formatNumber } from "../../utils/helper.util";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getProducts } from "../../query";
 import { config } from "../../utils/config.util";
-import { EProductStatus, ITable } from "../../__types__";
-import classNames from "classnames";
+import { useQuery } from "@tanstack/react-query";
+import { getVouchers } from "../../query";
 
-const ProductTable: React.FC<ITable> = ({ title }) => {
+const VoucherTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(search);
-
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
-  const status = queryParams.get("status") || undefined;
 
-  const handleChangeStatus = (status: string) => {
-    if (status === EProductStatus.all) queryParams.delete("status");
-    else queryParams.set("status", status);
-    navigate({ search: queryParams.toString() });
-  };
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["products", { page, limit, status }],
-    queryFn: () => getProducts(page, limit, status),
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["vouchers", { page, limit }],
+    queryFn: () => getVouchers(page, config.pagination.LIMIT),
   });
 
-  console.log(data);
+  console.log(data, 66);
+
+  const handleChangeStatus = async () => {};
 
   if (isLoading) return <Loader />;
   return (
@@ -41,56 +35,38 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
           </h4>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => handleChangeStatus(EProductStatus.all)}
               type="button"
-              className={classNames(
-                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": !queryParams.get("status") }
-              )}
+              className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
             >
-              Tất cả ({data.totalProductStatus.all})
+              Tất cả (100)
             </button>
             <button
-              onClick={() => handleChangeStatus(EProductStatus.active)}
-              type="button"
-              className={classNames(
-                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                {
-                  "bg-[#FBE69E]":
-                    queryParams.get("status") === EProductStatus.active,
-                }
-              )}
-            >
-              Đang hoạt động ({data.totalProductStatus.active})
-            </button>
-            <button
-              onClick={() => handleChangeStatus(EProductStatus.inactive)}
-              type="button"
-              className={classNames(
-                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                {
-                  "bg-[#FBE69E]":
-                    queryParams.get("status") === EProductStatus.inactive,
-                }
-              )}
-            >
-              Đang ẩn ({data.totalProductStatus.inactive})
-            </button>
-            {/* <button
               type="button"
               className="text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
             >
-              Đã giao hàng (27)
-            </button> */}
+              Sắp diễn ra (10)
+            </button>
+            <button
+              type="button"
+              className="text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
+            >
+              Đang hoạt động (23)
+            </button>
+            <button
+              type="button"
+              className="text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
+            >
+              Ngừng hoạt động (50)
+            </button>
           </div>
         </div>
         <div className="hidden md:flex items-center gap-4">
           <button
             type="button"
             className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
-            onClick={() => navigate("/product/create")}
+            onClick={() => navigate("/voucher/create")}
           >
-            Thêm sản phẩm
+            Tạo mã khuyến mãi
             <svg
               className="w-4 h-4 ml-4"
               aria-hidden="true"
@@ -104,15 +80,21 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
         </div>
       </div>
       <div className="flex flex-col">
-        <div className="grid grid-cols-7 border-t border-stroke p-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+        <div className="grid grid-cols-6 border-stroke p-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+          <div className="col-span-1 flex items-center"></div>
           <div className="col-span-1 hidden sm:flex items-center">
             <h5 className="text-sm font-medium xsm:text-base">Mã</h5>
           </div>
-          <div className="col-span-4 flex items-center">
-            <h5 className="text-sm font-medium xsm:text-base">Sản phẩm</h5>
+          <div className="col-span-2 flex items-center">
+            <h5 className="text-sm font-medium xsm:text-base">
+              Tên khuyến mãi
+            </h5>
+          </div>
+          <div className="col-span-1 hidden sm:flex items-center">
+            <h5 className="text-sm font-medium xsm:text-base">Giảm giá</h5>
           </div>
           <div className="col-span-1 flex items-center">
-            <h5 className="text-sm font-medium xsm:text-base">Giá</h5>
+            <h5 className="text-sm font-medium xsm:text-base">Thời gian</h5>
           </div>
           <div className="col-span-1 hidden sm:flex items-center">
             <h5 className="text-sm font-medium xsm:text-base">Trạng thái</h5>
@@ -123,59 +105,52 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
           </div>
         </div>
 
-        {data.products.length > 0 &&
-          data.products.map((product: any) => (
+        {data.length > 0 &&
+          data.map((voucher: IVoucher) => (
             <div
-              key={product.id}
-              className="grid grid-cols-7 border-t border-stroke p-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
+              key={voucher.id}
+              className="grid grid-cols-6 border-t border-stroke p-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
             >
-              <div className="col-span-1 hidden items-center sm:flex">
+              <div className="col-span-1 flex items-center">
+                <Switcher id={voucher.id} isEnabled={voucher.status} />
+              </div>
+              <div className="col-span-1 hidden sm:flex items-center">
                 <p className="text-xs text-black dark:text-white">
-                  #{product.id}
+                  #{voucher.code}
                 </p>
               </div>
 
-              <div className="col-span-4 flex items-center gap-1">
-                <div className="w-20 rounded-md">
-                  <img src={product.images[0]} alt="Product" />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
-                    {product.name}
-                  </p>
-                  <p className="text-xs font-thin text-black dark:text-white text-ellipsis overflow-hidden">
-                    Lượt bán: {product.sold}
-                  </p>
-                </div>
+              <div className="col-span-2 flex items-center">
+                <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
+                  {voucher.title}
+                </p>
               </div>
 
-              <div className="col-span-1 flex flex-col items-start justify-center gap-1">
-                <p className="text-sm text-black dark:text-white">
+              <div className="col-span-1 hidden sm:flex items-center">
+                <p className="text-xs text-black dark:text-white">
                   <span className="underline">đ</span>
-                  <span>{formatNumber(product.price)}</span>
+                  <span>
+                    {voucher.unit === "%"
+                      ? formatNumber(
+                          (1 - voucher.value / 100) * voucher.fromPrice
+                        )
+                      : voucher.value}
+                  </span>
                 </p>
-                <div className="inline-flex items-center text-sm text-meta-1 gap-2">
-                  <p className="rounded-full p-0.5 bg-[#FF7979] text-xs text-white hover:bg-opacity-90">
-                    - {product.discount}%
-                  </p>
-                  <p>
-                    <span className="underline">đ</span>
-                    <span>
-                      {formatNumber(
-                        (1 - product.discount / 100) * product.price
-                      )}
-                    </span>
-                  </p>
-                </div>
               </div>
 
-              <div className="col-span-1 hidden sm:flex flex-col items-start justify-center gap-1">
-                <p className="text-xs text-meta-5">Đang hoạt động</p>
-                <p className="text-xs text-meta-5">Tồn : 12000</p>
+              <div className="col-span-1 flex items-center">
+                <p className="text-xs text-black dark:text-white">
+                  12/09/23 - 30/09/23
+                </p>
+              </div>
+
+              <div className="col-span-1 hidden sm:flex items-center">
+                <p className="text-xs text-meta-5">Sắp diễn ra</p>
               </div>
 
               <div className="col-span-2 sm:col-span-1 flex justify-end text-end">
-                <div className="flex items-center justify-center space-x-4">
+                <div className="flex items-center justify-center gap-4">
                   <button className="hover:text-primary">
                     <svg
                       width="18"
@@ -246,13 +221,9 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
             </div>
           ))}
 
-        {data.products.length > 0 && (
+        {data.length > 0 && (
           <div className="flex justify-center items-center my-4">
-            <Pagination
-              page={page}
-              limit={limit}
-              total={data.totalProductStatus.all}
-            />
+            <Pagination page={page} limit={limit} total={31} />
           </div>
         )}
       </div>
@@ -260,4 +231,4 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
   );
 };
 
-export default ProductTable;
+export default VoucherTable;

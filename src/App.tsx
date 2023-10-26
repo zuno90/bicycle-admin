@@ -1,9 +1,11 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProtectedRouter from "./private/ProtectedRouter";
 import Loader from "./components/Loader";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Notification from "./components/Notification";
+import useNotification from "./hooks/useNotification";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 const Login = React.lazy(() => import("./pages/auth/Login"));
@@ -12,13 +14,28 @@ const Layout = React.lazy(() => import("./components/Layout"));
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
+  useNotification();
+
   return (
     <>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
           <Routes>
-            <Route path="/auth/login" element={<Login />} />
-            <Route element={<ProtectedRouter />}>
+            <Route
+              path="/auth/login"
+              element={
+                <React.Suspense fallback={<Loader />}>
+                  <Login />
+                </React.Suspense>
+              }
+            />
+            <Route
+              element={
+                <React.Suspense fallback={<Loader />}>
+                  <ProtectedRouter />
+                </React.Suspense>
+              }
+            >
               <Route
                 path="/*"
                 element={
@@ -31,7 +48,7 @@ const App: React.FC = () => {
           </Routes>
         </QueryClientProvider>
       </BrowserRouter>
-      <Notification />
+      <ToastContainer position="top-right" autoClose={2000} />
     </>
   );
 };

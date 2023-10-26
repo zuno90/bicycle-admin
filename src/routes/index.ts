@@ -6,7 +6,10 @@ const Product = React.lazy(() => import("../pages/home/product/Product"));
 const CreateProduct = React.lazy(
   () => import("../pages/home/product/CreateProduct")
 );
-const Voucher = React.lazy(() => import("../pages/home/Voucher"));
+const Voucher = React.lazy(() => import("../pages/home/voucher/Voucher"));
+const CreateVoucher = React.lazy(
+  () => import("../pages/home/voucher/CreateVoucher")
+);
 const Chat = React.lazy(() => import("../pages/home/chat/Chat"));
 const User = React.lazy(() => import("../pages/home/User"));
 
@@ -35,6 +38,11 @@ const dashboardRoutes = [
     path: "/voucher",
     title: "Khuyến mãi",
     element: Voucher,
+  },
+  {
+    path: "/voucher/create",
+    title: "Tạo mã khuyến mãi",
+    element: CreateVoucher,
   },
   {
     path: "/chat",

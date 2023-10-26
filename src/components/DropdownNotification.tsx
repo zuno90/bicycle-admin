@@ -9,11 +9,15 @@ const DropdownNotification: React.FC = () => {
   const trigger = React.useRef<any>(null);
   const dropdown = React.useRef<any>(null);
 
+  // get noti
   React.useEffect(() => {
     channel.addEventListener("message", (event) => {
-      console.log(event.data, "trong cai chuong");
+      console.log(event, "trong cai chuong");
       setHasNewNoti(true);
     });
+  }, []);
+
+  React.useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
       if (!dropdown.current) return;
       if (

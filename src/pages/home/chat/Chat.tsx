@@ -25,15 +25,21 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { IMessageContent, IMessageUser, IUserList } from "../../../__types__";
+import {
+  ENotificationType,
+  IMessageContent,
+  IMessageUser,
+  IUserList,
+} from "../../../__types__";
 import ChatWelcome1 from "../../../assets/chat-welcome1.jpeg";
 import UserAvatar from "../../../assets/images/user/user-03.png";
 import AdminAvatar from "../../../assets/zuno.png";
 import { db } from "../../../utils/firebase.util";
 import { v4 as uuidv4 } from "uuid";
-import { formatTimeAgo } from "../../../utils/helper.util";
+import { formatTimeAgo, notify } from "../../../utils/helper.util";
 import AWS from "aws-sdk";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+import { useSearchParams } from "react-router-dom";
 
 AWS.config.update({
   accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
@@ -42,11 +48,14 @@ AWS.config.update({
 });
 const s3 = new AWS.S3();
 
-const ADMINID = 99;
+const ADMINID = "1698215035570UIHEzfO0vLTr";
 
 const imageMimeType = /image\/(png|jpg|jpeg|webp)/i;
 
 const Chat: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const uid = searchParams.get("uid");
+
   // State
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [userList, setUserList] = React.useState<IUserList[]>([]);
@@ -152,9 +161,11 @@ const Chat: React.FC = () => {
       const allDoc = await getDocs(userCollection);
       if (!allDoc) throw new Error("User Doc not found!");
       setUserList(takeLastMessage(allDoc));
+      if (uid) await Promise.all([getUserById(uid), getMessages(uid)]);
+    } catch (error: any) {
+      notify(ENotificationType.error, error.message, "error");
+    } finally {
       setIsLoading(false);
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -199,19 +210,22 @@ const Chat: React.FC = () => {
       setCurrentUser(userDoc.data()?.user);
       // update unread messages for user
       await updateDoc(chatDocByUser, { unread: 0 });
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      notify(ENotificationType.error, "Không tìm thấy user!", "error");
     }
   };
 
   const getMessages = async (userId: number | string) => {
     const chatDocByUser = doc(db, "chat", `user:${userId}`);
+
     const unsubAdminDoc = onSnapshot(chatDocByAdmin, (outGoingDoc) => {
       // console.log("Current data admin: ", outGoingDoc.data());
       const outMessages =
         outGoingDoc
           .data()
-          ?.messages.filter((oM: IMessageContent) => oM.sendTo === userId)
+          ?.messages.filter(
+            (oM: IMessageContent) => oM.sendTo === Number(userId)
+          )
           .map((iMsg: IMessageContent) => ({
             type: iMsg.text === "" ? "image" : "text",
             sender: outGoingDoc.data()?.user.name,
@@ -222,6 +236,7 @@ const Chat: React.FC = () => {
           })) || [];
       setOutMessages(outMessages);
     });
+
     const unsubUserDoc = onSnapshot(chatDocByUser, (inCommingDoc) => {
       // console.log("Current data user: ", inCommingDoc.data());
       const inMessages =
@@ -276,6 +291,10 @@ const Chat: React.FC = () => {
                       setIsLoading(true);
                       // updateReadMsg(user.user._id);
                       setPreviewImg("");
+                      setSearchParams((params) => {
+                        params.delete("uid");
+                        return params;
+                      });
                       await Promise.all([
                         getUserById(user.user._id),
                         getMessages(user.user._id),

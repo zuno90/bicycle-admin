@@ -7,6 +7,12 @@ export interface IProductTable {
   status: string;
 }
 
+export enum EProductStatus {
+  all = "all",
+  active = "active",
+  inactive = "inactive",
+}
+
 export interface IProductInput {
   name: string;
   category: number;

@@ -37,8 +37,6 @@ const CreateProduct: React.FC = () => {
     handleSubmit,
     getValues,
     setValue,
-    watch,
-    reset,
     formState: { isSubmitting, isSubmitted, errors },
   } = useForm();
   const handleContent = (content: string) => setValue("content", content);
@@ -53,14 +51,14 @@ const CreateProduct: React.FC = () => {
   if (categories.isLoading || sizes.isLoading || colors.isLoading)
     return <Loader />;
 
-  const handleCreatePost: SubmitHandler<any> = async (data) => {
+  const onCreatePost: SubmitHandler<any> = async (data) => {
     console.log(data, 34);
   };
 
   console.log(getValues());
 
   return (
-    <form onSubmit={handleSubmit(handleCreatePost)}>
+    <form onSubmit={handleSubmit(onCreatePost)}>
       <h1 className="mb-6 text-xl">Sản phẩm {">"} Thêm sản phẩm</h1>
       <div className="space-y-4">
         <div className="w-full sm:inline-flex items-center">
@@ -347,21 +345,20 @@ const CreateProduct: React.FC = () => {
             <TinyMce getContent={handleContent} />
           </div>
         </div>
-
-        <div className="w-full justify-end inline-flex space-x-4">
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-md bg-[#B6B6B6] py-2 px-4 text-center font-medium text-black hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            Huỷ
-          </button>
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            Đăng sản phẩm
-          </button>
-        </div>
+      </div>
+      <div className="w-full justify-end inline-flex space-x-4">
+        <button
+          type="button"
+          className="inline-flex items-center justify-center rounded-md bg-[#B6B6B6] py-2 px-4 text-center font-medium text-black hover:bg-opacity-90 lg:px-8 xl:px-10"
+        >
+          Huỷ
+        </button>
+        <button
+          type="submit"
+          className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+        >
+          Đăng sản phẩm
+        </button>
       </div>
     </form>
   );

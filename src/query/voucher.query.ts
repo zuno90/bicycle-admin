@@ -1,9 +1,9 @@
 import { config } from "../utils/config.util";
 import { fetchGet, getCache } from "../utils/helper.util";
 
-export const getUser = async () => {
-  const res = await fetchGet(`${config.endpoint}/fetch-me`, {
+export const getVouchers = async (page: number, limit?: number) => {
+  const res = await fetchGet(`${config.endpoint}/vouchers`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
-  if (res.success) return res.data.user;
+  if (res.success) return res.data.vouchers;
 };

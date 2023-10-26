@@ -1,10 +1,5 @@
-export const LOGIN = "LOGIN";
-export const LOGOUT = "LOGOUT";
-
-interface ILogin {
-  type: typeof LOGIN;
-  payload: {
-    phoneNumber: string;
-    password: string;
-  };
+export interface ILoginInput {
+  phoneNumber: string;
+  password: string;
+  deviceToken: string | null;
 }
