@@ -1,6 +1,6 @@
 import queryString from "query-string";
 import { config } from "../utils/config.util";
-import { fetchGet, getCache } from "../utils/helper.util";
+import { fetchGet, fetchPost, getCache } from "../utils/helper.util";
 
 export const getProducts = async (
   page: number,
@@ -15,4 +15,13 @@ export const getProducts = async (
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
   if (res.success) return res.data;
+};
+
+export const createProduct = async (payload: any) => {
+  const res = await fetchPost(
+    `${config.endpoint}/product`,
+    JSON.stringify(payload),
+    { Authorization: `Bearer ${getCache(config.cache.accessToken)}` }
+  );
+  console.log(res);
 };

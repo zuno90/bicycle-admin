@@ -15,12 +15,18 @@ export enum EProductStatus {
 
 export interface IProductInput {
   name: string;
-  category: number;
+  categoryId: number;
+  subCategoryId: number;
+  productVariants: IProductVariant[];
+  showPromotion: number;
+  video: string;
+  images: File[];
+  detail: string;
+}
+
+export interface IProductVariant {
   size: number;
   color: number;
-  originalPrice: number;
-  promotionPrice: number;
+  price: number;
   inventory: number;
-  images: File[];
-  content: string;
 }

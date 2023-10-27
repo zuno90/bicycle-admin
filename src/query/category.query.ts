@@ -7,10 +7,3 @@ export const getCategories = async () => {
   });
   if (res.success) return res.data.categories;
 };
-
-export const getSubCategories = async () => {
-  const res = await fetchGet(`${config.endpoint}/categories`, {
-    Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
-  });
-  if (res.success) return res.data.categories;
-};

@@ -1,21 +1,31 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import TinyMce from "../../../components/TinyMce";
 import { useQueries } from "@tanstack/react-query";
-import Loader from "../../../components/Loader";
-import { IAttribute, ICategory } from "../../../__types__";
+import { ENotificationType, ICategory } from "../../../__types__";
 import {
+  createProduct,
   getCategories,
   getColors,
   getSizes,
-  getSubCategories,
 } from "../../../query";
 import queryString from "query-string";
+import Loader from "../../../components/Loader";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { decrement, increment } from "../../../store/common/commonSlice";
+import { notify } from "../../../utils/helper.util";
+
+const ProductVariant = React.lazy(
+  () => import("../../../components/product/ProductVariant")
+);
 
 const CreateProduct: React.FC = () => {
+  const commonState = useAppSelector((state) => state.common);
+  const dispatch = useAppDispatch();
   // handle images
   const [images, setImages] = React.useState<File[]>([]);
+
   const onDrop = React.useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles?.length) {
       setImages((prevFiles: File[]) => [
@@ -32,46 +42,53 @@ const CreateProduct: React.FC = () => {
     accept: { "image/*": [] },
   });
 
-  const removeImage = (index: number) => {
+  const removeImage = (index: number) =>
     setImages(images.filter((_, ind: number) => ind !== index));
-  };
 
   // handle upload & react hook form
+  const methods = useForm();
   // handle content
-  const {
-    register,
-    handleSubmit,
-    getValues,
-    setValue,
-    watch,
-    formState: { isSubmitting, isSubmitted, errors },
-  } = useForm();
-  const handleContent = (content: string) => setValue("content", content);
+  const handleContent = (content: string) =>
+    methods.setValue("detail", content);
 
-  const [categories, subCategories, sizes, colors] = useQueries({
+  const [categories, sizes, colors] = useQueries({
     queries: [
       { queryKey: ["categories"], queryFn: () => getCategories() },
-      { queryKey: ["subCategories"], queryFn: () => getSubCategories() },
       { queryKey: ["sizes"], queryFn: () => getSizes() },
-      { queryKey: ["values"], queryFn: () => getColors() },
+      { queryKey: ["colors"], queryFn: () => getColors() },
     ],
   });
-  if (
-    categories.isLoading ||
-    subCategories.isLoading ||
-    sizes.isLoading ||
-    colors.isLoading
-  )
+  const subCategories =
+    categories.data &&
+    categories.data.filter(
+      (cate: ICategory) => cate.id === Number(methods.watch("categoryId"))
+    )[0]?.subCategories;
+
+  if (categories.isLoading || sizes.isLoading || colors.isLoading)
     return <Loader />;
 
-  console.log({ categories, subCategories, sizes, colors });
+  const addVariant = () => dispatch(increment(null));
+  const removeVariant = (varIndex: number) => {
+    if (commonState.counterValue === 1)
+      return notify(ENotificationType.warning, "Không thể xoá!", "warning");
+    dispatch(decrement(varIndex));
+  };
 
   const onCreatePost: SubmitHandler<any> = async (data) => {
-    console.log(data, 34);
+    const { productVariants, ...others } = data;
+    const formD = new FormData();
+    for (let i of images) formD.append("images", i);
+    const payload = {
+      ...others,
+      images: formD,
+      productVariants: JSON.stringify(productVariants),
+    };
+    console.log(payload, 34);
+    await createProduct(payload);
   };
 
   return (
-    <form onSubmit={handleSubmit(onCreatePost)}>
+    <form onSubmit={methods.handleSubmit(onCreatePost)}>
       <h1 className="mb-6 text-xl">Sản phẩm {">"} Thêm sản phẩm</h1>
       <div className="space-y-10">
         <div className="w-full sm:inline-flex items-center">
@@ -82,7 +99,7 @@ const CreateProduct: React.FC = () => {
             </label>
           </div>
           <input
-            {...register("name", {
+            {...methods.register("name", {
               required: "Tên danh mục không được bỏ trống!",
             })}
             type="text"
@@ -103,11 +120,10 @@ const CreateProduct: React.FC = () => {
             <div className="w-full sm:w-[45%] relative z-20 dark:bg-form-input">
               <select
                 className="relative w-full appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
-                defaultValue={0}
-                {...register("category", {
+                defaultValue=""
+                {...methods.register("categoryId", {
                   required: "Danh mục không được bỏ trống!",
                   min: { value: 1, message: "Danh mục không được bỏ trống!" },
-                  valueAsNumber: true,
                 })}
               >
                 <option value={0} disabled>
@@ -156,20 +172,23 @@ const CreateProduct: React.FC = () => {
             <div className="w-full sm:w-[45%] relative z-20 dark:bg-form-input">
               <select
                 className="relative w-full appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
-                defaultValue={0}
-                {...register("subCategory", {
-                  required: "Danh mục không được bỏ trống!",
-                  min: { value: 1, message: "Danh mục không được bỏ trống!" },
-                  valueAsNumber: true,
+                defaultValue=""
+                {...methods.register("subCategoryId", {
+                  required: "Danh mục con không được bỏ trống!",
+                  min: {
+                    value: 1,
+                    message: "Danh mục con không được bỏ trống!",
+                  },
                 })}
               >
                 <option value={0} disabled>
                   Chọn danh mục con
                 </option>
-                {categories.data.length > 0 &&
-                  categories.data.map((category: ICategory) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
+                {subCategories &&
+                  subCategories.length > 0 &&
+                  subCategories.map((subCate: any) => (
+                    <option key={subCate.id} value={subCate.id}>
+                      {subCate.name}
                     </option>
                   ))}
               </select>
@@ -195,124 +214,113 @@ const CreateProduct: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full sm:inline-flex items-center">
-          <div className="sm:w-[30%]">
-            <label className="inline-flex space-x-2 text-black dark:text-white">
-              <span>Size</span>
-              <span className="text-meta-1">*</span>
-            </label>
-          </div>
-          <div className="w-full sm:w-[50%] relative z-20 dark:bg-form-input">
-            <select
-              className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
-              defaultValue={0}
-              {...register("size", {
-                required: "Size không được bỏ trống!",
-                min: { value: 1, message: "Size không được bỏ trống!" },
-                valueAsNumber: true,
-              })}
-            >
-              <option value={0} disabled>
-                Chọn size
-              </option>
-              {sizes.data.length > 0 &&
-                sizes.data.map((size: IAttribute) => (
-                  <option key={size.id} value={size.id}>
-                    {size.title}
-                  </option>
+        <div>
+          <div className="w-full sm:inline-flex">
+            <div className="sm:w-[30%]">
+              <label className="inline-flex space-x-2 text-black dark:text-white">
+                <span>Thuộc tính</span>
+                <span className="text-meta-1">*</span>
+              </label>
+            </div>
+            <div className="w-full sm:w-[70%] text-sm z-20 dark:bg-form-input">
+              <FormProvider {...methods}>
+                {[...Array(commonState.counterValue).keys()].map((_, index) => (
+                  <React.Suspense key={index} fallback={<Loader />}>
+                    <div className="relative w-full">
+                      <ProductVariant index={index} sizes={sizes.data} />
+                      <button
+                        type="button"
+                        className="absolute right-0 -top-2"
+                        onClick={() => removeVariant(index)}
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="#FF6055"
+                        >
+                          <path d="M8.27,3L3,8.27V15.73L8.27,21H15.73L21,15.73V8.27L15.73,3M8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59L15.59,17L12,13.41L8.41,17L7,15.59L10.59,12L7,8.41" />
+                        </svg>
+                      </button>
+                    </div>
+                  </React.Suspense>
                 ))}
-            </select>
-            <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+              </FormProvider>
+            </div>
+          </div>
+          <div className="w-full sm:inline-flex items-center">
+            <div className="sm:w-[30%]"></div>
+            <div className="w-full sm:w-[70%] text-sm z-20 dark:bg-form-input">
+              <button
+                type="button"
+                className="font-bold cursor-pointer"
+                onClick={addVariant}
               >
-                <g opacity="0.8">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                    fill="#637381"
-                  />
-                </g>
-              </svg>
-            </span>
+                Thêm thuộc tính +
+              </button>
+            </div>
           </div>
         </div>
 
         <div className="w-full sm:inline-flex items-center">
           <div className="sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
-              <span>Màu</span>
-              <span className="text-meta-1">*</span>
-            </label>
-          </div>
-          <div className="w-full sm:w-[50%] relative z-20 dark:bg-form-input">
-            <select
-              className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
-              defaultValue={0}
-              {...register("color", {
-                required: "Màu không được bỏ trống!",
-                min: { value: 1, message: "Màu không được bỏ trống!" },
-                valueAsNumber: true,
-              })}
-            >
-              <option value={0} disabled>
-                Chọn màu
-              </option>
-              {colors.data.length > 0 &&
-                colors.data.map((color: IAttribute) => (
-                  <option key={color.id} value={color.id}>
-                    {color.title}
-                  </option>
-                ))}
-            </select>
-            <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g opacity="0.8">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                    fill="#637381"
-                  />
-                </g>
-              </svg>
-            </span>
-          </div>
-        </div>
-
-        <div className="w-full sm:inline-flex items-center">
-          <div className="sm:w-[30%]">
-            <label className="inline-flex space-x-2 text-black dark:text-white">
-              <span>Giá hiển thị</span>
-              <span className="text-meta-1">*</span>
+              <span>% khuyến mãi</span>
             </label>
           </div>
           <div className="w-full sm:w-[25%] inline-flex items-center space-x-2">
             <input
-              {...register("price", {
-                required: "Giá gốc không được bỏ trống!",
-                min: { value: 1, message: "Giá phải lớn hơn 0" },
-                valueAsNumber: true,
+              {...methods.register("discount", {
+                min: { value: 0, message: "Giá phải lớn hơn 0" },
               })}
               type="number"
               placeholder="Nhập giá"
-              defaultValue={0}
+              defaultValue=""
+              min={0}
               className="rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
-            <p>đ</p>
+            <p>%</p>
           </div>
         </div>
+
+        <div className="w-full sm:inline-flex items-center">
+          <div className="sm:w-[30%]">
+            <label className="inline-flex space-x-2 text-black dark:text-white">
+              <span>Video</span>
+              <span className="text-meta-1"></span>
+            </label>
+          </div>
+          <input
+            {...methods.register("video")}
+            type="text"
+            placeholder="Link youtube"
+            className="w-full sm:w-[70%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+          />
+        </div>
+        {methods.watch("video") && (
+          <div className="w-full sm:inline-flex items-center">
+            <div className="sm:w-[30%]">
+              <label className="inline-flex space-x-2 text-black dark:text-white">
+                <span>Video preview</span>
+                <span className="text-meta-1"></span>
+              </label>
+            </div>
+            <div className="w-full sm:w-[70%]">
+              <iframe
+                width="100%"
+                height="315"
+                src={`https://youtube.com/embed/${
+                  Object.values(
+                    queryString.parse(methods.getValues("video"))
+                  )[0]
+                }`}
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        )}
 
         <div className="w-full sm:inline-flex">
           <div className="sm:w-[30%]">
@@ -361,43 +369,6 @@ const CreateProduct: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full sm:inline-flex items-center">
-          <div className="sm:w-[30%]">
-            <label className="inline-flex space-x-2 text-black dark:text-white">
-              <span>Video</span>
-              <span className="text-meta-1"></span>
-            </label>
-          </div>
-          <input
-            {...register("video")}
-            type="text"
-            placeholder="Link youtube"
-            className="w-full sm:w-[70%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-          />
-        </div>
-        {watch("video") && (
-          <div className="w-full sm:inline-flex items-center">
-            <div className="sm:w-[30%]">
-              <label className="inline-flex space-x-2 text-black dark:text-white">
-                <span>Video preview</span>
-                <span className="text-meta-1"></span>
-              </label>
-            </div>
-            <div className="w-full sm:w-[70%]">
-              <iframe
-                width="100%"
-                height="315"
-                src={`https://youtube.com/embed/${
-                  Object.values(queryString.parse(getValues("video")))[0]
-                }`}
-                title="YouTube video player"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            </div>
-          </div>
-        )}
-
         <div className="w-full sm:inline-flex">
           <div className="sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
@@ -405,12 +376,13 @@ const CreateProduct: React.FC = () => {
               <span className="text-meta-1">*</span>
             </label>
           </div>
-          <div {...register("content")} className="w-full sm:w-[70%]">
+          <div className="w-full sm:w-[70%]">
             <TinyMce getContent={handleContent} />
           </div>
         </div>
       </div>
-      <div className="w-full justify-end inline-flex space-x-4">
+
+      <div className="w-full mt-6 justify-end inline-flex space-x-8">
         <button
           type="button"
           className="inline-flex items-center justify-center rounded-md bg-[#B6B6B6] py-2 px-4 text-center font-medium text-black hover:bg-opacity-90 lg:px-8 xl:px-10"
