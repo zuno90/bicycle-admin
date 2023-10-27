@@ -3,6 +3,9 @@ import React from "react";
 const Home = React.lazy(() => import("../pages/home/Home"));
 const Category = React.lazy(() => import("../pages/home/Category"));
 const Product = React.lazy(() => import("../pages/home/product/Product"));
+const ProductDetail = React.lazy(
+  () => import("../pages/home/product/ProductDetail")
+);
 const CreateProduct = React.lazy(
   () => import("../pages/home/product/CreateProduct")
 );
@@ -28,6 +31,11 @@ const dashboardRoutes = [
     path: "/product",
     title: "Sản phẩm",
     element: Product,
+  },
+  {
+    path: "/product/:slug",
+    title: "Cập nhật sản phẩm",
+    element: ProductDetail,
   },
   {
     path: "/product/create",

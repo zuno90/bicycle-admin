@@ -8,10 +8,12 @@ type TProductVariantProps = {
 };
 
 const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
-  const { register } = useFormContext();
+  const { register, getValues } = useFormContext();
+
+  console.log(getValues());
 
   return (
-    <table className="">
+    <table className="w-full">
       <thead className="bg-gray">
         <tr>
           <th className="py-3">Size</th>
@@ -25,7 +27,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
           <td className="py-3">
             <div className="relative z-20 dark:bg-form-input">
               <select
-                className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
+                className="relative z-20 w-[80%] appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
                 defaultValue=""
                 {...register(`productVariants.${index}.size`, {
                   required: "Size không được bỏ trống!",
@@ -42,7 +44,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
                     </option>
                   ))}
               </select>
-              <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
+              <span className="absolute top-1/2 right-6 z-10 -translate-y-1/2">
                 <svg
                   width="24"
                   height="24"
@@ -69,7 +71,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
               })}
               type="text"
               placeholder="Nhập màu"
-              className="w-[75%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              className="w-[80%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
           </td>
           <td className="py-3">
@@ -82,10 +84,9 @@ const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
               placeholder="Nhập giá"
               defaultValue=""
               min={0}
-              className="w-[75%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              className="w-[80%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
           </td>
-
           <td className="py-3">
             <input
               {...register(`productVariants.${index}.inventory`, {
@@ -96,7 +97,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
               placeholder="Nhập tồn kho"
               defaultValue=""
               min={0}
-              className="w-[75%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+              className="w-[80%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
           </td>
         </tr>

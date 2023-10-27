@@ -1,6 +1,7 @@
 import { Editor } from "@tinymce/tinymce-react";
 
 const TinyMce: React.FC<any> = ({ initContent, getContent }) => {
+  console.log(initContent);
   return (
     <Editor
       apiKey="df4xfwysyt7xdzreywi9m58z5jpaj5ke6cwff4zgobsp54ru"
@@ -37,10 +38,10 @@ const TinyMce: React.FC<any> = ({ initContent, getContent }) => {
           input.click();
         },
       }}
-      onInit={(e, editor) =>
-        initContent && editor.setContent(initContent, { format: "text" })
-      }
-      onEditorChange={(data, editor) => getContent(data)}
+      onInit={(e, editor) => {
+        initContent && editor.setContent(initContent, { format: "text" });
+      }}
+      onEditorChange={(data, _) => getContent(data)}
     />
   );
 };

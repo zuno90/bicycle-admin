@@ -1,16 +1,7 @@
-export interface IProductTable {
-  id: number;
-  orderId: string;
-  date: Date;
-  name: string;
-  value: number;
-  status: string;
-}
-
 export enum EProductStatus {
-  all = "all",
-  active = "active",
-  inactive = "inactive",
+  all = "Tất cả",
+  active = "Đang hoạt động",
+  inactive = "Đang ẩn",
 }
 
 export interface IProductInput {

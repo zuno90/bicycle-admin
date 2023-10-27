@@ -16,3 +16,10 @@ export const getProducts = async (
   });
   if (res.success) return res.data;
 };
+
+export const getProduct = async (slug: string) => {
+  const res = await fetchGet(`${config.endpoint}/product/${slug}`, {
+    Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
+  });
+  if (res.success) return res.data.product;
+};

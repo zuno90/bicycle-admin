@@ -2,7 +2,7 @@ import React from "react";
 import Pagination from "../Pagination";
 import Loader from "../Loader";
 import { formatNumber } from "../../utils/helper.util";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "../../query";
 import { config } from "../../utils/config.util";
@@ -19,7 +19,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
   const status = queryParams.get("status") || undefined;
 
   const handleChangeStatus = (status: string) => {
-    if (status === EProductStatus.all) queryParams.delete("status");
+    if (status === "all") queryParams.delete("status");
     else queryParams.set("status", status);
     navigate({ search: queryParams.toString() });
   };
@@ -39,7 +39,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
           </h4>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => handleChangeStatus(EProductStatus.all)}
+              onClick={() => handleChangeStatus("all")}
               type="button"
               className={classNames(
                 "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
@@ -49,26 +49,24 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               Tất cả ({data.totalProductStatus.all})
             </button>
             <button
-              onClick={() => handleChangeStatus(EProductStatus.active)}
+              onClick={() => handleChangeStatus("active")}
               type="button"
               className={classNames(
                 "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
                 {
-                  "bg-[#FBE69E]":
-                    queryParams.get("status") === EProductStatus.active,
+                  "bg-[#FBE69E]": queryParams.get("status") === "active",
                 }
               )}
             >
               Đang hoạt động ({data.totalProductStatus.active})
             </button>
             <button
-              onClick={() => handleChangeStatus(EProductStatus.inactive)}
+              onClick={() => handleChangeStatus("inactive")}
               type="button"
               className={classNames(
                 "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
                 {
-                  "bg-[#FBE69E]":
-                    queryParams.get("status") === EProductStatus.inactive,
+                  "bg-[#FBE69E]": queryParams.get("status") === "inactive",
                 }
               )}
             >
@@ -117,13 +115,19 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               key={product.id}
               className="grid grid-cols-7 border-t border-stroke p-4 dark:border-strokedark sm:grid-cols-7 md:px-6 2xl:px-7.5"
             >
-              <div className="col-span-1 hidden items-center sm:flex">
+              <Link
+                to={`/product/${product.slug}`}
+                className="col-span-1 hidden items-center sm:flex"
+              >
                 <p className="text-xs text-black dark:text-white">
                   #{product.id}
                 </p>
-              </div>
+              </Link>
 
-              <div className="col-span-4 flex items-center gap-1">
+              <Link
+                to={`/product/${product.slug}`}
+                className="col-span-4 flex items-center gap-1"
+              >
                 <div className="w-20 rounded-md">
                   <img
                     className="rounded-lg"
@@ -139,7 +143,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
                     Lượt bán: {product.sold}
                   </p>
                 </div>
-              </div>
+              </Link>
 
               <div className="col-span-1 flex flex-col items-start justify-center gap-1">
                 <p className="text-sm text-black dark:text-white">
@@ -149,7 +153,9 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               </div>
 
               <div className="col-span-1 hidden sm:flex flex-col items-start justify-center gap-1">
-                <p className="text-xs text-meta-5">Đang hoạt động</p>
+                <p className="text-xs text-meta-5">
+                  {EProductStatus[product.status]}
+                </p>
                 <p className="text-xs text-meta-5">Tồn : 12000</p>
               </div>
             </div>
