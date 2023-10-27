@@ -43,15 +43,31 @@ export const notify = (
   position?: ToastPosition
 ) => {
   if (type === ENotificationType.info)
-    return toast.info(content, { toastId: id, position });
+    return toast.info(content, { toastId: id, position, pauseOnHover: false });
   if (type === ENotificationType.success)
-    return toast.success(content, { toastId: id, position });
+    return toast.success(content, {
+      toastId: id,
+      position,
+      pauseOnHover: false,
+    });
   if (type === ENotificationType.warning)
-    return toast.warning(content, { toastId: id, position });
+    return toast.warning(content, {
+      toastId: id,
+      position,
+      pauseOnHover: false,
+    });
   if (type === ENotificationType.error)
-    return toast.error(content, { toastId: id, position });
+    return toast.error(content, { toastId: id, position, pauseOnHover: false });
 };
 
+// get local cache
+export const getCache = (key: string) => window.localStorage.getItem(key);
+export const setCache = (key: string, value: string) =>
+  window.localStorage.setItem(key, value);
+export const delCache = (key: string) => window.localStorage.removeItem(key);
+export const clearCache = () => window.localStorage.clear();
+
+// call api
 export const fetchGet = async (url: string, header?: any) => {
   try {
     const r = await fetch(url, {
@@ -67,20 +83,32 @@ export const fetchGet = async (url: string, header?: any) => {
   }
 };
 
-// get local cache
-export const getCache = (key: string) => window.localStorage.getItem(key);
-export const setCache = (key: string, value: string) =>
-  window.localStorage.setItem(key, value);
-export const delCache = (key: string) => window.localStorage.removeItem(key);
-export const clearCache = () => window.localStorage.clear();
-
-// call api
 export const fetchPost = async (url: string, body: string, header?: any) => {
   try {
     const r = await fetch(url, {
       method: "POST",
       body,
       headers: { "Content-Type": "application/json", ...header },
+    });
+    const res = await r.json();
+    const { success, data, message } = res;
+    if (!success) throw new Error(message);
+    return { success, data, message };
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const fetchPostFormData = async (
+  url: string,
+  body: string,
+  header?: any
+) => {
+  try {
+    const r = await fetch(url, {
+      method: "POST",
+      body,
+      headers: { ...header },
     });
     const res = await r.json();
     const { success, data, message } = res;

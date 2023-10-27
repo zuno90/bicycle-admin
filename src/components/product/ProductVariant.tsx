@@ -32,7 +32,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
                   min: { value: 1, message: "Size không được bỏ trống!" },
                 })}
               >
-                <option value={0} disabled>
+                <option value="" disabled>
                   Chọn size
                 </option>
                 {sizes.length > 0 &&

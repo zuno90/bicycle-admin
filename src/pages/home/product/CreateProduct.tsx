@@ -1,20 +1,17 @@
 import React from "react";
 import { useDropzone } from "react-dropzone";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { FormProvider, Message, SubmitHandler, useForm } from "react-hook-form";
 import TinyMce from "../../../components/TinyMce";
-import { useQueries } from "@tanstack/react-query";
-import { ENotificationType, ICategory } from "../../../__types__";
-import {
-  createProduct,
-  getCategories,
-  getColors,
-  getSizes,
-} from "../../../query";
+import { useMutation, useQueries } from "@tanstack/react-query";
+import { ENotificationType, ICategory, ISubCategory } from "../../../__types__";
+import { getCategories, getColors, getSizes } from "../../../query";
 import queryString from "query-string";
 import Loader from "../../../components/Loader";
 import { useAppDispatch, useAppSelector } from "../../../store";
-import { decrement, increment } from "../../../store/common/commonSlice";
+import { addByIndex, removeByIndex } from "../../../store/common/commonSlice";
 import { notify } from "../../../utils/helper.util";
+import { createProduct } from "../../../mutation/product.mutation";
+import classNames from "classnames";
 
 const ProductVariant = React.lazy(
   () => import("../../../components/product/ProductVariant")
@@ -51,6 +48,31 @@ const CreateProduct: React.FC = () => {
   const handleContent = (content: string) =>
     methods.setValue("detail", content);
 
+  const addVariant = () =>
+    dispatch(addByIndex(Math.max(...commonState.counterList) + 1));
+  const removeVariant = (varIndex: number) => {
+    if (commonState.counterValue === 1)
+      return notify(ENotificationType.warning, "Không thể xoá!", "warning");
+
+    dispatch(removeByIndex(varIndex));
+  };
+
+
+  const onCreatePost: SubmitHandler<any> = async (data) => {
+    const { productVariants, ...others } = data;
+    const formD = new FormData();
+    for (let i of images) formD.append("images", i);
+    formD.append("categoryId", others.categoryId);
+    formD.append("detail", others.detail);
+    formD.append("discount", others.discount);
+    formD.append("name", others.name);
+    formD.append("subCategoryId", others.subCategoryId);
+    formD.append("video", others.video);
+    formD.append("productVariants", JSON.stringify(productVariants));
+    console.log(formD, 34);
+    mutate(formD);
+  };
+
   const [categories, sizes, colors] = useQueries({
     queries: [
       { queryKey: ["categories"], queryFn: () => getCategories() },
@@ -64,32 +86,47 @@ const CreateProduct: React.FC = () => {
       (cate: ICategory) => cate.id === Number(methods.watch("categoryId"))
     )[0]?.subCategories;
 
+  // upload data
+  const { mutate, isLoading, data } = useMutation(createProduct, {
+    onSuccess: (res) => {
+      if (!res.success)
+        notify(ENotificationType.error, res.message, "error", "top-center");
+      else {
+        notify(
+          ENotificationType.success,
+          "Tạo mới sản phẩm thành công!",
+          "success",
+          "top-center"
+        );
+      }
+    },
+  });
+
   if (categories.isLoading || sizes.isLoading || colors.isLoading)
     return <Loader />;
 
-  const addVariant = () => dispatch(increment(null));
-  const removeVariant = (varIndex: number) => {
-    if (commonState.counterValue === 1)
-      return notify(ENotificationType.warning, "Không thể xoá!", "warning");
-    dispatch(decrement(varIndex));
-  };
-
-  const onCreatePost: SubmitHandler<any> = async (data) => {
-    const { productVariants, ...others } = data;
-    const formD = new FormData();
-    for (let i of images) formD.append("images", i);
-    const payload = {
-      ...others,
-      images: formD,
-      productVariants: JSON.stringify(productVariants),
-    };
-    console.log(payload, 34);
-    console.log("image trong form data", payload.images.getAll("images"));
-    await createProduct(payload);
-  };
-
   return (
-    <form onSubmit={methods.handleSubmit(onCreatePost)}>
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        const ok = await methods.trigger();
+
+        if (!ok) {
+          for (let e in methods.formState.errors) {
+            if (e === "productVariants") {
+              for (let ee of methods.formState.errors[e] as any)
+                for (let eee in ee)
+                  return notify(ENotificationType.error, ee[eee].message);
+            }
+            return notify(
+              ENotificationType.error,
+              methods.formState.errors[e]?.message as Message
+            );
+          }
+        }
+        methods.handleSubmit(onCreatePost)();
+      }}
+    >
       <h1 className="mb-6 text-xl">Sản phẩm {">"} Thêm sản phẩm</h1>
       <div className="space-y-10">
         <div className="w-full sm:inline-flex items-center">
@@ -127,7 +164,7 @@ const CreateProduct: React.FC = () => {
                   min: { value: 1, message: "Danh mục không được bỏ trống!" },
                 })}
               >
-                <option value={0} disabled>
+                <option value="" disabled>
                   Chọn danh mục
                 </option>
                 {categories.data.length > 0 &&
@@ -182,12 +219,12 @@ const CreateProduct: React.FC = () => {
                   },
                 })}
               >
-                <option value={0} disabled>
+                <option value="" disabled>
                   Chọn danh mục con
                 </option>
                 {subCategories &&
                   subCategories.length > 0 &&
-                  subCategories.map((subCate: any) => (
+                  subCategories.map((subCate: ISubCategory) => (
                     <option key={subCate.id} value={subCate.id}>
                       {subCate.name}
                     </option>
@@ -225,14 +262,17 @@ const CreateProduct: React.FC = () => {
             </div>
             <div className="w-full sm:w-[70%] text-sm z-20 dark:bg-form-input">
               <FormProvider {...methods}>
-                {[...Array(commonState.counterValue).keys()].map((_, index) => (
-                  <React.Suspense key={index} fallback={<Loader />}>
+                {commonState.counterList.map((attribuleIndex, _) => (
+                  <React.Suspense key={attribuleIndex} fallback={<Loader />}>
                     <div className="relative w-full">
-                      <ProductVariant index={index} sizes={sizes.data} />
+                      <ProductVariant
+                        index={attribuleIndex}
+                        sizes={sizes.data}
+                      />
                       <button
                         type="button"
                         className="absolute right-0 -top-2"
-                        onClick={() => removeVariant(index)}
+                        onClick={() => removeVariant(attribuleIndex)}
                       >
                         <svg
                           className="w-5 h-5"
@@ -276,7 +316,7 @@ const CreateProduct: React.FC = () => {
               })}
               type="number"
               placeholder="Nhập giá"
-              defaultValue=""
+              defaultValue="0"
               min={0}
               className="rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
@@ -392,8 +432,24 @@ const CreateProduct: React.FC = () => {
         </button>
         <button
           type="submit"
+          disabled={isLoading}
           className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
         >
+          <svg
+            className={classNames("w-4 h-4 mr-3", {
+              "animate-spin": isLoading,
+            })}
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="currentColor"
+            />
+            <path
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentFill"
+            />
+          </svg>
           Đăng sản phẩm
         </button>
       </div>
