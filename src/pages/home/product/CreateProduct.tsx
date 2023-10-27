@@ -84,6 +84,7 @@ const CreateProduct: React.FC = () => {
       productVariants: JSON.stringify(productVariants),
     };
     console.log(payload, 34);
+    console.log("image trong form data", payload.images.getAll("images"));
     await createProduct(payload);
   };
 

@@ -15,6 +15,9 @@ const commonSlice = createSlice({
       console.log(action);
       state.counterValue > 1 && state.counterValue--;
     },
+    decrementByIndex: (state,action) => {
+      
+    },
     incrementByAmount: (state, action: PayloadAction<number>) => {
       state.counterValue += action.payload;
     },

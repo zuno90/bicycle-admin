@@ -11,7 +11,9 @@ import "./App.css";
 const Login = React.lazy(() => import("./pages/auth/Login"));
 const Layout = React.lazy(() => import("./components/Layout"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { refetchOnWindowFocus: false } },
+});
 
 const App: React.FC = () => {
   useNotification();
