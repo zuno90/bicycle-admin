@@ -24,7 +24,7 @@ const productSlice = createSlice({
           state.previewImageList = payload;
           break;
         default:
-          return state;
+          break;
       }
     },
     addByIndex: (state, action) => {
@@ -36,7 +36,7 @@ const productSlice = createSlice({
         case "previewImage":
           break;
         default:
-          return state;
+          break;
       }
     },
     removeByIndex: (state, action) => {

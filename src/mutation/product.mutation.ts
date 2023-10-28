@@ -12,10 +12,10 @@ export const createProduct = async (payload: any) => {
   return res;
 };
 
-export const updateProduct = async (id: number, payload: any) => {
+export const updateProduct = async (data: any) => {
   const res = await fetchPutFormData(
-    `${config.endpoint}/product/${id}`,
-    payload,
+    `${config.endpoint}/product/${data.id}`,
+    data.payload,
     {
       Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
     }

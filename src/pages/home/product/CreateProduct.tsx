@@ -12,12 +12,14 @@ import { notify } from "../../../utils/helper.util";
 import { createProduct } from "../../../mutation/product.mutation";
 import classNames from "classnames";
 import { addByIndex, removeByIndex } from "../../../store/product/productSlice";
+import { useNavigate } from "react-router-dom";
 
 const ProductVariant = React.lazy(
   () => import("../../../components/product/ProductVariant")
 );
 
 const CreateProduct: React.FC = () => {
+  const navigate = useNavigate();
   const productState = useAppSelector((state) => state.product);
   const dispatch = useAppDispatch();
   // handle images
@@ -62,6 +64,7 @@ const CreateProduct: React.FC = () => {
   };
 
   const onCreatePost: SubmitHandler<any> = async (data) => {
+    console.log(data);
     const { productVariants, ...others } = data;
     const formD = new FormData();
     formD.append("name", others.name);
@@ -99,6 +102,7 @@ const CreateProduct: React.FC = () => {
           "success",
           "top-center"
         );
+        navigate("/product");
       }
     },
   });

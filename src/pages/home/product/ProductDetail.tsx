@@ -134,6 +134,7 @@ const ProductDetail: React.FC = () => {
   });
 
   const onUpdatePost: SubmitHandler<any> = async (data) => {
+    console.log(data);
     const { productVariants, ...others } = data;
     const formD = new FormData();
     formD.append("name", others.name);
@@ -145,7 +146,7 @@ const ProductDetail: React.FC = () => {
     formD.append("images", JSON.stringify(productState.previewImageList));
     if (images.length > 0) for (let i of images) formD.append("newImages", i);
     formD.append("detail", others.detail);
-    mutate(product.data.id, formD);
+    mutate({ id: product.data.id, payload: formD });
   };
 
   if (product.isLoading || categories.isLoading || sizes.isLoading)
