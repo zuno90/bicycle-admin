@@ -64,13 +64,13 @@ const CreateProduct: React.FC = () => {
   const onCreatePost: SubmitHandler<any> = async (data) => {
     const { productVariants, ...others } = data;
     const formD = new FormData();
-    for (let i of images) formD.append("images", i);
     formD.append("name", others.name);
     formD.append("categoryId", others.categoryId);
     formD.append("subCategoryId", others.subCategoryId);
     formD.append("productVariants", JSON.stringify(productVariants));
     formD.append("discount", others.discount);
     formD.append("video", others.video);
+    for (let i of images) formD.append("images", i);
     formD.append("detail", others.detail);
     mutate(formD);
   };

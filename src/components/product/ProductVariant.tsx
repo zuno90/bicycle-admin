@@ -34,7 +34,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
                 defaultValue={
                   defaultValues ? `${defaultValues[index]?.size.id}` : ""
                 }
-                {...register(`productVariants.${index}.size`, {
+                {...register(`productVariants.${index}.sizeId`, {
                   required: "Size không được bỏ trống!",
                   min: { value: 1, message: "Size không được bỏ trống!" },
                 })}
