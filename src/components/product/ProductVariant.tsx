@@ -1,20 +1,23 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { IAttribute } from "../../__types__";
+import { IAttribute, IProductVariant } from "../../__types__";
 
 type TProductVariantProps = {
   index: number;
+  defaultValues?: IProductVariant[];
   sizes: IAttribute[];
 };
 
-const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
-  const { register, getValues } = useFormContext();
-
-  console.log(getValues());
+const ProductVariant: React.FC<TProductVariantProps> = ({
+  index,
+  defaultValues,
+  sizes,
+}) => {
+  const { register } = useFormContext();
 
   return (
     <table className="w-full">
-      <thead className="bg-gray">
+      <thead className="bg-meta-2 text-meta-4 dark:bg-meta-4 dark:text-white">
         <tr>
           <th className="py-3">Size</th>
           <th className="py-3">Màu sắc</th>
@@ -28,7 +31,9 @@ const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
             <div className="relative z-20 dark:bg-form-input">
               <select
                 className="relative z-20 w-[80%] appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
-                defaultValue=""
+                defaultValue={
+                  defaultValues ? `${defaultValues[index]?.size.id}` : ""
+                }
                 {...register(`productVariants.${index}.size`, {
                   required: "Size không được bỏ trống!",
                   min: { value: 1, message: "Size không được bỏ trống!" },
@@ -71,6 +76,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
               })}
               type="text"
               placeholder="Nhập màu"
+              defaultValue={defaultValues ? defaultValues[index]?.color : ""}
               className="w-[80%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
           </td>
@@ -82,7 +88,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
               })}
               type="number"
               placeholder="Nhập giá"
-              defaultValue=""
+              defaultValue={defaultValues ? defaultValues[index]?.price : ""}
               min={0}
               className="w-[80%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
@@ -95,7 +101,9 @@ const ProductVariant: React.FC<TProductVariantProps> = ({ index, sizes }) => {
               })}
               type="number"
               placeholder="Nhập tồn kho"
-              defaultValue=""
+              defaultValue={
+                defaultValues ? defaultValues[index]?.inventory : ""
+              }
               min={0}
               className="w-[80%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />

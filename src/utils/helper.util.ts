@@ -4,12 +4,29 @@ import { ENotificationType } from "../__types__";
 // channel receives message from service worker
 export const channel = new BroadcastChannel("notifications");
 
+// merge then sort arr
+export const mergeSort = (arr: Array<number[]>) => {
+  const eArray: number[] = [];
+  for (let i = 0; i <= arr.length; i++) arr[i]?.forEach((e) => eArray.push(e));
+  const sortedArr = eArray.sort((a: number, b: number) => a - b);
+  return { min: sortedArr[0], max: sortedArr[sortedArr.length - 1] };
+};
+
+// merge then total arr
+export const mergeTotal = (arr: Array<number[]>) => {
+  const eArray: number[] = [];
+  for (let i = 0; i <= arr.length; i++) arr[i]?.forEach((e) => eArray.push(e));
+  return eArray.reduce((total, currentValue) => total + currentValue);
+};
+
+// format Number
 export const formatNumber = (x: number) => {
   return Math.round(x)
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
+// handle time ago
 export const formatTimeAgo = (deltaTime: number) => {
   let interval = Math.floor(deltaTime / 31536000);
   if (interval > 1) return interval + " năm trước";
@@ -31,11 +48,13 @@ export const formatTimeAgo = (deltaTime: number) => {
   return Math.floor(deltaTime) + " giây trước";
 };
 
+// format unread message
 export const formatUnreadMsg = (num: number) => {
   if (num > 5) return `${num}+`;
   return num;
 };
 
+// notification
 export const notify = (
   type: ENotificationType,
   content: JSX.Element | string,
@@ -125,6 +144,26 @@ export const fetchPut = async (url: string, body: string, header?: any) => {
       method: "PUT",
       body,
       headers: { "Content-Type": "application/json", ...header },
+    });
+    const res = await r.json();
+    const { success, data, message } = res;
+    if (!success) throw new Error(message);
+    return { success, data, message };
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const fetchPutFormData = async (
+  url: string,
+  body: string,
+  header?: any
+) => {
+  try {
+    const r = await fetch(url, {
+      method: "PUT",
+      body,
+      headers: { ...header },
     });
     const res = await r.json();
     const { success, data, message } = res;

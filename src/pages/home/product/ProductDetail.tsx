@@ -3,16 +3,25 @@ import { useDropzone } from "react-dropzone";
 import { FormProvider, Message, SubmitHandler, useForm } from "react-hook-form";
 import TinyMce from "../../../components/TinyMce";
 import { useMutation, useQueries } from "@tanstack/react-query";
-import { ENotificationType, ICategory, ISubCategory } from "../../../__types__";
-import { getCategories, getColors, getProduct, getSizes } from "../../../query";
+import {
+  ENotificationType,
+  ICategory,
+  IProductVariant,
+  ISubCategory,
+} from "../../../__types__";
+import { getCategories, getProduct, getSizes } from "../../../query";
 import queryString from "query-string";
 import Loader from "../../../components/Loader";
 import { useAppDispatch, useAppSelector } from "../../../store";
-import { addByIndex, removeByIndex } from "../../../store/common/commonSlice";
 import { notify } from "../../../utils/helper.util";
-import { createProduct } from "../../../mutation/product.mutation";
+import { updateProduct } from "../../../mutation/product.mutation";
 import classNames from "classnames";
 import { useParams } from "react-router-dom";
+import {
+  addByIndex,
+  removeByIndex,
+  setInitialList,
+} from "../../../store/product/productSlice";
 
 const ProductVariant = React.lazy(
   () => import("../../../components/product/ProductVariant")
@@ -20,7 +29,7 @@ const ProductVariant = React.lazy(
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams();
-  const commonState = useAppSelector((state) => state.common);
+  const productState = useAppSelector((state) => state.product);
   const dispatch = useAppDispatch();
   // handle images
   const [images, setImages] = React.useState<File[]>([]);
@@ -41,8 +50,8 @@ const ProductDetail: React.FC = () => {
     accept: { "image/*": [] },
   });
 
-  // const removeInitImage = (index:number) =>
-
+  const removeOldImage = (index: number) =>
+    dispatch(removeByIndex({ type: "previewImage", payload: index }));
   const removeImage = (index: number) =>
     setImages(images.filter((_, ind: number) => ind !== index));
 
@@ -53,38 +62,50 @@ const ProductDetail: React.FC = () => {
     methods.setValue("detail", content);
 
   const addVariant = () =>
-    dispatch(addByIndex(Math.max(...commonState.counterList) + 1));
+    dispatch(
+      addByIndex({
+        type: "variant",
+        payload: Math.max(...productState.variantList) + 1,
+      })
+    );
   const removeVariant = (varIndex: number) => {
-    if (commonState.counterValue === 1)
+    if (productState.variantList.length === 1)
       return notify(ENotificationType.warning, "Không thể xoá!", "warning");
-
-    dispatch(removeByIndex(varIndex));
+    dispatch(removeByIndex({ type: "variant", payload: varIndex }));
   };
 
-  const onCreatePost: SubmitHandler<any> = async (data) => {
-    const { productVariants, ...others } = data;
-    const formD = new FormData();
-    for (let i of images) formD.append("images", i);
-    formD.append("categoryId", others.categoryId);
-    formD.append("detail", others.detail);
-    formD.append("discount", others.discount);
-    formD.append("name", others.name);
-    formD.append("subCategoryId", others.subCategoryId);
-    formD.append("video", others.video);
-    formD.append("productVariants", JSON.stringify(productVariants));
-    mutate(formD);
-  };
-
-  const [product, categories, sizes, colors] = useQueries({
+  const [product, categories, sizes] = useQueries({
     queries: [
       { queryKey: ["product", { slug }], queryFn: () => getProduct(slug) },
       { queryKey: ["categories"], queryFn: () => getCategories() },
       { queryKey: ["sizes"], queryFn: () => getSizes() },
-      { queryKey: ["colors"], queryFn: () => getColors() },
     ],
   });
 
-  // init value being applied to form
+  // init value
+  React.useEffect(() => {
+    if (product.data) {
+      const variantKeys: number[] = [];
+      product.data.productItem.forEach((_: IProductVariant, idx: number) =>
+        variantKeys.push(idx)
+      );
+      Promise.all([
+        dispatch(
+          setInitialList({
+            type: "variant",
+            payload: variantKeys,
+          })
+        ),
+        dispatch(
+          setInitialList({
+            type: "previewImage",
+            payload: product.data.images,
+          })
+        ),
+      ]);
+    }
+  }, [product.data]);
+
   const initSubCategories =
     categories.data &&
     categories.data.filter(
@@ -97,14 +118,14 @@ const ProductDetail: React.FC = () => {
     )[0]?.subCategories;
 
   // upload data
-  const { mutate, isLoading, data } = useMutation(createProduct, {
+  const { mutate, isLoading, data } = useMutation(updateProduct, {
     onSuccess: (res) => {
       if (!res.success)
         notify(ENotificationType.error, res.message, "error", "top-center");
       else {
         notify(
           ENotificationType.success,
-          "Tạo mới sản phẩm thành công!",
+          "Cập nhật sản phẩm thành công!",
           "success",
           "top-center"
         );
@@ -112,16 +133,23 @@ const ProductDetail: React.FC = () => {
     },
   });
 
-  console.log(product);
+  const onUpdatePost: SubmitHandler<any> = async (data) => {
+    const { productVariants, ...others } = data;
+    const formD = new FormData();
+    formD.append("name", others.name);
+    formD.append("categoryId", others.categoryId);
+    formD.append("subCategoryId", others.subCategoryId);
+    formD.append("productVariants", JSON.stringify(productVariants));
+    formD.append("discount", others.discount);
+    formD.append("video", others.video);
+    formD.append("images", JSON.stringify(productState.previewImageList));
+    if (images.length > 0) for (let i of images) formD.append("newImages", i);
+    formD.append("detail", others.detail);
+    mutate(product.data.id, formD);
+  };
 
-  if (
-    product.isLoading ||
-    categories.isLoading ||
-    sizes.isLoading ||
-    colors.isLoading
-  )
+  if (product.isLoading || categories.isLoading || sizes.isLoading)
     return <Loader />;
-
   return (
     <form
       onSubmit={async (e) => {
@@ -141,7 +169,7 @@ const ProductDetail: React.FC = () => {
             );
           }
         }
-        methods.handleSubmit(onCreatePost)();
+        methods.handleSubmit(onUpdatePost)();
       }}
     >
       <h1 className="mb-6 text-xl">Sản phẩm {">"} Thêm sản phẩm</h1>
@@ -288,61 +316,32 @@ const ProductDetail: React.FC = () => {
             </div>
             <div className="w-full sm:w-[70%] text-sm z-20 dark:bg-form-input">
               <FormProvider {...methods}>
-                {product.data.productItem && product.data.productItem.length > 0
-                  ? product.data.productItem.map((attribuleIndex, _) => (
-                      <React.Suspense
-                        key={attribuleIndex}
-                        fallback={<Loader />}
-                      >
-                        <div className="relative w-full">
-                          <ProductVariant
-                            index={attribuleIndex}
-                            sizes={sizes.data}
-                          />
-                          <button
-                            type="button"
-                            className="absolute -right-2 -top-2"
-                            onClick={() => removeVariant(attribuleIndex)}
+                {productState.variantList.length > 0 &&
+                  productState.variantList.map((attribuleIndex, _) => (
+                    <React.Suspense key={attribuleIndex} fallback={<Loader />}>
+                      <div className="relative w-full">
+                        <ProductVariant
+                          defaultValues={product.data.productItem}
+                          index={attribuleIndex}
+                          sizes={sizes.data}
+                        />
+                        <button
+                          type="button"
+                          className="absolute -right-2 -top-2"
+                          onClick={() => removeVariant(attribuleIndex)}
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="#FF6055"
                           >
-                            <svg
-                              className="w-5 h-5"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="#FF6055"
-                            >
-                              <path d="M8.27,3L3,8.27V15.73L8.27,21H15.73L21,15.73V8.27L15.73,3M8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59L15.59,17L12,13.41L8.41,17L7,15.59L10.59,12L7,8.41" />
-                            </svg>
-                          </button>
-                        </div>
-                      </React.Suspense>
-                    ))
-                  : commonState.counterList.map((attribuleIndex, _) => (
-                      <React.Suspense
-                        key={attribuleIndex}
-                        fallback={<Loader />}
-                      >
-                        <div className="relative w-full">
-                          <ProductVariant
-                            index={attribuleIndex}
-                            sizes={sizes.data}
-                          />
-                          <button
-                            type="button"
-                            className="absolute -right-2 -top-2"
-                            onClick={() => removeVariant(attribuleIndex)}
-                          >
-                            <svg
-                              className="w-5 h-5"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="#FF6055"
-                            >
-                              <path d="M8.27,3L3,8.27V15.73L8.27,21H15.73L21,15.73V8.27L15.73,3M8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59L15.59,17L12,13.41L8.41,17L7,15.59L10.59,12L7,8.41" />
-                            </svg>
-                          </button>
-                        </div>
-                      </React.Suspense>
-                    ))}
+                            <path d="M8.27,3L3,8.27V15.73L8.27,21H15.73L21,15.73V8.27L15.73,3M8.41,7L12,10.59L15.59,7L17,8.41L13.41,12L17,15.59L15.59,17L12,13.41L8.41,17L7,15.59L10.59,12L7,8.41" />
+                          </svg>
+                        </button>
+                      </div>
+                    </React.Suspense>
+                  ))}
               </FormProvider>
             </div>
           </div>
@@ -420,26 +419,28 @@ const ProductDetail: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="w-full sm:inline-flex items-center">
-            <div className="sm:w-[30%]">
-              <label className="inline-flex space-x-2 text-black dark:text-white">
-                <span>Video preview</span>
-                <span className="text-meta-1"></span>
-              </label>
+          product.data.video && (
+            <div className="w-full sm:inline-flex items-center">
+              <div className="sm:w-[30%]">
+                <label className="inline-flex space-x-2 text-black dark:text-white">
+                  <span>Video preview</span>
+                  <span className="text-meta-1"></span>
+                </label>
+              </div>
+              <div className="w-full sm:w-[70%]">
+                <iframe
+                  width="100%"
+                  height="315"
+                  src={`https://youtube.com/embed/${
+                    Object.values(queryString.parse(product.data.video))[0]
+                  }`}
+                  title="YouTube video player"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
             </div>
-            <div className="w-full sm:w-[70%]">
-              <iframe
-                width="100%"
-                height="315"
-                src={`https://youtube.com/embed/${
-                  Object.values(queryString.parse(product.data.video))[0]
-                }`}
-                title="YouTube video player"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            </div>
-          </div>
+          )
         )}
 
         <div className="w-full sm:inline-flex">
@@ -450,43 +451,48 @@ const ProductDetail: React.FC = () => {
             </label>
           </div>
 
-          <div className="inline-flex space-x-4">
-            {product.data && product.data.images.length > 0
-              ? product.data.images.map((image, index) => (
-                  <div key={index} className="relative">
-                    <svg
-                      className="absolute w-6 h-6 fill-danger -top-3 -right-3 cursor-pointer"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      onClick={() => removeImage(index)}
-                    >
-                      <path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M14.59,8L12,10.59L9.41,8L8,9.41L10.59,12L8,14.59L9.41,16L12,13.41L14.59,16L16,14.59L13.41,12L16,9.41L14.59,8Z" />
-                    </svg>
-                    <img
-                      className="w-20 h-20 object-cover"
-                      src={image}
-                      alt="preview-image"
-                    />
-                  </div>
-                ))
-              : images.map((image, index) => (
-                  <div key={index} className="relative">
-                    <svg
-                      className="absolute w-6 h-6 fill-danger -top-3 -right-3 cursor-pointer"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      onClick={() => removeImage(index)}
-                    >
-                      <path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M14.59,8L12,10.59L9.41,8L8,9.41L10.59,12L8,14.59L9.41,16L12,13.41L14.59,16L16,14.59L13.41,12L16,9.41L14.59,8Z" />
-                    </svg>
-                    <img
-                      className="w-20 h-20 object-cover"
-                      src={image?.preview}
-                      alt="preview-image"
-                    />
-                  </div>
-                ))}
-
+          <div className="w-full sm:w-[70%] inline-flex space-x-4">
+            {productState.previewImageList.length > 0 &&
+              productState.previewImageList.map((image, index) => (
+                <div
+                  key={index}
+                  {...methods.register("images", {
+                    value: productState.previewImageList,
+                  })}
+                  className="relative"
+                >
+                  <svg
+                    className="absolute w-6 h-6 fill-danger -top-3 -right-3 cursor-pointer"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    onClick={() => removeOldImage(index)}
+                  >
+                    <path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M14.59,8L12,10.59L9.41,8L8,9.41L10.59,12L8,14.59L9.41,16L12,13.41L14.59,16L16,14.59L13.41,12L16,9.41L14.59,8Z" />
+                  </svg>
+                  <img
+                    className="w-20 h-20 object-cover"
+                    src={image}
+                    alt="preview-old-image"
+                  />
+                </div>
+              ))}
+            {images.map((image, index) => (
+              <div key={index} className="relative">
+                <svg
+                  className="absolute w-6 h-6 fill-danger -top-3 -right-3 cursor-pointer"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  onClick={() => removeImage(index)}
+                >
+                  <path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M14.59,8L12,10.59L9.41,8L8,9.41L10.59,12L8,14.59L9.41,16L12,13.41L14.59,16L16,14.59L13.41,12L16,9.41L14.59,8Z" />
+                </svg>
+                <img
+                  className="w-20 h-20 object-cover"
+                  src={image?.preview}
+                  alt="preview-image"
+                />
+              </div>
+            ))}
             <label
               {...getRootProps({ className: "dropzone" })}
               className="bg-[#D9D9D9] rounded-lg"
@@ -550,7 +556,7 @@ const ProductDetail: React.FC = () => {
               fill="currentFill"
             />
           </svg>
-          Đăng sản phẩm
+          Cập nhật sản phẩm
         </button>
       </div>
     </form>

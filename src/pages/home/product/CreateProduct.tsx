@@ -4,21 +4,21 @@ import { FormProvider, Message, SubmitHandler, useForm } from "react-hook-form";
 import TinyMce from "../../../components/TinyMce";
 import { useMutation, useQueries } from "@tanstack/react-query";
 import { ENotificationType, ICategory, ISubCategory } from "../../../__types__";
-import { getCategories, getColors, getSizes } from "../../../query";
+import { getCategories, getSizes } from "../../../query";
 import queryString from "query-string";
 import Loader from "../../../components/Loader";
 import { useAppDispatch, useAppSelector } from "../../../store";
-import { addByIndex, removeByIndex } from "../../../store/common/commonSlice";
 import { notify } from "../../../utils/helper.util";
 import { createProduct } from "../../../mutation/product.mutation";
 import classNames from "classnames";
+import { addByIndex, removeByIndex } from "../../../store/product/productSlice";
 
 const ProductVariant = React.lazy(
   () => import("../../../components/product/ProductVariant")
 );
 
 const CreateProduct: React.FC = () => {
-  const commonState = useAppSelector((state) => state.common);
+  const productState = useAppSelector((state) => state.product);
   const dispatch = useAppDispatch();
   // handle images
   const [images, setImages] = React.useState<File[]>([]);
@@ -49,34 +49,36 @@ const CreateProduct: React.FC = () => {
     methods.setValue("detail", content);
 
   const addVariant = () =>
-    dispatch(addByIndex(Math.max(...commonState.counterList) + 1));
+    dispatch(
+      addByIndex({
+        type: "variant",
+        payload: Math.max(...productState.variantList) + 1,
+      })
+    );
   const removeVariant = (varIndex: number) => {
-    if (commonState.counterValue === 1)
+    if (productState.variantList.length === 1)
       return notify(ENotificationType.warning, "Không thể xoá!", "warning");
-
-    dispatch(removeByIndex(varIndex));
+    dispatch(removeByIndex({ type: "variant", payload: varIndex }));
   };
-
 
   const onCreatePost: SubmitHandler<any> = async (data) => {
     const { productVariants, ...others } = data;
     const formD = new FormData();
     for (let i of images) formD.append("images", i);
-    formD.append("categoryId", others.categoryId);
-    formD.append("detail", others.detail);
-    formD.append("discount", others.discount);
     formD.append("name", others.name);
+    formD.append("categoryId", others.categoryId);
     formD.append("subCategoryId", others.subCategoryId);
-    formD.append("video", others.video);
     formD.append("productVariants", JSON.stringify(productVariants));
+    formD.append("discount", others.discount);
+    formD.append("video", others.video);
+    formD.append("detail", others.detail);
     mutate(formD);
   };
 
-  const [categories, sizes, colors] = useQueries({
+  const [categories, sizes] = useQueries({
     queries: [
       { queryKey: ["categories"], queryFn: () => getCategories() },
       { queryKey: ["sizes"], queryFn: () => getSizes() },
-      { queryKey: ["colors"], queryFn: () => getColors() },
     ],
   });
   const subCategories =
@@ -101,8 +103,7 @@ const CreateProduct: React.FC = () => {
     },
   });
 
-  if (categories.isLoading || sizes.isLoading || colors.isLoading)
-    return <Loader />;
+  if (categories.isLoading || sizes.isLoading) return <Loader />;
 
   return (
     <form
@@ -261,7 +262,7 @@ const CreateProduct: React.FC = () => {
             </div>
             <div className="w-full sm:w-[70%] text-sm z-20 dark:bg-form-input">
               <FormProvider {...methods}>
-                {commonState.counterList.map((attribuleIndex, _) => (
+                {productState.variantList.map((attribuleIndex, _) => (
                   <React.Suspense key={attribuleIndex} fallback={<Loader />}>
                     <div className="relative w-full">
                       <ProductVariant

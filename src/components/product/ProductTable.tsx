@@ -1,7 +1,7 @@
 import React from "react";
 import Pagination from "../Pagination";
 import Loader from "../Loader";
-import { formatNumber } from "../../utils/helper.util";
+import { formatNumber, mergeSort, mergeTotal } from "../../utils/helper.util";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "../../query";
@@ -28,6 +28,23 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
     queryKey: ["products", { page, limit, status }],
     queryFn: () => getProducts(page, limit, status),
   });
+
+  let minPrice: number;
+  let maxPrice: number;
+  let inventory: number;
+  if (data) {
+    const priceArr = data.products.map((i) =>
+      i.productItem.map((j) => j.price)
+    );
+    console.log(priceArr);
+    const inventoryArr = data.products.map((i) =>
+      i.productItem.map((j) => j.inventory)
+    );
+    const { min, max } = mergeSort(priceArr);
+    minPrice = min;
+    maxPrice = max;
+    inventory = mergeTotal(inventoryArr);
+  }
 
   if (isLoading) return <Loader />;
   return (
@@ -148,7 +165,10 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               <div className="col-span-1 flex flex-col items-start justify-center gap-1">
                 <p className="text-sm text-black dark:text-white">
                   <span className="underline">đ</span>
-                  <span>{formatNumber(product.price)}</span>
+                  <span>
+                    {minPrice && formatNumber(minPrice)} -{" "}
+                    {maxPrice && formatNumber(maxPrice)}
+                  </span>
                 </p>
               </div>
 
@@ -156,7 +176,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
                 <p className="text-xs text-meta-5">
                   {EProductStatus[product.status]}
                 </p>
-                <p className="text-xs text-meta-5">Tồn : 12000</p>
+                <p className="text-xs text-meta-5">Tồn : {inventory}</p>
               </div>
             </div>
           ))}
