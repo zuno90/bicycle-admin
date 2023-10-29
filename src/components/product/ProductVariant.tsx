@@ -40,6 +40,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
             <div
               {...register(`productVariants.${index}.id`, {
                 value: defaultValues && `${defaultValues[index]?.id}`,
+                shouldUnregister: true,
               })}
               className="relative z-20 dark:bg-form-input"
             >
@@ -48,6 +49,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
                 {...register(`productVariants.${index}.sizeId`, {
                   required: "Size không được bỏ trống!",
                   min: { value: 1, message: "Size không được bỏ trống!" },
+                  shouldUnregister: true,
                 })}
               >
                 <option value="" disabled>
@@ -84,6 +86,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
             <input
               {...register(`productVariants.${index}.color`, {
                 required: "Màu sắc không được bỏ trống!",
+                shouldUnregister: true,
               })}
               type="text"
               placeholder="Nhập màu"
@@ -96,6 +99,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
               {...register(`productVariants.${index}.price`, {
                 required: "Giá gốc không được bỏ trống!",
                 min: { value: 1, message: "Giá phải lớn hơn 0" },
+                shouldUnregister: true,
               })}
               type="number"
               placeholder="Nhập giá"
@@ -109,6 +113,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
               {...register(`productVariants.${index}.inventory`, {
                 required: "Tồn kho không được bỏ trống!",
                 min: { value: 1, message: "Tồn kho phải lớn hơn 0" },
+                shouldUnregister: true,
               })}
               type="number"
               placeholder="Nhập tồn kho"

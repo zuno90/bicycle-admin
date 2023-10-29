@@ -47,16 +47,15 @@ const productSlice = createSlice({
       const { type, payload } = action.payload;
       switch (type) {
         case "variant":
-          console.log(payload);
           state.variantList = state.variantList
             .filter((index) => index !== payload)
             .sort((a: number, b: number) => a - b);
           break;
         case "detailVariant":
-          console.log(payload);
           state.detailVariantList = state.detailVariantList
             .filter((index) => index !== payload)
             .sort((a: number, b: number) => a - b);
+
           break;
         case "previewImage":
           state.previewImageList = state.previewImageList.filter(
