@@ -4,6 +4,7 @@ import classNames from "classnames";
 type TSwitcher = { id: number; isEnabled: boolean };
 
 const Switcher: React.FC<TSwitcher> = ({ id, isEnabled }) => {
+  console.log(isEnabled);
   const [enabled, setEnabled] = React.useState(isEnabled);
 
   return (

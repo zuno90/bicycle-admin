@@ -64,14 +64,14 @@ const ProductDetail: React.FC = () => {
   const addVariant = () =>
     dispatch(
       addByIndex({
-        type: "variant",
-        payload: Math.max(...productState.variantList) + 1,
+        type: "detailVariant",
+        payload: Math.max(...productState.detailVariantList) + 1,
       })
     );
   const removeVariant = (varIndex: number) => {
-    if (productState.variantList.length === 1)
+    if (productState.detailVariantList.length === 1)
       return notify(ENotificationType.warning, "Không thể xoá!", "warning");
-    dispatch(removeByIndex({ type: "variant", payload: varIndex }));
+    dispatch(removeByIndex({ type: "detailVariant", payload: varIndex }));
   };
 
   const [product, categories, sizes] = useQueries({
@@ -92,7 +92,7 @@ const ProductDetail: React.FC = () => {
       Promise.all([
         dispatch(
           setInitialList({
-            type: "variant",
+            type: "detailVariant",
             payload: variantKeys,
           })
         ),
@@ -134,7 +134,6 @@ const ProductDetail: React.FC = () => {
   });
 
   const onUpdatePost: SubmitHandler<any> = async (data) => {
-    console.log(data);
     const { productVariants, ...others } = data;
     const formD = new FormData();
     formD.append("name", others.name);
@@ -317,8 +316,8 @@ const ProductDetail: React.FC = () => {
             </div>
             <div className="w-full sm:w-[70%] text-sm z-20 dark:bg-form-input">
               <FormProvider {...methods}>
-                {productState.variantList.length > 0 &&
-                  productState.variantList.map((attribuleIndex, _) => (
+                {productState.detailVariantList.length > 0 &&
+                  productState.detailVariantList.map((attribuleIndex, _) => (
                     <React.Suspense key={attribuleIndex} fallback={<Loader />}>
                       <div className="relative w-full">
                         <ProductVariant

@@ -15,6 +15,7 @@ import storage from "redux-persist/lib/storage";
 import chatSlice from "./chat/chatSlice";
 import productSlice from "./product/productSlice";
 import commonSlice from "./common/commonSlice";
+import voucherSlice from "./voucher/voucherSlice";
 
 const persistConfig = { key: "root", version: 1, storage };
 
@@ -25,6 +26,7 @@ const store = configureStore({
     admin: rootReducer,
     chat: chatSlice,
     product: productSlice,
+    voucher: voucherSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

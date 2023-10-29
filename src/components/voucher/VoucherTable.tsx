@@ -8,15 +8,18 @@ import { formatNumber } from "../../utils/helper.util";
 import { config } from "../../utils/config.util";
 import { useQuery } from "@tanstack/react-query";
 import { getVouchers } from "../../query";
+import { useAppDispatch, useAppSelector } from "../../store";
 
 const VoucherTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
   const navigate = useNavigate();
+  const voucherState = useAppSelector((state) => state.voucher);
+  const dispatch = useAppDispatch();
   const queryParams = new URLSearchParams(search);
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["vouchers", { page, limit }],
     queryFn: () => getVouchers(page, config.pagination.LIMIT),
   });
@@ -105,8 +108,8 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
           </div>
         </div>
 
-        {data.length > 0 &&
-          data.map((voucher: IVoucher) => (
+        {data.vouchers.length > 0 &&
+          data.vouchers.map((voucher: IVoucher) => (
             <div
               key={voucher.id}
               className="grid grid-cols-6 border-t border-stroke p-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"

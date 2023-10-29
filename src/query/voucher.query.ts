@@ -5,5 +5,6 @@ export const getVouchers = async (page: number, limit?: number) => {
   const res = await fetchGet(`${config.endpoint}/vouchers`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
-  if (res.success) return res.data.vouchers;
+  console.log(res);
+  if (res.success) return res.data;
 };

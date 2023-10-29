@@ -2,11 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 
 type TProductState = {
   variantList: number[];
+  detailVariantList: number[];
   previewImageList: string[];
 };
 
 const initialState: TProductState = {
   variantList: [0],
+  detailVariantList: [],
   previewImageList: [],
 };
 
@@ -17,8 +19,8 @@ const productSlice = createSlice({
     setInitialList: (state, action) => {
       const { type, payload } = action.payload;
       switch (type) {
-        case "variant":
-          state.variantList = payload;
+        case "detailVariant":
+          state.detailVariantList = payload;
           break;
         case "previewImage":
           state.previewImageList = payload;
@@ -33,7 +35,8 @@ const productSlice = createSlice({
         case "variant":
           state.variantList.push(payload);
           break;
-        case "previewImage":
+        case "detailVariant":
+          state.detailVariantList.push(payload);
           break;
         default:
           break;
@@ -45,6 +48,12 @@ const productSlice = createSlice({
         case "variant":
           console.log(payload);
           state.variantList = state.variantList
+            .filter((index) => index !== payload)
+            .sort((a: number, b: number) => a - b);
+          break;
+        case "detailVariant":
+          console.log(payload);
+          state.detailVariantList = state.detailVariantList
             .filter((index) => index !== payload)
             .sort((a: number, b: number) => a - b);
           break;
