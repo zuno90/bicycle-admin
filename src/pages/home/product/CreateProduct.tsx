@@ -95,7 +95,7 @@ const CreateProduct: React.FC = () => {
     )[0]?.subCategories;
 
   // upload data
-  const { mutate, isLoading, data } = useMutation(createProduct, {
+  const { mutate, isLoading } = useMutation(createProduct, {
     onSuccess: (res) => {
       if (!res.success)
         notify(ENotificationType.error, res.message, "error", "top-center");

@@ -70,7 +70,7 @@ const CreateVoucher: React.FC = () => {
             </label>
           </div>
           <input
-            {...register("name", {
+            {...register("title", {
               required: "Tên mã khuyến mãi không được bỏ trống!",
             })}
             type="text"
@@ -175,7 +175,7 @@ const CreateVoucher: React.FC = () => {
         <div className="w-full sm:inline-flex items-center">
           <div className="sm:w-[30%]">
             <label className="inline-flex space-x-2 text-black dark:text-white">
-              <span>Số tiền</span>
+              <span>Số lượng</span>
               <span className="text-meta-1">*</span>
             </label>
           </div>

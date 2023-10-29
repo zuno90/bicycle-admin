@@ -6,7 +6,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "../../query";
 import { config } from "../../utils/config.util";
-import { EProductStatus, ITable } from "../../__types__";
+import {
+  EProductStatus,
+  IProduct,
+  IProductItem,
+  ITable,
+} from "../../__types__";
 import classNames from "classnames";
 
 const ProductTable: React.FC<ITable> = ({ title }) => {
@@ -16,44 +21,70 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
 
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
-  const status = queryParams.get("status") || undefined;
-
-  const handleChangeStatus = (status: string) => {
-    if (status === "all") queryParams.delete("status");
-    else queryParams.set("status", status);
-    navigate({ search: queryParams.toString() });
-  };
+  const status = queryParams.get("status");
 
   const { data, isLoading } = useQuery({
     queryKey: ["products", { page, limit, status }],
     queryFn: () => getProducts(page, limit, status),
   });
 
+  const handleChangeStatus = (status: string) => {
+    queryParams.delete("page");
+    queryParams.delete("limit");
+    if (status === "all") queryParams.delete("status");
+    else queryParams.set("status", status);
+    navigate({ search: queryParams.toString() });
+  };
+
   let minPrice: number;
   let maxPrice: number;
   let inventory: number;
+  let dataTotal: number = 0;
   if (data) {
-    const priceArr = data.products.map((i) =>
-      i.productItem.map((j) => j.price)
+    const priceArr = data.products.map((i: IProduct) =>
+      i.productItem.map((j: IProductItem) => j.price)
     );
-    console.log(priceArr);
-    const inventoryArr = data.products.map((i) =>
-      i.productItem.map((j) => j.inventory)
+    const inventoryArr = data.products.map((i: IProduct) =>
+      i.productItem.map((j: IProductItem) => j.inventory)
     );
     const { min, max } = mergeSort(priceArr);
     minPrice = min;
     maxPrice = max;
     inventory = mergeTotal(inventoryArr);
+    dataTotal = data.totalProductStatus[queryParams.get("status") ?? "all"];
   }
+
+  console.log(data);
 
   if (isLoading) return <Loader />;
   return (
     <>
       <div className="flex justify-between items-center mb-4">
-        <div className="space-y-4">
-          <h4 className="text-xl font-semibold text-black dark:text-white">
-            {title}
-          </h4>
+        <div className="space-y-10">
+          <div className="w-full inline-flex items-center justify-between">
+            <h4 className="text-xl font-semibold text-black dark:text-white">
+              {title}
+            </h4>
+            <div className="md:hidden inline-flex items-center gap-4">
+              <button
+                type="button"
+                className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
+                onClick={() => navigate("/product/create")}
+              >
+                Thêm sản phẩm
+                <svg
+                  className="w-4 h-4 ml-4"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
           <div className="flex items-center gap-4">
             <button
               onClick={() => handleChangeStatus("all")}
@@ -70,9 +101,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               type="button"
               className={classNames(
                 "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                {
-                  "bg-[#FBE69E]": queryParams.get("status") === "active",
-                }
+                { "bg-[#FBE69E]": queryParams.get("status") === "active" }
               )}
             >
               Đang hoạt động ({data.totalProductStatus.active})
@@ -82,16 +111,14 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               type="button"
               className={classNames(
                 "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                {
-                  "bg-[#FBE69E]": queryParams.get("status") === "inactive",
-                }
+                { "bg-[#FBE69E]": queryParams.get("status") === "inactive" }
               )}
             >
               Đang ẩn ({data.totalProductStatus.inactive})
             </button>
           </div>
         </div>
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:inline-flex items-center gap-4">
           <button
             type="button"
             className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
@@ -127,7 +154,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
         </div>
 
         {data.products.length > 0 &&
-          data.products.map((product: any) => (
+          data.products.map((product: IProduct) => (
             <div
               key={product.id}
               className="grid grid-cols-7 border-t border-stroke p-4 dark:border-strokedark sm:grid-cols-7 md:px-6 2xl:px-7.5"
@@ -183,11 +210,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
 
         {data.products.length > 0 && (
           <div className="flex justify-center items-center my-4">
-            <Pagination
-              page={page}
-              limit={limit}
-              total={data.totalProductStatus.all}
-            />
+            <Pagination page={page} limit={limit} total={dataTotal} />
           </div>
         )}
       </div>

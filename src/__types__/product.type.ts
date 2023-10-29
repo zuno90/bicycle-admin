@@ -4,6 +4,32 @@ export enum EProductStatus {
   inactive = "Đang ẩn",
 }
 
+export interface IProduct {
+  id: number;
+  categoryId: number;
+  subCategoryId: number;
+  name: string;
+  nameOriginal: string;
+  slug: string;
+  discount: number;
+  productItem: IProductItem[];
+  sold: number;
+  images: string[];
+  video: string;
+  detail: string;
+  status: keyof typeof EProductStatus;
+  createAt: Date;
+  updateAt: Date;
+}
+
+export interface IProductItem {
+  id: number;
+  sizeId: number;
+  color: number;
+  price: number;
+  inventory: number;
+}
+
 export interface IProductInput {
   name: string;
   categoryId: number;

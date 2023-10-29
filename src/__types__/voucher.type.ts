@@ -1,3 +1,10 @@
+export enum EVoucherStatus {
+  all = "Tất cả",
+  upcoming = "Sắp diễn ra",
+  ongoing = "Đang hoạt động",
+  inactive = "Ngừng hoạt động",
+}
+
 export interface IVoucher {
   id: number;
   code: string;
@@ -6,14 +13,7 @@ export interface IVoucher {
   fromPrice: number;
   unit: "%" | "cash";
   value: number;
-  status: boolean;
-  statement: EVoucherStatement;
-}
-
-enum EVoucherStatement {
-  BEFORE = "Sắp diễn ra",
-  ACTIVE = "Đang hoạt động",
-  INACTIVE = "Ngừng hoạt động",
+  status: keyof typeof EVoucherStatus;
 }
 
 export interface IVoucherInput {

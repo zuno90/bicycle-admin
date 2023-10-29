@@ -87,7 +87,7 @@ const Pagination: React.FC<TPagination> = ({ page, limit, total }) => {
                   </button>
                 </li>
               ))}
-        {page < noOfPage && <li className="px-3">...</li>}
+        {page > shownNumber && page < noOfPage && <li className="px-3">...</li>}
         <li>
           <button
             disabled={page === noOfPage}

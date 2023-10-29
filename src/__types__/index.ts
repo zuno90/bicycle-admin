@@ -6,3 +6,4 @@ export * from "./attribute.type";
 export * from "./chat.type";
 export * from "./notification.type";
 export * from "./table.type";
+export * from "./order.type";

@@ -47,14 +47,6 @@ const App: React.FC = () => {
                   </React.Suspense>
                 }
               />
-              {/* <Route
-                path="*"
-                element={
-                  <React.Suspense fallback={<Loader />}>
-                    <PageNotFound />
-                  </React.Suspense>
-                }
-              /> */}
             </Route>
           </Routes>
         </QueryClientProvider>

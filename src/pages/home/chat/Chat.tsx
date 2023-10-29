@@ -49,6 +49,7 @@ import {
   setCurrentUser,
   setLoading,
 } from "../../../store/chat/chat.slice";
+import { clean } from "../../../store/global.action";
 
 AWS.config.update({
   accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
@@ -62,8 +63,8 @@ const ADMINID = "1698215035570UIHEzfO0vLTr";
 const imageMimeType = /image\/(png|jpg|jpeg|webp)/i;
 
 const Chat: React.FC = () => {
-  const dispatch = useAppDispatch();
   const chatState = useAppSelector((state) => state.chat);
+  const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const uid = searchParams.get("uid");
 
@@ -165,6 +166,7 @@ const Chat: React.FC = () => {
   };
 
   const initFetch = async () => {
+    dispatch(clean());
     dispatch(setLoading(true));
     try {
       const allDoc = await getDocs(userCollection);

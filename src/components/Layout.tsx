@@ -1,9 +1,11 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import routes from "../routes";
 import Loader from "./Loader";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import routes from "../routes";
+
+const PageNotFound = React.lazy(() => import("../pages/PageNotFound"));
 
 const Layout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState<boolean>(false);
@@ -16,18 +18,28 @@ const Layout: React.FC = () => {
           <main>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <Routes>
-                {routes.map(({ path, index, element: Component }) => (
+                <>
+                  {routes.map(({ path, index, element: Component }) => (
+                    <Route
+                      key={path}
+                      index={index}
+                      path={path}
+                      element={
+                        <React.Suspense fallback={<Loader />}>
+                          <Component />
+                        </React.Suspense>
+                      }
+                    />
+                  ))}
                   <Route
-                    key={path}
-                    index={index}
-                    path={path}
+                    path="*"
                     element={
                       <React.Suspense fallback={<Loader />}>
-                        <Component />
+                        <PageNotFound />
                       </React.Suspense>
                     }
                   />
-                ))}
+                </>
               </Routes>
             </div>
           </main>

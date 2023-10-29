@@ -1,10 +1,15 @@
 import { formatNumber } from "../../utils/helper.util";
 
-const Card: React.FC = () => {
+type TCard = {
+  title: string;
+  data?: any;
+};
+
+const Card: React.FC<TCard> = ({ title, data }) => {
   return (
     <div className="rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="flex items-center justify-between">
-        <p>Doanh thu</p>
+        <p>{title}</p>
         <p className="inline-flex items-center space-x-2">
           <svg
             width="10"

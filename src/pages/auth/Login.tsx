@@ -12,10 +12,14 @@ import { config } from "../../utils/config.util";
 import { getUserInfo } from "../../query";
 
 const Login: React.FC = () => {
-  const { isAuth, user } = useAppSelector((state) => state.admin);
   const location = useLocation();
   const navigate = useNavigate();
+  const adminState = useAppSelector((state) => state.admin);
   const dispatch = useAppDispatch();
+
+  const redirectUrl = location.state?.from?.pathname ?? "/";
+  if (adminState.isAuth && adminState.user)
+    navigate(redirectUrl, { replace: true });
 
   const {
     register,
@@ -23,11 +27,14 @@ const Login: React.FC = () => {
     formState: { errors },
   } = useForm<ILoginInput>();
 
-  const {
-    mutate,
-    isLoading: isLoadingLogin,
-    data: loginData,
-  } = useMutation(login, {
+  const { isFetching: isFetchingUser, data: userData } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => getUserInfo(),
+    enabled: adminState.isAuth,
+  });
+  userData && dispatch(adminAction(userData));
+
+  const { mutate, isLoading: isLoadingLogin } = useMutation(login, {
     onSuccess: (res) => {
       dispatch(loginAction(res));
       if (!res.success) notify(ENotificationType.error, res.message, "error");
@@ -50,16 +57,6 @@ const Login: React.FC = () => {
     };
     mutate(payload);
   };
-
-  const { isFetching: isFetchingUser, data: userData } = useQuery({
-    queryKey: ["user"],
-    queryFn: () => getUserInfo(),
-    enabled: isAuth,
-  });
-  if (userData) dispatch(adminAction(userData));
-
-  const redirectUrl = location.state.from.pathname ?? "/";
-  if (isAuth && user) navigate(redirectUrl, { replace: true });
 
   return (
     <section className="w-full h-screen flex justify-center items-center bg-gray-200">

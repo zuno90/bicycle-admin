@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IMessageUser, IUserList } from "../../__types__";
+import { clean } from "../global.action";
 
 interface IChatState {
   isLoading: boolean;
@@ -46,6 +47,7 @@ const chatSlice = createSlice({
       }
     },
   },
+  extraReducers: (builder) => builder.addCase(clean, () => initialState),
 });
 
 export const { setLoading, loadSidebar, setCurrentUser, handleImageUpload } =

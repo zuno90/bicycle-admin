@@ -4,3 +4,4 @@ export * from "./user.query";
 export * from "./size.query";
 export * from "./color.query";
 export * from "./voucher.query";
+export * from "./order.query";

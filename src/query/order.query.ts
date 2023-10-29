@@ -1,8 +1,8 @@
 import queryString from "query-string";
-import { config } from "../utils/config.util";
 import { fetchGet, getCache } from "../utils/helper.util";
+import { config } from "../utils/config.util";
 
-export const getProducts = async (
+export const getOrders = async (
   page: number,
   limit: number,
   status: string | null
@@ -11,15 +11,9 @@ export const getProducts = async (
     { page, limit, status },
     { skipNull: true, skipEmptyString: true }
   );
-  const res = await fetchGet(`${config.endpoint}/products?${params}`, {
+  console.log(params);
+  const res = await fetchGet(`${config.endpoint}/orders?${params}`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
   if (res.success) return res.data;
-};
-
-export const getProduct = async (slug: string) => {
-  const res = await fetchGet(`${config.endpoint}/product/${slug}`, {
-    Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
-  });
-  if (res.success) return res.data.product;
 };

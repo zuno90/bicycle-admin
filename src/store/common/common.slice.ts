@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { clean } from "../global.action";
 
 type TCommonState = { counterValue: number };
 
@@ -19,6 +20,7 @@ const commonSlice = createSlice({
       state.counterValue += action.payload;
     },
   },
+  extraReducers: (builder) => builder.addCase(clean, () => initialState),
 });
 
 export const { increment, decrement, incrementByAmount } = commonSlice.actions;

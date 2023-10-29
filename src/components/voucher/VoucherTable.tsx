@@ -3,67 +3,116 @@ import Pagination from "../Pagination";
 import Switcher from "../Switcher";
 import Loader from "../Loader";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ITable, IVoucher } from "../../__types__";
+import { EVoucherStatus, ITable, IVoucher } from "../../__types__";
 import { formatNumber } from "../../utils/helper.util";
 import { config } from "../../utils/config.util";
 import { useQuery } from "@tanstack/react-query";
 import { getVouchers } from "../../query";
 import { useAppDispatch, useAppSelector } from "../../store";
+import classNames from "classnames";
+import queryString from "query-string";
 
 const VoucherTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
   const navigate = useNavigate();
   const voucherState = useAppSelector((state) => state.voucher);
   const dispatch = useAppDispatch();
+
   const queryParams = new URLSearchParams(search);
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
+  const status = queryParams.get("status");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["vouchers", { page, limit }],
-    queryFn: () => getVouchers(page, config.pagination.LIMIT),
+    queryKey: ["vouchers", { page, limit, status }],
+    queryFn: () => getVouchers(page, limit, status),
   });
 
   console.log(data, 66);
+  const dataTotal =
+    data && data.totalVoucherStatus[queryParams.get("status") ?? "all"];
 
-  const handleChangeStatus = async (id:number) => {};
+  const handleChangeStatus = (status: string) => {
+    queryParams.delete("page");
+    queryParams.delete("limit");
+    if (status === "all") queryParams.delete("status");
+    else queryParams.set("status", status);
+    navigate({ search: queryParams.toString() });
+  };
 
   if (isLoading) return <Loader />;
   return (
     <>
       <div className="flex justify-between items-center mb-4">
-        <div className="space-y-4">
-          <h4 className="text-xl font-semibold text-black dark:text-white">
-            {title}
-          </h4>
+        <div className="space-y-10">
+          <div className="w-full inline-flex items-center justify-between">
+            <h4 className="text-xl font-semibold text-black dark:text-white">
+              {title}
+            </h4>
+            <div className="md:hidden inline-flex items-center gap-4">
+              <button
+                type="button"
+                className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
+                onClick={() => navigate("/voucher/create")}
+              >
+                Tạo mã khuyến mãi
+                <svg
+                  className="w-4 h-4 ml-4"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
           <div className="flex items-center gap-4">
             <button
               type="button"
-              className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
+              onClick={() => handleChangeStatus("all")}
+              className={classNames(
+                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+                { "bg-[#FBE69E]": !queryParams.get("status") }
+              )}
             >
-              Tất cả (100)
+              Tất cả ({data.totalVoucherStatus.all})
             </button>
             <button
+              onClick={() => handleChangeStatus("upcoming")}
               type="button"
-              className="text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
+              className={classNames(
+                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+                { "bg-[#FBE69E]": queryParams.get("status") === "upcoming" }
+              )}
             >
-              Sắp diễn ra (10)
+              Sắp diễn ra ({data.totalVoucherStatus.upcoming})
             </button>
             <button
+              onClick={() => handleChangeStatus("ongoing")}
               type="button"
-              className="text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
+              className={classNames(
+                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+                { "bg-[#FBE69E]": queryParams.get("status") === "ongoing" }
+              )}
             >
-              Đang hoạt động (23)
+              Đang hoạt động ({data.totalVoucherStatus.ongoing})
             </button>
             <button
+              onClick={() => handleChangeStatus("inactive")}
               type="button"
-              className="text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
+              className={classNames(
+                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+                { "bg-[#FBE69E]": queryParams.get("status") === "inactive" }
+              )}
             >
-              Ngừng hoạt động (50)
+              Ngừng hoạt động ({data.totalVoucherStatus.inactive})
             </button>
           </div>
         </div>
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:inline-flex items-center gap-4">
           <button
             type="button"
             className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
@@ -149,7 +198,9 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
               </div>
 
               <div className="col-span-1 hidden sm:flex items-center">
-                <p className="text-xs text-meta-5">Sắp diễn ra</p>
+                <p className="text-xs text-meta-5">
+                  {EVoucherStatus[voucher.status]}
+                </p>
               </div>
 
               <div className="col-span-2 sm:col-span-1 flex justify-end text-end">
@@ -206,9 +257,9 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
             </div>
           ))}
 
-        {data.length > 0 && (
+        {data.vouchers.length > 0 && (
           <div className="flex justify-center items-center my-4">
-            <Pagination page={page} limit={limit} total={31} />
+            <Pagination page={page} limit={limit} total={dataTotal} />
           </div>
         )}
       </div>
