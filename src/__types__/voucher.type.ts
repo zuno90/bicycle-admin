@@ -15,3 +15,12 @@ enum EVoucherStatement {
   ACTIVE = "Đang hoạt động",
   INACTIVE = "Ngừng hoạt động",
 }
+
+export interface IVoucherInput {
+  name: string;
+  discount: number;
+  startDate: Date;
+  endDate: Date;
+  code: string;
+  quantity: number;
+}

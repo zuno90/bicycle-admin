@@ -37,7 +37,7 @@ const TinyMce: React.FC<any> = ({ initContent, getContent }) => {
           input.click();
         },
       }}
-      initialValue={initContent}
+      initialValue={initContent ?? ""}
       // onInit={(e, editor) => {
       //   initContent &&
       //     editor.setContent("<p>Hello world!</p>", { format: "text" });
