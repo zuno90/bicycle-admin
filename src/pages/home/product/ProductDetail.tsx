@@ -84,8 +84,6 @@ const ProductDetail: React.FC = () => {
     ],
   });
 
-  console.log(product.data);
-
   // init value
   React.useEffect(() => {
     if (product.data) {
@@ -324,12 +322,12 @@ const ProductDetail: React.FC = () => {
             <div className="w-full sm:w-[70%] text-sm z-20 dark:bg-form-input">
               <FormProvider {...methods}>
                 {productState.detailVariantList.length > 0 &&
-                  productState.detailVariantList.map((attribuleIndex, _) => (
+                  productState.detailVariantList.map((attribuleIndex) => (
                     <React.Suspense key={attribuleIndex} fallback={<Loader />}>
                       <div className="relative w-full">
                         <ProductVariant
-                          defaultValues={product.data.productItem}
                           index={attribuleIndex}
+                          defaultValues={product.data.productItem}
                           sizes={sizes.data}
                         />
                         <button

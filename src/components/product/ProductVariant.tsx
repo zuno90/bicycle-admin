@@ -13,15 +13,16 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
   defaultValues,
   sizes,
 }) => {
-  const { register } = useFormContext();
+  const { register, setValue } = useFormContext();
 
-  console.log(typeof `${defaultValues[index].size.id}`);
-
-  console.log(
-    sizes.map(
-      (size, index) => size.id.toString() === `${defaultValues[index]?.size.id}`
-    )
-  );
+  React.useEffect(() => {
+    defaultValues &&
+      setValue(
+        `productVariants.${index}.sizeId`,
+        `${defaultValues[index]?.size.id}`,
+        { shouldDirty: true }
+      );
+  }, []);
 
   return (
     <table className="w-full">
@@ -38,15 +39,12 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
           <td className="py-3">
             <div
               {...register(`productVariants.${index}.id`, {
-                value: `${defaultValues[index]?.id}`,
+                value: defaultValues && `${defaultValues[index]?.id}`,
               })}
               className="relative z-20 dark:bg-form-input"
             >
               <select
                 className="relative z-20 w-[80%] appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
-                defaultValue={
-                  defaultValues ? `${defaultValues[index]?.size.id}` : ""
-                }
                 {...register(`productVariants.${index}.sizeId`, {
                   required: "Size không được bỏ trống!",
                   min: { value: 1, message: "Size không được bỏ trống!" },
@@ -57,7 +55,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
                 </option>
                 {sizes.length > 0 &&
                   sizes.map((size) => (
-                    <option key={size.id} value={size.id.toString()}>
+                    <option key={size.id} value={size.id}>
                       {size.title}
                     </option>
                   ))}

@@ -2,7 +2,7 @@ import React from "react";
 import Pagination from "../Pagination";
 import Switcher from "../Switcher";
 import Loader from "../Loader";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ITable, IVoucher } from "../../__types__";
 import { formatNumber } from "../../utils/helper.util";
 import { config } from "../../utils/config.util";
@@ -26,7 +26,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
 
   console.log(data, 66);
 
-  const handleChangeStatus = async () => {};
+  const handleChangeStatus = async (id:number) => {};
 
   if (isLoading) return <Loader />;
   return (
@@ -154,7 +154,10 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
 
               <div className="col-span-2 sm:col-span-1 flex justify-end text-end">
                 <div className="flex items-center justify-center gap-4">
-                  <button className="hover:text-primary">
+                  <Link
+                    to={`/voucher/${voucher.id}`}
+                    className="hover:text-primary"
+                  >
                     <svg
                       width="18"
                       height="18"
@@ -170,7 +173,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                  </button>
+                  </Link>
                   <button className="hover:text-primary">
                     <svg
                       className="fill-current"

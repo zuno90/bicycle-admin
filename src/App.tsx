@@ -59,7 +59,12 @@ const App: React.FC = () => {
           </Routes>
         </QueryClientProvider>
       </BrowserRouter>
-      <ToastContainer position="top-right" autoClose={2000} />
+      <ToastContainer
+        position="top-right"
+        pauseOnFocusLoss={false}
+        pauseOnHover={false}
+        autoClose={2000}
+      />
     </>
   );
 };

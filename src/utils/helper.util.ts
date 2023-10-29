@@ -62,21 +62,19 @@ export const notify = (
   position?: ToastPosition
 ) => {
   if (type === ENotificationType.info)
-    return toast.info(content, { toastId: id, position, pauseOnHover: false });
+    return toast.info(content, { toastId: id, position });
   if (type === ENotificationType.success)
     return toast.success(content, {
       toastId: id,
       position,
-      pauseOnHover: false,
     });
   if (type === ENotificationType.warning)
     return toast.warning(content, {
       toastId: id,
       position,
-      pauseOnHover: false,
     });
   if (type === ENotificationType.error)
-    return toast.error(content, { toastId: id, position, pauseOnHover: false });
+    return toast.error(content, { toastId: id, position });
 };
 
 // get local cache
