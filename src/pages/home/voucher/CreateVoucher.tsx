@@ -1,25 +1,29 @@
 import React from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Message, SubmitHandler, useForm } from "react-hook-form";
+import { notify } from "../../../utils/helper.util";
+import { ENotificationType } from "../../../__types__";
 
 const CreateVoucher: React.FC = () => {
   const {
     register,
-    handleSubmit,
     getValues,
-    setValue,
+    trigger,
+    handleSubmit,
     formState: { isSubmitting, isSubmitted, errors },
   } = useForm();
 
+  const compareNow = "Ngày không được nhỏ hơn bây giờ";
   const compareDateErr = "Ngày bắt đầu không được lớn hơn ngày kết thúc!";
 
   const onCreateVoucher: SubmitHandler<any> = async (data) => {
     console.log(data);
-    try {
-    } catch (error) {}
   };
 
-  console.log(errors);
-
+  if (errors) {
+    console.log(errors);
+    for (let e in errors)
+      notify(ENotificationType.error, errors[e]?.message as Message, `error`);
+  }
   return (
     <form onSubmit={handleSubmit(onCreateVoucher)}>
       <h1 className="mb-6 text-xl">Khuyến mãi {">"} Tạo mã khuyến mãi</h1>
@@ -58,6 +62,7 @@ const CreateVoucher: React.FC = () => {
               type="number"
               placeholder="Số tiền giảm giá"
               defaultValue={0}
+              min={0}
               className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
             <p>đ</p>
@@ -76,8 +81,11 @@ const CreateVoucher: React.FC = () => {
               {...register("startDate", {
                 required: "Ngày bắt đầu không được để trống",
                 valueAsDate: true,
-                validate: (startD) =>
-                  startD <= getValues("endDate") || compareDateErr,
+                validate: {
+                  compareNow: (startD) => startD > new Date() || compareNow,
+                  compareDate: (startD) =>
+                    startD <= getValues("endDate") || compareDateErr,
+                },
               })}
               type="date"
               className="custom-input-date custom-input-date-1 w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -97,8 +105,11 @@ const CreateVoucher: React.FC = () => {
               {...register("endDate", {
                 required: "Ngày kết thúc không được để trống",
                 valueAsDate: true,
-                validate: (endD) =>
-                  endD >= getValues("startDate") || compareDateErr,
+                validate: {
+                  compareNow: (endD) => endD > new Date() || compareNow,
+                  compareDate: (endD) =>
+                    endD >= getValues("startDate") || compareDateErr,
+                },
               })}
               type="date"
               className="custom-input-date custom-input-date-1 w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -121,6 +132,29 @@ const CreateVoucher: React.FC = () => {
             placeholder="Code"
             className="w-full sm:w-[50%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
           />
+        </div>
+
+        <div className="w-full sm:inline-flex items-center">
+          <div className="sm:w-[30%]">
+            <label className="inline-flex space-x-2 text-black dark:text-white">
+              <span>Số tiền</span>
+              <span className="text-meta-1">*</span>
+            </label>
+          </div>
+          <div className="w-full sm:w-[50%] inline-flex items-center space-x-2">
+            <input
+              {...register("quantity", {
+                required: "Số lượng voucher không được bỏ trống!",
+                min: { value: 1, message: "Số lượng voucher phải lớn hơn 0" },
+                valueAsNumber: true,
+              })}
+              type="number"
+              placeholder="Số lượng voucher"
+              defaultValue={0}
+              min={0}
+              className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            />
+          </div>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IVoucher } from "../../__types__";
+import { clean } from "../global.action";
 
 type TVoucherState = {
   voucherList: IVoucher[];
@@ -18,6 +19,7 @@ const voucherlice = createSlice({
     },
     changeStatus: (state, action) => {},
   },
+  extraReducers: (builder) => builder.addCase(clean, () => initialState),
 });
 
 export const { setInitVoucherList, changeStatus } = voucherlice.actions;

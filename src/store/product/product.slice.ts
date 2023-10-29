@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { clean } from "../global.action";
 
 type TProductState = {
   variantList: number[];
@@ -66,10 +67,10 @@ const productSlice = createSlice({
           break;
       }
     },
-    clean: () => initialState,
   },
+  extraReducers: (builder) => builder.addCase(clean, () => initialState),
 });
 
-export const { setInitialList, addByIndex, removeByIndex, clean } =
+export const { setInitialList, addByIndex, removeByIndex } =
   productSlice.actions;
 export default productSlice.reducer;

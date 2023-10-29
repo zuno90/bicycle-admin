@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import adminSlice from "./auth/authSlice";
+import adminSlice from "./auth/auth.slice";
 import {
   persistStore,
   persistReducer,
@@ -12,10 +12,10 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import chatSlice from "./chat/chatSlice";
-import productSlice from "./product/productSlice";
-import commonSlice from "./common/commonSlice";
-import voucherSlice from "./voucher/voucherSlice";
+import chatSlice from "./chat/chat.slice";
+import productSlice from "./product/product.slice";
+import commonSlice from "./common/common.slice";
+import voucherSlice from "./voucher/voucher.slice";
 
 const persistConfig = { key: "root", version: 1, storage };
 

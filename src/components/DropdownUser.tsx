@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import Zuno from "../assets/zuno.png";
 import { useAppDispatch, useAppSelector } from "../store";
-import { logoutAction } from "../store/auth/authSlice";
+import { logoutAction } from "../store/auth/auth.slice";
 
 const DropdownUser: React.FC = () => {
   const { user } = useAppSelector((state) => state.admin);

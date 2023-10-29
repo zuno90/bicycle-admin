@@ -13,10 +13,10 @@ import { createProduct } from "../../../mutation/product.mutation";
 import classNames from "classnames";
 import {
   addByIndex,
-  clean,
   removeByIndex,
-} from "../../../store/product/productSlice";
+} from "../../../store/product/product.slice";
 import { useNavigate } from "react-router-dom";
+import { clean } from "../../../store/global.action";
 
 const ProductVariant = React.lazy(
   () => import("../../../components/product/ProductVariant")

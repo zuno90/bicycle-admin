@@ -4,7 +4,6 @@ import classNames from "classnames";
 type TSwitcher = { id: number; isEnabled: boolean };
 
 const Switcher: React.FC<TSwitcher> = ({ id, isEnabled }) => {
-  console.log(isEnabled);
   const [enabled, setEnabled] = React.useState(isEnabled);
 
   return (
@@ -20,7 +19,12 @@ const Switcher: React.FC<TSwitcher> = ({ id, isEnabled }) => {
             className="sr-only"
             onChange={() => setEnabled(!enabled)}
           />
-          <div className="h-5 w-14 rounded-full bg-success shadow-inner dark:bg-[#5A616B]"></div>
+          <div
+            className={classNames(
+              "h-5 w-14 rounded-full bg-gray dark:bg-[#5A616B] shadow-inner",
+              { "bg-success dark:bg-success": enabled }
+            )}
+          ></div>
           <div
             className={classNames(
               "dot absolute left-0 -top-1 h-7 w-7 rounded-full bg-white shadow-switch-1 transition",

@@ -19,10 +19,10 @@ import classNames from "classnames";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   addByIndex,
-  clean,
   removeByIndex,
   setInitialList,
-} from "../../../store/product/productSlice";
+} from "../../../store/product/product.slice";
+import { clean } from "../../../store/global.action";
 
 const ProductVariant = React.lazy(
   () => import("../../../components/product/ProductVariant")
@@ -83,6 +83,8 @@ const ProductDetail: React.FC = () => {
       { queryKey: ["sizes"], queryFn: () => getSizes() },
     ],
   });
+
+  console.log(product.data);
 
   // init value
   React.useEffect(() => {

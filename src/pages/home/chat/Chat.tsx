@@ -48,7 +48,7 @@ import {
   loadSidebar,
   setCurrentUser,
   setLoading,
-} from "../../../store/chat/chatSlice";
+} from "../../../store/chat/chat.slice";
 
 AWS.config.update({
   accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,

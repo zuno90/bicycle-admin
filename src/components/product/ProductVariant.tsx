@@ -15,6 +15,14 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
 }) => {
   const { register } = useFormContext();
 
+  console.log(typeof `${defaultValues[index].size.id}`);
+
+  console.log(
+    sizes.map(
+      (size, index) => size.id.toString() === `${defaultValues[index]?.size.id}`
+    )
+  );
+
   return (
     <table className="w-full">
       <thead className="bg-meta-2 text-meta-4 dark:bg-meta-4 dark:text-white">
@@ -28,7 +36,12 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
       <tbody className="text-center">
         <tr>
           <td className="py-3">
-            <div className="relative z-20 dark:bg-form-input">
+            <div
+              {...register(`productVariants.${index}.id`, {
+                value: `${defaultValues[index]?.id}`,
+              })}
+              className="relative z-20 dark:bg-form-input"
+            >
               <select
                 className="relative z-20 w-[80%] appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
                 defaultValue={
@@ -44,7 +57,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
                 </option>
                 {sizes.length > 0 &&
                   sizes.map((size) => (
-                    <option key={size.id} value={size.id}>
+                    <option key={size.id} value={size.id.toString()}>
                       {size.title}
                     </option>
                   ))}

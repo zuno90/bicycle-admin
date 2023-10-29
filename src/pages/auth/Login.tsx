@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import { login } from "../../mutation/auth.mutation";
 import { getCache, notify, setCache } from "../../utils/helper.util";
-import { adminAction, loginAction } from "../../store/auth/authSlice";
+import { adminAction, loginAction } from "../../store/auth/auth.slice";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { useLocation, useNavigate } from "react-router-dom";
 import { config } from "../../utils/config.util";
@@ -30,16 +30,14 @@ const Login: React.FC = () => {
   } = useMutation(login, {
     onSuccess: (res) => {
       dispatch(loginAction(res));
-      if (!res.success)
-        notify(ENotificationType.error, res.message, "error", "top-center");
+      if (!res.success) notify(ENotificationType.error, res.message, "error");
       else {
         setCache("accessToken", res.data.accessToken);
         setCache("refreshToken", res.data.refreshToken);
         notify(
           ENotificationType.success,
           "Đăng nhập thành công với quyền admin!",
-          "success",
-          "top-center"
+          "success"
         );
       }
     },
