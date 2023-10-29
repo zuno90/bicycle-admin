@@ -1,7 +1,6 @@
 import { Editor } from "@tinymce/tinymce-react";
 
 const TinyMce: React.FC<any> = ({ initContent, getContent }) => {
-  console.log(initContent);
   return (
     <Editor
       apiKey="df4xfwysyt7xdzreywi9m58z5jpaj5ke6cwff4zgobsp54ru"

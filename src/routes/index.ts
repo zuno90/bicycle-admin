@@ -19,6 +19,7 @@ const User = React.lazy(() => import("../pages/home/User"));
 const dashboardRoutes = [
   {
     path: "/",
+    index: true,
     title: "Trang chủ",
     element: Home,
   },

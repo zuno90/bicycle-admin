@@ -16,9 +16,10 @@ const Layout: React.FC = () => {
           <main>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <Routes>
-                {routes.map(({ path, element: Component }) => (
+                {routes.map(({ path, index, element: Component }) => (
                   <Route
                     key={path}
+                    index={index}
                     path={path}
                     element={
                       <React.Suspense fallback={<Loader />}>

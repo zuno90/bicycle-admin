@@ -16,9 +16,10 @@ import { useAppDispatch, useAppSelector } from "../../../store";
 import { notify } from "../../../utils/helper.util";
 import { updateProduct } from "../../../mutation/product.mutation";
 import classNames from "classnames";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   addByIndex,
+  clean,
   removeByIndex,
   setInitialList,
 } from "../../../store/product/productSlice";
@@ -29,6 +30,7 @@ const ProductVariant = React.lazy(
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const productState = useAppSelector((state) => state.product);
   const dispatch = useAppDispatch();
   // handle images
@@ -129,11 +131,14 @@ const ProductDetail: React.FC = () => {
           "success",
           "top-center"
         );
+        dispatch(clean());
+        navigate("/product");
       }
     },
   });
 
   const onUpdatePost: SubmitHandler<any> = async (data) => {
+    console.log(data);
     const { productVariants, ...others } = data;
     const formD = new FormData();
     formD.append("name", others.name);

@@ -10,6 +10,7 @@ import "./App.css";
 
 const Login = React.lazy(() => import("./pages/auth/Login"));
 const Layout = React.lazy(() => import("./components/Layout"));
+const PageNotFound = React.lazy(() => import("./pages/PageNotFound"));
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } },
@@ -39,13 +40,21 @@ const App: React.FC = () => {
               }
             >
               <Route
-                path="/*"
+                path="*"
                 element={
                   <React.Suspense fallback={<Loader />}>
                     <Layout />
                   </React.Suspense>
                 }
               />
+              {/* <Route
+                path="*"
+                element={
+                  <React.Suspense fallback={<Loader />}>
+                    <PageNotFound />
+                  </React.Suspense>
+                }
+              /> */}
             </Route>
           </Routes>
         </QueryClientProvider>

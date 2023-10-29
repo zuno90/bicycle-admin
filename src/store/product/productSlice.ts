@@ -66,9 +66,10 @@ const productSlice = createSlice({
           break;
       }
     },
+    clean: () => initialState,
   },
 });
 
-export const { setInitialList, addByIndex, removeByIndex } =
+export const { setInitialList, addByIndex, removeByIndex, clean } =
   productSlice.actions;
 export default productSlice.reducer;

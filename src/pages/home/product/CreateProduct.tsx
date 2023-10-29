@@ -11,7 +11,11 @@ import { useAppDispatch, useAppSelector } from "../../../store";
 import { notify } from "../../../utils/helper.util";
 import { createProduct } from "../../../mutation/product.mutation";
 import classNames from "classnames";
-import { addByIndex, removeByIndex } from "../../../store/product/productSlice";
+import {
+  addByIndex,
+  clean,
+  removeByIndex,
+} from "../../../store/product/productSlice";
 import { useNavigate } from "react-router-dom";
 
 const ProductVariant = React.lazy(
@@ -102,6 +106,7 @@ const CreateProduct: React.FC = () => {
           "success",
           "top-center"
         );
+        dispatch(clean());
         navigate("/product");
       }
     },
