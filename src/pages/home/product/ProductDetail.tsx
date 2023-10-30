@@ -78,7 +78,11 @@ const ProductDetail: React.FC = () => {
 
   const [product, categories, sizes] = useQueries({
     queries: [
-      { queryKey: ["product", { slug }], queryFn: () => getProduct(slug) },
+      {
+        queryKey: ["product"],
+        queryFn: () => getProduct(slug),
+        keepPreviousData: false,
+      },
       { queryKey: ["categories"], queryFn: () => getCategories() },
       { queryKey: ["sizes"], queryFn: () => getSizes() },
     ],
