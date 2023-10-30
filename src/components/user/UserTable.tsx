@@ -1,20 +1,14 @@
 import React from "react";
-import Pagination from "../Pagination";
-import Loader from "../Loader";
-import { formatNumber, mergeSort, mergeTotal } from "../../utils/helper.util";
+import { ITable } from "../../__types__";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getProducts } from "../../query";
 import { config } from "../../utils/config.util";
-import {
-  EProductStatus,
-  IProduct,
-  IProductItem,
-  ITable,
-} from "../../__types__";
 import classNames from "classnames";
+import { useQuery } from "@tanstack/react-query";
+import { getUsers } from "../../query";
+import Loader from "../Loader";
+import Pagination from "../Pagination";
 
-const ProductTable: React.FC<ITable> = ({ title }) => {
+const UserTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(search);
@@ -24,9 +18,10 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
   const status = queryParams.get("status");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["products", { page, limit, status }],
-    queryFn: () => getProducts(page, limit, status),
+    queryKey: ["users", { page, limit, status }],
+    queryFn: () => getUsers(page, limit, status),
   });
+  console.log(data, 55);
 
   const handleChangeStatus = (status: string) => {
     queryParams.delete("page");
@@ -35,26 +30,6 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
     else queryParams.set("status", status);
     navigate({ search: queryParams.toString() });
   };
-
-  let minPrice: number;
-  let maxPrice: number;
-  let inventory: number;
-  let dataTotal: number = 0;
-  if (data) {
-    const priceArr = data.products.map((i: IProduct) =>
-      i.productItem.map((j: IProductItem) => j.price),
-    );
-    const inventoryArr = data.products.map((i: IProduct) =>
-      i.productItem.map((j: IProductItem) => j.inventory),
-    );
-    const { min, max } = mergeSort(priceArr);
-    minPrice = min;
-    maxPrice = max;
-    inventory = mergeTotal(inventoryArr);
-    dataTotal = data.totalProductStatus[queryParams.get("status") ?? "all"];
-  }
-
-  console.log(data);
 
   if (isLoading) return <Loader />;
   return (
@@ -94,7 +69,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
                 { "bg-[#FBE69E]": !queryParams.get("status") },
               )}
             >
-              Tất cả ({data.totalProductStatus.all})
+              Tất cả (100)
             </button>
             <button
               onClick={() => handleChangeStatus("active")}
@@ -104,7 +79,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
                 { "bg-[#FBE69E]": queryParams.get("status") === "active" },
               )}
             >
-              Đang hoạt động ({data.totalProductStatus.active})
+              Đang hoạt động (100)
             </button>
             <button
               onClick={() => handleChangeStatus("inactive")}
@@ -114,7 +89,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
                 { "bg-[#FBE69E]": queryParams.get("status") === "inactive" },
               )}
             >
-              Đang ẩn ({data.totalProductStatus.inactive})
+              Đang ẩn (100)
             </button>
           </div>
         </div>
@@ -153,7 +128,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
           </div>
         </div>
 
-        {data.products.length > 0 &&
+        {/* {data.products.length > 0 &&
           data.products.map((product: IProduct) => (
             <div
               key={product.id}
@@ -212,10 +187,10 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
           <div className="flex justify-center items-center my-4">
             <Pagination page={page} limit={limit} total={dataTotal} />
           </div>
-        )}
+        )} */}
       </div>
     </>
   );
 };
 
-export default ProductTable;
+export default UserTable;

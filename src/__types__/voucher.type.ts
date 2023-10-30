@@ -9,11 +9,14 @@ export interface IVoucher {
   id: number;
   code: string;
   title: string;
-  thumbnail: string;
-  fromPrice: number;
-  unit: "%" | "cash";
+  detail: string;
+  startDate: Date;
+  endDate: Date;
+  unit: string;
   value: number;
+  quantity: number;
   status: keyof typeof EVoucherStatus;
+  statusDisplay: boolean;
 }
 
 export interface IVoucherInput {

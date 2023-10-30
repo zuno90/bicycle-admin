@@ -4,20 +4,22 @@ const Home = React.lazy(() => import("../pages/home/Home"));
 const Category = React.lazy(() => import("../pages/home/Category"));
 const Product = React.lazy(() => import("../pages/home/product/Product"));
 const ProductDetail = React.lazy(
-  () => import("../pages/home/product/ProductDetail")
+  () => import("../pages/home/product/ProductDetail"),
 );
 const CreateProduct = React.lazy(
-  () => import("../pages/home/product/CreateProduct")
+  () => import("../pages/home/product/CreateProduct"),
 );
 const Voucher = React.lazy(() => import("../pages/home/voucher/Voucher"));
 const VoucherDetail = React.lazy(
-  () => import("../pages/home/voucher/VoucherDetail")
+  () => import("../pages/home/voucher/VoucherDetail"),
 );
 const CreateVoucher = React.lazy(
-  () => import("../pages/home/voucher/CreateVoucher")
+  () => import("../pages/home/voucher/CreateVoucher"),
 );
 const Chat = React.lazy(() => import("../pages/home/chat/Chat"));
-const User = React.lazy(() => import("../pages/home/User"));
+const User = React.lazy(() => import("../pages/home/user/User"));
+const UserDetail = React.lazy(() => import("../pages/home/user/UserDetail"));
+const Test = React.lazy(() => import("../pages/home/test/Test"));
 
 const dashboardRoutes = [
   {
@@ -70,6 +72,16 @@ const dashboardRoutes = [
     path: "/user",
     title: "Quản lý người dùng",
     element: User,
+  },
+  {
+    path: "/user/:id",
+    title: "Thông tin người dùng",
+    element: UserDetail,
+  },
+  {
+    path: "/test",
+    title: "Test page",
+    element: Test,
   },
 ];
 

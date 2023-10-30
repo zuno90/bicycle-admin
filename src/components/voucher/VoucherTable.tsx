@@ -10,7 +10,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getVouchers } from "../../query";
 import { useAppDispatch, useAppSelector } from "../../store";
 import classNames from "classnames";
-import queryString from "query-string";
 
 const VoucherTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
@@ -22,6 +21,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
   const status = queryParams.get("status");
+  console.log(status);
 
   const { data, isLoading } = useQuery({
     queryKey: ["vouchers", { page, limit, status }],

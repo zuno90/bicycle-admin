@@ -16,6 +16,7 @@ import chatSlice from "./chat/chat.slice";
 import productSlice from "./product/product.slice";
 import commonSlice from "./common/common.slice";
 import voucherSlice from "./voucher/voucher.slice";
+import userSlice from "./user/user.slice";
 
 const persistConfig = { key: "root", version: 1, storage };
 
@@ -27,6 +28,7 @@ const store = configureStore({
     chat: chatSlice,
     product: productSlice,
     voucher: voucherSlice,
+    user: userSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

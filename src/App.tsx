@@ -10,7 +10,6 @@ import "./App.css";
 
 const Login = React.lazy(() => import("./pages/auth/Login"));
 const Layout = React.lazy(() => import("./components/Layout"));
-const PageNotFound = React.lazy(() => import("./pages/PageNotFound"));
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } },
