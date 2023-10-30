@@ -104,7 +104,8 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
               type="number"
               placeholder="Nhập giá"
               defaultValue={defaultValues ? defaultValues[index]?.price : ""}
-              min={0}
+              // min={0}
+              // max={1000000}
               className="w-[80%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
           </td>
@@ -121,6 +122,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
                 defaultValues ? defaultValues[index]?.inventory : ""
               }
               min={0}
+              // max={1000000}
               className="w-[80%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
           </td>
