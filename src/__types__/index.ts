@@ -7,3 +7,4 @@ export * from "./chat.type";
 export * from "./notification.type";
 export * from "./table.type";
 export * from "./order.type";
+export * from "./transaction.type";

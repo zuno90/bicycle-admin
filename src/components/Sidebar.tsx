@@ -17,7 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   const storedSidebarExpanded = localStorage.getItem("sidebar-expanded");
   const [sidebarExpanded] = React.useState(
-    storedSidebarExpanded === null ? false : storedSidebarExpanded === "true",
+    storedSidebarExpanded === null ? false : storedSidebarExpanded === "true"
   );
 
   // close on click outside
@@ -136,6 +136,31 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             </SidebarLinkGroup>
             {/* <!-- Menu Item Dashboard --> */}
 
+            {/* <!-- Menu Item Transaction --> */}
+            <li>
+              <NavLink
+                to="/transaction"
+                className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                  (pathname === "/transaction" ||
+                    pathname.includes("/transaction")) &&
+                  "bg-graydark dark:bg-meta-4"
+                }`}
+              >
+                <svg
+                  className="fill-current"
+                  width={18}
+                  height={18}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                >
+                  <path d="M11 8C11 10.21 9.21 12 7 12C4.79 12 3 10.21 3 8C3 5.79 4.79 4 7 4C9.21 4 11 5.79 11 8M11 14.72V20H0V18C0 15.79 3.13 14 7 14C8.5 14 9.87 14.27 11 14.72M24 20H13V3H24V20M16 11.5C16 10.12 17.12 9 18.5 9C19.88 9 21 10.12 21 11.5C21 12.88 19.88 14 18.5 14C17.12 14 16 12.88 16 11.5M22 7C20.9 7 20 6.11 20 5H17C17 6.11 16.11 7 15 7V16C16.11 16 17 16.9 17 18H20C20 16.9 20.9 16 22 16V7Z" />
+                </svg>
+                Giao dịch
+              </NavLink>
+            </li>
+            {/* <!-- Menu Item Transaction --> */}
+
             {/* <!-- Menu Item Category --> */}
             <li>
               <NavLink
@@ -175,8 +200,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
               >
                 <svg
                   className="fill-current"
-                  width="18"
-                  height="18"
+                  width={18}
+                  height={18}
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"

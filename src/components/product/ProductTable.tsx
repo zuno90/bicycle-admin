@@ -42,10 +42,10 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
   let dataTotal: number = 0;
   if (data) {
     const priceArr = data.products.map((i: IProduct) =>
-      i.productItem.map((j: IProductItem) => j.price),
+      i.productItem.map((j: IProductItem) => j.price)
     );
     const inventoryArr = data.products.map((i: IProduct) =>
-      i.productItem.map((j: IProductItem) => j.inventory),
+      i.productItem.map((j: IProductItem) => j.inventory)
     );
     const { min, max } = mergeSort(priceArr);
     minPrice = min;
@@ -91,7 +91,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               type="button"
               className={classNames(
                 "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": !queryParams.get("status") },
+                { "bg-[#FBE69E]": !queryParams.get("status") }
               )}
             >
               Tất cả ({data.totalProductStatus.all})
@@ -101,7 +101,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               type="button"
               className={classNames(
                 "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": queryParams.get("status") === "active" },
+                { "bg-[#FBE69E]": queryParams.get("status") === "active" }
               )}
             >
               Đang hoạt động ({data.totalProductStatus.active})
@@ -111,7 +111,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               type="button"
               className={classNames(
                 "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": queryParams.get("status") === "inactive" },
+                { "bg-[#FBE69E]": queryParams.get("status") === "inactive" }
               )}
             >
               Đang ẩn ({data.totalProductStatus.inactive})
@@ -138,18 +138,18 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
         </div>
       </div>
       <div className="flex flex-col">
-        <div className="grid grid-cols-7 border-t border-stroke p-4 dark:border-strokedark sm:grid-cols-7 md:px-6 2xl:px-7.5">
+        <div className="grid grid-cols-7 border-stroke p-4 dark:border-strokedark sm:grid-cols-7 md:px-6 2xl:px-7.5">
           <div className="col-span-1 hidden sm:flex items-center">
-            <h5 className="text-sm font-medium xsm:text-base">Mã</h5>
+            <h5 className="text-sm font-bold xsm:text-base">Mã</h5>
           </div>
           <div className="col-span-4 flex items-center">
-            <h5 className="text-sm font-medium xsm:text-base">Sản phẩm</h5>
+            <h5 className="text-sm font-bold xsm:text-base">Sản phẩm</h5>
           </div>
           <div className="col-span-1 flex items-center">
-            <h5 className="text-sm font-medium xsm:text-base">Giá</h5>
+            <h5 className="text-sm font-bold xsm:text-base">Giá</h5>
           </div>
           <div className="col-span-1 hidden sm:flex items-center">
-            <h5 className="text-sm font-medium xsm:text-base">Trạng thái</h5>
+            <h5 className="text-sm font-bold xsm:text-base">Trạng thái</h5>
           </div>
         </div>
 

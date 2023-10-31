@@ -31,7 +31,7 @@ import {
   IUserList,
 } from "../../../__types__";
 import ChatWelcome1 from "../../../assets/chat-welcome1.jpeg";
-import UserAvatar from "../../../assets/images/user/user-03.png";
+import UserAvatar from "../../../assets/images/user/user.png";
 import AdminAvatar from "../../../assets/zuno.png";
 import { db } from "../../../utils/firebase.util";
 import { v4 as uuidv4 } from "uuid";
@@ -39,11 +39,9 @@ import { formatTimeAgo, notify } from "../../../utils/helper.util";
 import AWS from "aws-sdk";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import { useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { getUser } from "../../../query";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import {
-  checkUserFromFirebase,
   handleImageUpload,
   loadSidebar,
   setCurrentUser,
@@ -223,7 +221,7 @@ const Chat: React.FC = () => {
       await updateDoc(chatDocByUser, { unread: 0 });
     } catch (error: any) {
       // admin chat fisrt
-      const res = await getUser(uid);
+      const res = await getUser(uid!);
       if (!res)
         notify(
           ENotificationType.error,
@@ -331,7 +329,7 @@ const Chat: React.FC = () => {
                       ]);
                       dispatch(handleImageUpload({ type: "remove" }));
                       dispatch(setLoading(false));
-                    }
+                    } else getUserById(user.user._id);
                   }}
                 >
                   <Avatar src={UserAvatar} />
@@ -425,7 +423,7 @@ const Chat: React.FC = () => {
                       <img className="object-fit" src={chatState.previewImg} />
                       <div className="w-full flex flex-col items-center space-y-2">
                         <button
-                          onClick={() => uploadImageToS3(chatState.imageFile)}
+                          onClick={() => uploadImageToS3(chatState.imageFile!)}
                           type="button"
                           className="w-full text-white bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none focus:ring-[#1da1f2]/50 font-medium rounded-full text-sm px-5 py-2.5 text-center inline-flex justify-center items-center dark:focus:ring-[#1da1f2]/55"
                         >

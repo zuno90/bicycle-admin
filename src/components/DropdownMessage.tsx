@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import UserOne from "../assets/images/user/user-01.png";
-import UserTwo from "../assets/images/user/user-02.png";
-import UserThree from "../assets/images/user/user-03.png";
-import UserFour from "../assets/images/user/user-04.png";
+import User from "../assets/images/user/user.png";
 
 const DropdownMessage: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -97,7 +94,7 @@ const DropdownMessage: React.FC = () => {
               to="/messages"
             >
               <div className="h-12.5 w-12.5 rounded-full">
-                <img src={UserTwo} alt="User" />
+                <img src={User} alt="User" />
               </div>
 
               <div>
@@ -115,7 +112,7 @@ const DropdownMessage: React.FC = () => {
               to="/messages"
             >
               <div className="h-12.5 w-12.5 rounded-full">
-                <img src={UserOne} alt="User" />
+                <img src={User} alt="User" />
               </div>
 
               <div>
@@ -133,7 +130,7 @@ const DropdownMessage: React.FC = () => {
               to="/messages"
             >
               <div className="h-12.5 w-12.5 rounded-full">
-                <img src={UserThree} alt="User" />
+                <img src={User} alt="User" />
               </div>
 
               <div>
@@ -151,7 +148,7 @@ const DropdownMessage: React.FC = () => {
               to="/messages"
             >
               <div className="h-12.5 w-12.5 rounded-full">
-                <img src={UserFour} alt="User" />
+                <img src={User} alt="User" />
               </div>
 
               <div>
@@ -169,7 +166,7 @@ const DropdownMessage: React.FC = () => {
               to="/messages"
             >
               <div className="h-12.5 w-12.5 rounded-full">
-                <img src={UserTwo} alt="User" />
+                <img src={User} alt="User" />
               </div>
 
               <div>

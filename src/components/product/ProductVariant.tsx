@@ -16,12 +16,12 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
   const { register, setValue } = useFormContext();
 
   React.useEffect(() => {
-    defaultValues &&
-      setValue(
-        `productVariants.${index}.sizeId`,
-        `${defaultValues[index]?.size.id}`,
-        { shouldDirty: true }
-      );
+    // defaultValues &&
+    setValue(
+      `productVariants.${index}.sizeId`,
+      defaultValues ? `${defaultValues[index]?.size.id}` : "undefined"
+      // { shouldDirty: true }
+    );
   }, []);
 
   return (
@@ -52,7 +52,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
                   shouldUnregister: true,
                 })}
               >
-                <option value="" disabled>
+                <option value="undefined" disabled>
                   Chọn size
                 </option>
                 {sizes.length > 0 &&

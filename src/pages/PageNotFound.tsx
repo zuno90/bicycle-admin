@@ -13,7 +13,7 @@ const PageNotFound: React.FC = () => {
           </p>
           <p className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">
             Sorry, we can't find that page. You'll find lots to explore on the
-            home page.{" "}
+            home page.
           </p>
           <a
             href="#"

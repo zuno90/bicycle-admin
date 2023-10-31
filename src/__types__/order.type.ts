@@ -7,6 +7,13 @@ export enum EOrderStatus {
   canceled = "Đã huỷ",
 }
 
+export enum EOrderStep {
+  waiting_payment,
+  pending,
+  transported,
+  success,
+}
+
 export interface IOrder {
   id: number;
 }

@@ -2,13 +2,16 @@ import React from "react";
 import Pagination from "../Pagination";
 import { ITable } from "../../__types__";
 import { formatNumber } from "../../utils/helper.util";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { config } from "../../utils/config.util";
 import { useQuery } from "@tanstack/react-query";
 import { getOrders } from "../../query";
 import classNames from "classnames";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Loader from "../Loader";
+
+type TDateRange = [Date | null, Date | null];
 
 const HomeTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
@@ -19,7 +22,10 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
   const status = queryParams.get("status");
 
-  const [dateRange, setDateRange] = React.useState([new Date(), null]);
+  const [dateRange, setDateRange] = React.useState<TDateRange>([
+    new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+  ]);
   const [startDate, endDate] = dateRange;
 
   const { data, isLoading } = useQuery({
@@ -39,6 +45,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
 
   const handleExportOrder = () => {};
 
+  if (isLoading) return <Loader />;
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -143,16 +150,16 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
             <h5 className="text-sm font-medium xsm:text-base">ID</h5>
           </div>
           <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium  xsm:text-base">Ngày</h5>
+            <h5 className="text-sm font-medium xsm:text-base">Ngày</h5>
           </div>
           <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium  xsm:text-base">Tên đơn hàng</h5>
+            <h5 className="text-sm font-medium xsm:text-base">Tên đơn hàng</h5>
           </div>
           <div className="hidden p-2.5 sm:block xl:p-5">
-            <h5 className="text-sm font-medium  xsm:text-base">Giá trị</h5>
+            <h5 className="text-sm font-medium xsm:text-base">Giá trị</h5>
           </div>
           <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-medium  xsm:text-base">Trạng thái</h5>
+            <h5 className="text-sm font-medium xsm:text-base">Trạng thái</h5>
           </div>
         </div>
 

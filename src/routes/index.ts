@@ -1,20 +1,27 @@
 import React from "react";
 
-const Home = React.lazy(() => import("../pages/home/Home"));
+const Order = React.lazy(() => import("../pages/home/order/Order"));
+const OrderDetail = React.lazy(() => import("../pages/home/order/OrderDetail"));
+const Transaction = React.lazy(
+  () => import("../pages/home/transaction/Transaction")
+);
+const TransactionDetail = React.lazy(
+  () => import("../pages/home/transaction/TransactionDetail")
+);
 const Category = React.lazy(() => import("../pages/home/Category"));
 const Product = React.lazy(() => import("../pages/home/product/Product"));
 const ProductDetail = React.lazy(
-  () => import("../pages/home/product/ProductDetail"),
+  () => import("../pages/home/product/ProductDetail")
 );
 const CreateProduct = React.lazy(
-  () => import("../pages/home/product/CreateProduct"),
+  () => import("../pages/home/product/CreateProduct")
 );
 const Voucher = React.lazy(() => import("../pages/home/voucher/Voucher"));
 const VoucherDetail = React.lazy(
-  () => import("../pages/home/voucher/VoucherDetail"),
+  () => import("../pages/home/voucher/VoucherDetail")
 );
 const CreateVoucher = React.lazy(
-  () => import("../pages/home/voucher/CreateVoucher"),
+  () => import("../pages/home/voucher/CreateVoucher")
 );
 const Chat = React.lazy(() => import("../pages/home/chat/Chat"));
 const User = React.lazy(() => import("../pages/home/user/User"));
@@ -26,7 +33,22 @@ const dashboardRoutes = [
     path: "/",
     index: true,
     title: "Trang chủ",
-    element: Home,
+    element: Order,
+  },
+  {
+    path: "/order/:id",
+    title: "Chi tiết đơn hàng",
+    element: OrderDetail,
+  },
+  {
+    path: "/transaction",
+    title: "Giao dịch",
+    element: Transaction,
+  },
+  {
+    path: "/transaction/:id",
+    title: "Chi tiết giao dịch",
+    element: TransactionDetail,
   },
   {
     path: "/category",

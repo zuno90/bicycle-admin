@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../../store";
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "../../../query";
 import Loader from "../../../components/Loader";
-import UserImage from "../../../assets/images/user/user-04.png";
+import User from "../../../assets/images/user/user.png";
 
 const UserDetail: React.FC = () => {
   const { id } = useParams();
@@ -15,6 +15,7 @@ const UserDetail: React.FC = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["user", { id }],
     queryFn: () => getUser(id!),
+    cacheTime: 0,
   });
 
   console.log(data, "data id 2");
@@ -22,13 +23,15 @@ const UserDetail: React.FC = () => {
   if (isLoading) return <Loader />;
   return (
     <>
-      <h1 className="mb-6 text-xl">Quản lý người dùng {">"} Nguyen Van A</h1>
+      <h1 className="mb-6 text-xl">
+        Quản lý người dùng {">"} {data?.name}
+      </h1>
       <div className="space-y-6">
         <div className="flex flex-col items-center bg-gray-100 rounded-lg shadow-lg md:flex-row hover:bg-gray-100 dark:border-gray-700 dark:bg-form-strokedark dark:hover:bg-gray-700">
           <div className="p-4 flex flex-col items-center gap-2">
             <img
               className="object-cover rounded-t-lg h-24 md:h-auto md:w-52 md:rounded-none md:rounded-l-lg"
-              src={UserImage}
+              src={User}
               alt="user-info-img"
             />
             <p className="text-black dark:text-white">Số dư</p>
@@ -59,7 +62,9 @@ const UserDetail: React.FC = () => {
               <input
                 type="text"
                 className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                defaultValue={data.createAt ?? ""}
+                defaultValue={
+                  new Date(data.createAt).toLocaleDateString("en-GB") ?? ""
+                }
                 disabled
               />
             </div>
