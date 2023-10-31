@@ -7,7 +7,7 @@ import { createVoucher } from "../../../mutation/voucher.mutation";
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store";
-import { clean } from "../../../store/global.action";
+import { clean } from "../../../store/common.action";
 
 const CreateVoucher: React.FC = () => {
   const navigate = useNavigate();

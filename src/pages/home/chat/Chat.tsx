@@ -47,7 +47,7 @@ import {
   setCurrentUser,
   setLoading,
 } from "../../../store/chat/chat.slice";
-import { clean } from "../../../store/global.action";
+import { clean } from "../../../store/common.action";
 
 AWS.config.update({
   accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,

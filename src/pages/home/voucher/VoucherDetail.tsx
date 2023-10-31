@@ -7,7 +7,7 @@ import { notify } from "../../../utils/helper.util";
 import { ENotificationType, IVoucherInput } from "../../../__types__";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { updateVoucher } from "../../../mutation/voucher.mutation";
-import { clean } from "../../../store/global.action";
+import { clean } from "../../../store/common.action";
 import { getVoucher } from "../../../query";
 
 const VoucherDetail: React.FC = () => {

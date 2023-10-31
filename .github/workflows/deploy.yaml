@@ -1,0 +1,24 @@
+name: deploy bicycle-admin by ZUNO
+on: [workflow_dispatch]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE.
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+
+      - name: executing remote ssh commands using password
+        uses: supnobita/ssh-action@master
+        with:
+          host: 3.0.139.127
+          username: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          envs: GITHUB_RUN_NUMBER
+          script: |
+            echo "SSH successfully!"
+            cd /home/ubuntu/code
+            git clone https://${{ secrets.GIT_TOKEN }}@github.com/zuno90/bicycle-admin.git
+            echo "clone repo successfully!"

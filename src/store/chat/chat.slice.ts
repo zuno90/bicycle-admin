@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IMessageUser, IUserList } from "../../__types__";
-import { clean } from "../global.action";
+import { clean } from "../common.action";
 
 interface IChatState {
   isLoading: boolean;

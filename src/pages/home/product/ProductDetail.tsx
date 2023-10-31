@@ -22,7 +22,7 @@ import {
   removeByIndex,
   setInitialList,
 } from "../../../store/product/product.slice";
-import { clean } from "../../../store/global.action";
+import { clean } from "../../../store/common.action";
 
 const ProductVariant = React.lazy(
   () => import("../../../components/product/ProductVariant")
@@ -497,7 +497,7 @@ const ProductDetail: React.FC = () => {
                 </svg>
                 <img
                   className="w-20 h-20 object-cover"
-                  src={image?.preview}
+                  src={image.preview}
                   alt="preview-image"
                 />
               </div>

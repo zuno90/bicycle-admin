@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { clean } from "../global.action";
+import { clean } from "../common.action";
 
 const initialState = {};
 

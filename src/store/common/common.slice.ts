@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { clean } from "../global.action";
+import { clean } from "../common.action";
 
 type TCommonState = { isOpenModal: boolean; counterValue: number };
 
