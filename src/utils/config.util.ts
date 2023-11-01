@@ -1,5 +1,5 @@
 export const config = {
-  endpoint: "https://gate.mamnonhoalu.online/api",
+  endpoint: "https://gate.mamnonhoalu.online/api/admin",
   cache: {
     deviceToken: "deviceToken",
     accessToken: "accessToken",

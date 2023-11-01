@@ -17,10 +17,6 @@ const Login: React.FC = () => {
   const adminState = useAppSelector((state) => state.admin);
   const dispatch = useAppDispatch();
 
-  const redirectUrl = location.state?.from?.pathname ?? "/";
-  if (adminState.isAuth && adminState.user)
-    navigate(redirectUrl, { replace: true });
-
   const {
     register,
     handleSubmit,
@@ -57,6 +53,10 @@ const Login: React.FC = () => {
     };
     mutate(payload);
   };
+
+  const redirectUrl = location.state?.from?.pathname ?? "/";
+  if (adminState.isAuth && adminState.user)
+    navigate(redirectUrl, { replace: true });
 
   return (
     <section className="w-full h-screen flex justify-center items-center bg-gray-200">

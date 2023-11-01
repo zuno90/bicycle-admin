@@ -11,6 +11,7 @@ node_modules
 # dist
 dist-ssr
 *.local
+free-react-tailwind-admin-dashboard-main
 
 # Editor directories and files
 .vscode/*

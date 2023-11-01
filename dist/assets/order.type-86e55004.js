@@ -1,0 +1,1 @@
+var a=(n=>(n.all="Tất cả",n.waiting_payment="Chờ thanh toán",n.pending="Đang xử lí",n.transported="Đang vận chuyển",n.success="Đã giao",n.canceled="Đã huỷ",n))(a||{}),c=(n=>(n[n.waiting_payment=0]="waiting_payment",n[n.pending=1]="pending",n[n.transported=2]="transported",n[n.success=3]="success",n))(c||{});export{a as E,c as a};

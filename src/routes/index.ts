@@ -30,7 +30,7 @@ const Test = React.lazy(() => import("../pages/home/test/Test"));
 
 const dashboardRoutes = [
   {
-    path: "/",
+    path: "",
     index: true,
     title: "Trang chủ",
     element: Order,

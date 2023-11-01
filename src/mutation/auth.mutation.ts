@@ -4,7 +4,7 @@ import { fetchPost } from "../utils/helper.util";
 
 export const login = async (payload: ILoginInput) => {
   const res = await fetchPost(
-    `${config.endpoint}/signin-admin`,
+    `${config.endpoint}/signin`,
     JSON.stringify(payload)
   );
   return res;

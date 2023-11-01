@@ -14,6 +14,20 @@ export enum EOrderStep {
   success,
 }
 
+export interface IOrderLine {
+  id: number;
+  orderId: number;
+  productVariantId: number;
+  sizeValue: number;
+  colorValue: string;
+  price: number;
+  quantity: number;
+}
+
 export interface IOrder {
   id: number;
+  orderCode: string;
+  orderLines: IOrderLine[];
+  status: keyof typeof EOrderStatus;
+  totalPrice: number;
 }
