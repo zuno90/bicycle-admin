@@ -26,6 +26,7 @@ jobs:
           echo "clone repo successfully!"
           cd /var/www
           sudo rm -rf bicycle-admin
+          sudo mkdir bicycle-admin
           sudo mv /home/ubuntu/code/bicycle-admin/dist/* bicycle-admin
           echo "move dist successfully!"
           rm -rf /home/ubuntu/code/bicycle-admin
