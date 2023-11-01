@@ -1,5 +1,5 @@
 name: deploy bicycle-admin by ZUNO
-on: [workflow_dispatch]
+on: push
 jobs:
   build:
     name: Build
@@ -24,6 +24,7 @@ jobs:
           git clone https://${{ secrets.GIT_TOKEN }}@github.com/zuno90/bicycle-admin.git
           echo "clone repo successfully!"
           cd /var/www
+          sudo rm bicycle-admin
           sudo mv /home/ubuntu/code/bicycle-admin/dist/* bicycle-admin
           echo "move dist successfully!"
           rm /home/ubuntu/code/bicycle-admin
