@@ -48,11 +48,9 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   React.useEffect(() => {
     localStorage.setItem("sidebar-expanded", sidebarExpanded.toString());
-    if (sidebarExpanded) {
-      document.querySelector("body")?.classList.add("sidebar-expanded");
-    } else {
-      document.querySelector("body")?.classList.remove("sidebar-expanded");
-    }
+    sidebarExpanded
+      ? document.querySelector("body")?.classList.add("sidebar-expanded")
+      : document.querySelector("body")?.classList.remove("sidebar-expanded");
   }, [sidebarExpanded]);
 
   return (

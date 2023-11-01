@@ -5,8 +5,9 @@ import ProtectedRouter from "./private/ProtectedRouter";
 import Loader from "./components/Loader";
 import useNotification from "./hooks/useNotification";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+import "react-toastify/dist/ReactToastify.css";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Login = React.lazy(() => import("./pages/auth/Login"));
 const Layout = React.lazy(() => import("./components/Layout"));

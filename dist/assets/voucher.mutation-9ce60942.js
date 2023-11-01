@@ -1,0 +1,1 @@
+import{c as e}from"./config.util-005c10b6.js";import{f as c,g as a}from"./index-48b4b36f.js";const n=async t=>await c(`${e.endpoint}/voucher`,JSON.stringify(t),{Authorization:`Bearer ${a(e.cache.accessToken)}`}),i=async()=>{};export{n as c,i as u};

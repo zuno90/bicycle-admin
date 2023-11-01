@@ -17,9 +17,9 @@ const CreateProduct = React.lazy(
   () => import("../pages/home/product/CreateProduct")
 );
 const Voucher = React.lazy(() => import("../pages/home/voucher/Voucher"));
-const VoucherDetail = React.lazy(
-  () => import("../pages/home/voucher/VoucherDetail")
-);
+// const VoucherDetail = React.lazy(
+//   () => import("../pages/home/voucher/VoucherDetail")
+// );
 const CreateVoucher = React.lazy(
   () => import("../pages/home/voucher/CreateVoucher")
 );
@@ -75,11 +75,11 @@ const dashboardRoutes = [
     title: "Khuyến mãi",
     element: Voucher,
   },
-  {
-    path: "/voucher/:id",
-    title: "Cập nhật khuyến mãi",
-    element: VoucherDetail,
-  },
+  // {
+  //   path: "/voucher/:id",
+  //   title: "Cập nhật khuyến mãi",
+  //   element: VoucherDetail,
+  // },
   {
     path: "/voucher/create",
     title: "Tạo mã khuyến mãi",

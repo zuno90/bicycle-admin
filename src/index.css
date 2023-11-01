@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply font-mont font-normal text-base text-body bg-white relative z-1;
+    @apply font-mont font-normal text-base text-black bg-whiten relative z-1;
   }
 }
 

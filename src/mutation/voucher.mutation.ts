@@ -20,3 +20,5 @@ export const updateVoucher = async (data: any) => {
   );
   return res;
 };
+
+export const updateVoucherByStatus = async () => {}

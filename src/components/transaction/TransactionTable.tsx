@@ -4,10 +4,13 @@ import { config } from "../../utils/config.util";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import classNames from "classnames";
 import Pagination from "../Pagination";
+import Modal from "../Modal";
+import DatePicker from "react-datepicker";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { toggleModal } from "../../store/common/common.slice";
-import Modal from "../Modal";
 import { formatNumber } from "../../utils/helper.util";
+
+type TDateRange = [Date | null, Date | null];
 
 const TransactionTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
@@ -19,6 +22,12 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
   const status = queryParams.get("status");
+
+  const [dateRange, setDateRange] = React.useState<TDateRange>([
+    new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+  ]);
+  const [startDate, endDate] = dateRange;
 
   const handleChangeStatus = (status: string) => {
     queryParams.delete("page");
@@ -70,91 +79,113 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
-        <div className="space-y-10">
-          <div className="w-full inline-flex items-center justify-between">
-            <h4 className="text-xl font-semibold text-black dark:text-white">
-              {title}
-            </h4>
-          </div>
-
+      <div className="space-y-10 mb-4">
+        <div className="w-full inline-flex items-center justify-between">
+          <h4 className="text-xl font-semibold text-black dark:text-white">
+            {title}
+          </h4>
           <div className="inline-flex items-center gap-4">
-            <button
-              onClick={() => handleChangeStatus("all")}
-              type="button"
-              className={classNames(
-                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": !queryParams.get("status") }
-              )}
-            >
-              Tất cả (100)
+            <button type="button" className="text-xs underline">
+              Xuất đơn hàng
             </button>
-            <button
-              onClick={() => handleChangeStatus("active")}
-              type="button"
-              className={classNames(
-                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": queryParams.get("status") === "active" }
-              )}
-            >
-              Chờ xử lý (10)
-            </button>
-            <button
-              onClick={() => handleChangeStatus("inactive")}
-              type="button"
-              className={classNames(
-                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": queryParams.get("status") === "inactive" }
-              )}
-            >
-              Đã xác nhận (23)
-            </button>
-            <button
-              onClick={() => handleChangeStatus("canceled")}
-              type="button"
-              className={classNames(
-                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": queryParams.get("status") === "canceled" }
-              )}
-            >
-              Đã huỷ (50)
-            </button>
+            <DatePicker
+              className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-xs px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 cursor-pointer"
+              selectsRange={true}
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(update) => setDateRange(update)}
+              isClearable={true}
+            />
           </div>
+        </div>
+        <div className="inline-flex items-center gap-4">
+          <button
+            onClick={() => handleChangeStatus("all")}
+            type="button"
+            className={classNames(
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
+              { "bg-[#FBE69E]": !queryParams.get("status") }
+            )}
+          >
+            Tất cả (100)
+          </button>
+          <button
+            onClick={() => handleChangeStatus("active")}
+            type="button"
+            className={classNames(
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
+              { "bg-[#FBE69E]": queryParams.get("status") === "active" }
+            )}
+          >
+            Chờ xử lý (10)
+          </button>
+          <button
+            onClick={() => handleChangeStatus("inactive")}
+            type="button"
+            className={classNames(
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
+              { "bg-[#FBE69E]": queryParams.get("status") === "inactive" }
+            )}
+          >
+            Đã xác nhận (23)
+          </button>
+          <button
+            onClick={() => handleChangeStatus("canceled")}
+            type="button"
+            className={classNames(
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
+              { "bg-[#FBE69E]": queryParams.get("status") === "canceled" }
+            )}
+          >
+            Đã huỷ (50)
+          </button>
         </div>
       </div>
 
       <div className="flex flex-col">
-        <div className="grid grid-cols-8 border-stroke p-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+        <div className="grid grid-cols-8 border-stroke py-4 dark:border-strokedark sm:grid-cols-8">
           <div className="col-span-1">
-            <h5 className="text-sm text-left font-bold">ID</h5>
+            <h5 className="text-sm font-bold xsm:text-base">ID</h5>
           </div>
           <div className="col-span-1">
-            <h5 className="text-sm text-center font-bold">Ngày</h5>
+            <h5 className="text-sm text-center font-bold xsm:text-base">
+              Ngày
+            </h5>
           </div>
           <div className="col-span-1">
-            <h5 className="text-sm text-center font-bold">Tên</h5>
+            <h5 className="text-sm text-center font-bold xsm:text-base">Tên</h5>
           </div>
           <div className="col-span-1">
-            <h5 className="text-sm text-center font-bold">Số điện thoại</h5>
+            <h5 className="text-sm text-center font-bold xsm:text-base">
+              Số điện thoại
+            </h5>
           </div>
           <div className="col-span-1">
-            <h5 className="text-sm text-center font-bold">Nội dung</h5>
+            <h5 className="text-sm text-center font-bold xsm:text-base">
+              Nội dung
+            </h5>
           </div>
           <div className="col-span-1">
-            <h5 className="text-sm text-center font-bold">Số tiền</h5>
+            <h5 className="text-sm text-center font-bold xsm:text-base">
+              Số tiền
+            </h5>
           </div>
           <div className="col-span-1">
-            <h5 className="text-sm text-center font-bold">Trạng thái</h5>
+            <h5 className="text-sm text-center font-bold xsm:text-base">
+              Trạng thái
+            </h5>
           </div>
           <div className="col-span-1 text-center">
-            <h5 className="text-sm text-center font-bold">Hành động</h5>
+            <h5 className="text-sm text-center font-bold xsm:text-base">
+              Hành động
+            </h5>
           </div>
         </div>
 
         {/* demo */}
-        <div className="grid grid-cols-8 border-t border-stroke p-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+        <div className="grid grid-cols-8 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-8">
           <Link to={`/transaction/1`} className="col-span-1 items-center">
-            <p className="text-xs text-center text-black dark:text-white">#1</p>
+            <p className="text-xs text-black dark:text-white">#1</p>
           </Link>
 
           <div className="col-span-1 items-center">

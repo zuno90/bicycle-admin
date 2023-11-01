@@ -17,8 +17,9 @@ const VoucherDetail: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["voucher", { id }],
-    queryFn: () => getVoucher(id!),
+    queryKey: ["voucher"],
+    queryFn: () => getVoucher(Number(id)),
+    cacheTime: 0,
   });
 
   console.log(data, 77);

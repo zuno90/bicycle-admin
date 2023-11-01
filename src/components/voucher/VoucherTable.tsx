@@ -3,13 +3,19 @@ import Pagination from "../Pagination";
 import Switcher from "../Switcher";
 import Loader from "../Loader";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { EVoucherStatus, ITable, IVoucher } from "../../__types__";
-import { formatNumber } from "../../utils/helper.util";
+import {
+  ENotificationType,
+  EVoucherStatus,
+  ITable,
+  IVoucher,
+} from "../../__types__";
+import { formatNumber, notify } from "../../utils/helper.util";
 import { config } from "../../utils/config.util";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getVouchers } from "../../query";
 import { useAppDispatch, useAppSelector } from "../../store";
 import classNames from "classnames";
+import { updateVoucherByStatus } from "../../mutation/voucher.mutation";
 
 const VoucherTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
@@ -39,120 +45,117 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
     navigate({ search: queryParams.toString() });
   };
 
-  if (isLoading) return <Loader />;
+  const { mutate, isLoading: updateVoucherByStatusLoading } = useMutation(
+    updateVoucherByStatus,
+    {
+      onSuccess: (res) => {
+        if (!res.success)
+          notify(
+            ENotificationType.error,
+            "Xảy ra lỗi! Không thể cập nhật trạng thái voucher!"
+          );
+        else
+          notify(
+            ENotificationType.success,
+            "Cập nhật trạng thái voucher thành công!"
+          );
+      },
+    }
+  );
+
+  if (isLoading || updateVoucherByStatusLoading) return <Loader />;
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
-        <div className="space-y-10">
-          <div className="w-full inline-flex items-center justify-between">
-            <h4 className="text-xl font-semibold text-black dark:text-white">
-              {title}
-            </h4>
-            <div className="md:hidden inline-flex items-center gap-4">
-              <button
-                type="button"
-                className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
-                onClick={() => navigate("/voucher/create")}
+      <div className="space-y-10 mb-4">
+        <div className="w-full inline-flex justify-between items-center">
+          <h4 className="text-xl font-semibold text-black dark:text-white">
+            {title}
+          </h4>
+          <div className="inline-flex items-center gap-4">
+            <button
+              type="button"
+              className="text-xs text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55"
+              onClick={() => navigate("/voucher/create")}
+            >
+              Tạo mã khuyến mãi
+              <svg
+                className="w-4 h-4 ml-4"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 24 24"
               >
-                Tạo mã khuyến mãi
-                <svg
-                  className="w-4 h-4 ml-4"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => handleChangeStatus("all")}
-              className={classNames(
-                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": !queryParams.get("status") }
-              )}
-            >
-              Tất cả ({data.totalVoucherStatus.all})
-            </button>
-            <button
-              onClick={() => handleChangeStatus("upcoming")}
-              type="button"
-              className={classNames(
-                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": queryParams.get("status") === "upcoming" }
-              )}
-            >
-              Sắp diễn ra ({data.totalVoucherStatus.upcoming})
-            </button>
-            <button
-              onClick={() => handleChangeStatus("ongoing")}
-              type="button"
-              className={classNames(
-                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": queryParams.get("status") === "ongoing" }
-              )}
-            >
-              Đang hoạt động ({data.totalVoucherStatus.ongoing})
-            </button>
-            <button
-              onClick={() => handleChangeStatus("inactive")}
-              type="button"
-              className={classNames(
-                "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-                { "bg-[#FBE69E]": queryParams.get("status") === "inactive" }
-              )}
-            >
-              Ngừng hoạt động ({data.totalVoucherStatus.inactive})
+                <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+              </svg>
             </button>
           </div>
         </div>
-        <div className="hidden md:inline-flex items-center gap-4">
+
+        <div className="flex items-center gap-4">
           <button
             type="button"
-            className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2"
-            onClick={() => navigate("/voucher/create")}
+            onClick={() => handleChangeStatus("all")}
+            className={classNames(
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
+              { "bg-[#FBE69E]": !queryParams.get("status") }
+            )}
           >
-            Tạo mã khuyến mãi
-            <svg
-              className="w-4 h-4 ml-4"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
-            </svg>
+            Tất cả ({data.totalVoucherStatus.all})
+          </button>
+          <button
+            onClick={() => handleChangeStatus("upcoming")}
+            type="button"
+            className={classNames(
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
+              { "bg-[#FBE69E]": queryParams.get("status") === "upcoming" }
+            )}
+          >
+            Sắp diễn ra ({data.totalVoucherStatus.upcoming})
+          </button>
+          <button
+            onClick={() => handleChangeStatus("ongoing")}
+            type="button"
+            className={classNames(
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
+              { "bg-[#FBE69E]": queryParams.get("status") === "ongoing" }
+            )}
+          >
+            Đang hoạt động ({data.totalVoucherStatus.ongoing})
+          </button>
+          <button
+            onClick={() => handleChangeStatus("inactive")}
+            type="button"
+            className={classNames(
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
+              { "bg-[#FBE69E]": queryParams.get("status") === "inactive" }
+            )}
+          >
+            Ngừng hoạt động ({data.totalVoucherStatus.inactive})
           </button>
         </div>
       </div>
+
       <div className="flex flex-col">
-        <div className="grid grid-cols-6 border-stroke p-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+        <div className="grid grid-cols-6 border-stroke py-4 dark:border-strokedark sm:grid-cols-8">
           <div className="col-span-1 flex items-center"></div>
-          <div className="col-span-1 hidden sm:flex items-center">
-            <h5 className="text-sm font-medium xsm:text-base">Mã</h5>
+          <div className="col-span-1 flex items-center">
+            <h5 className="text-sm font-bold xsm:text-base">Mã</h5>
           </div>
           <div className="col-span-2 flex items-center">
-            <h5 className="text-sm font-medium xsm:text-base">
-              Tên khuyến mãi
-            </h5>
+            <h5 className="text-sm font-bold xsm:text-base">Tên khuyến mãi</h5>
           </div>
-          <div className="col-span-1 hidden sm:flex items-center">
-            <h5 className="text-sm font-medium xsm:text-base">Giảm giá</h5>
+          <div className="col-span-1flex items-center">
+            <h5 className="text-sm font-bold xsm:text-base">Giảm giá</h5>
           </div>
           <div className="col-span-1 flex items-center">
-            <h5 className="text-sm font-medium xsm:text-base">Thời gian</h5>
+            <h5 className="text-sm font-bold xsm:text-base">Thời gian</h5>
           </div>
-          <div className="col-span-1 hidden sm:flex items-center">
-            <h5 className="text-sm font-medium xsm:text-base">Trạng thái</h5>
+          <div className="col-span-1flex items-center">
+            <h5 className="text-sm font-bold xsm:text-base">Trạng thái</h5>
           </div>
 
-          <div className="col-span-2 sm:col-span-1 flex justify-end text-end">
-            <h5 className="text-sm font-medium xsm:text-base">Hành động</h5>
+          <div className="col-span-1 flex justify-end text-end">
+            <h5 className="text-sm font-bold xsm:text-base">Hành động</h5>
           </div>
         </div>
 
@@ -160,12 +163,12 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
           data.vouchers.map((voucher: IVoucher) => (
             <div
               key={voucher.id}
-              className="grid grid-cols-6 border-t border-stroke p-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
+              className="grid grid-cols-6 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-8"
             >
               <div className="col-span-1 flex items-center">
-                <Switcher id={voucher.id} isEnabled={voucher.status} />
+                <Switcher id={voucher.id} isEnabled={voucher.statusDisplay} />
               </div>
-              <div className="col-span-1 hidden sm:flex items-center">
+              <div className="col-span-1 flex items-center">
                 <p className="text-xs text-black dark:text-white">
                   #{voucher.code}
                 </p>
@@ -177,7 +180,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
                 </p>
               </div>
 
-              <div className="col-span-1 hidden sm:flex items-center">
+              <div className="col-span-1 flex items-center">
                 <p className="text-xs text-black dark:text-white">
                   <span className="underline">đ</span>
                   <span>{formatNumber(voucher.value)}</span>
@@ -190,15 +193,15 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
                 </p>
               </div>
 
-              <div className="col-span-1 hidden sm:flex items-center">
+              <div className="col-span-1 flex items-center">
                 <p className="text-xs text-black dark:text-white">
                   {EVoucherStatus[voucher.status]}
                 </p>
               </div>
 
-              <div className="col-span-2 sm:col-span-1 flex justify-end text-end">
+              <div className="col-span-2 sm:col-span-1 flex justify-center text-end">
                 <div className="flex items-center justify-center gap-4">
-                  <Link
+                  {/* <Link
                     to={`/voucher/${voucher.id}`}
                     className="hover:text-primary"
                   >
@@ -217,7 +220,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                  </Link>
+                  </Link> */}
                   <button className="hover:text-primary">
                     <svg
                       className="fill-current"
