@@ -20,12 +20,13 @@ jobs:
         script: |
           echo "SSH successfully!"
           cd /home/ubuntu/code
-          rm bicycle-admin
+          rm -rf bicycle-admin
+          echo "remove folder successfully!"
           git clone https://${{ secrets.GIT_TOKEN }}@github.com/zuno90/bicycle-admin.git
           echo "clone repo successfully!"
           cd /var/www
-          sudo rm bicycle-admin
+          sudo rm -rf bicycle-admin
           sudo mv /home/ubuntu/code/bicycle-admin/dist/* bicycle-admin
           echo "move dist successfully!"
-          rm /home/ubuntu/code/bicycle-admin
+          rm -rf /home/ubuntu/code/bicycle-admin
           echo "remove bicycle-admin successfully!"

@@ -27,6 +27,7 @@ export interface IOrderLine {
 export interface IOrder {
   id: number;
   orderCode: string;
+  productVariant: any;
   orderLines: IOrderLine[];
   status: keyof typeof EOrderStatus;
   totalPrice: number;

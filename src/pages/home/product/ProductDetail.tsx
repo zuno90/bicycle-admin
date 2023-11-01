@@ -29,7 +29,7 @@ const ProductVariant = React.lazy(
 );
 
 const ProductDetail: React.FC = () => {
-  const { slug } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
   const productState = useAppSelector((state) => state.product);
   const dispatch = useAppDispatch();
@@ -80,7 +80,7 @@ const ProductDetail: React.FC = () => {
     queries: [
       {
         queryKey: ["product"],
-        queryFn: () => getProduct(slug),
+        queryFn: () => getProduct(Number(id)!),
         cacheTime: 0,
       },
       { queryKey: ["categories"], queryFn: () => getCategories() },

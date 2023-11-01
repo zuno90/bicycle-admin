@@ -11,14 +11,15 @@ export const getProducts = async (
     { page, limit, status },
     { skipNull: true, skipEmptyString: true }
   );
+  console.log(`${config.endpoint}/products?${params}`);
   const res = await fetchGet(`${config.endpoint}/products?${params}`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
   if (res.success) return res.data;
 };
 
-export const getProduct = async (slug: string) => {
-  const res = await fetchGet(`${config.endpoint}/product/${slug}`, {
+export const getProduct = async (id: number) => {
+  const res = await fetchGet(`${config.endpoint}/product/${id}`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
   if (res.success) return res.data.product;

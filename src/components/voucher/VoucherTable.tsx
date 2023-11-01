@@ -21,7 +21,6 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
   const status = queryParams.get("status");
-  console.log(status);
 
   const { data, isLoading } = useQuery({
     queryKey: ["vouchers", { page, limit, status }],
@@ -181,13 +180,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
               <div className="col-span-1 hidden sm:flex items-center">
                 <p className="text-xs text-black dark:text-white">
                   <span className="underline">đ</span>
-                  <span>
-                    {voucher.unit === "%"
-                      ? formatNumber(
-                          (1 - voucher.value / 100) * voucher.fromPrice
-                        )
-                      : voucher.value}
-                  </span>
+                  <span>{formatNumber(voucher.value)}</span>
                 </p>
               </div>
 
@@ -198,7 +191,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
               </div>
 
               <div className="col-span-1 hidden sm:flex items-center">
-                <p className="text-xs text-meta-5">
+                <p className="text-xs text-black dark:text-white">
                   {EVoucherStatus[voucher.status]}
                 </p>
               </div>

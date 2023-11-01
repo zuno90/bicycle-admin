@@ -19,7 +19,7 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
     // defaultValues &&
     setValue(
       `productVariants.${index}.sizeId`,
-      defaultValues ? `${defaultValues[index]?.size.id}` : "undefined"
+      defaultValues ? `${defaultValues[index]?.sizeId}` : "undefined"
       // { shouldDirty: true }
     );
   }, []);
@@ -90,7 +90,9 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
               })}
               type="text"
               placeholder="Nhập màu"
-              defaultValue={defaultValues ? defaultValues[index]?.color : ""}
+              defaultValue={
+                defaultValues ? defaultValues[index]?.colorValue : ""
+              }
               className="w-[80%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
             />
           </td>

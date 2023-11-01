@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "../../../query";
+import { formatNumber } from "../../../utils/helper.util";
+import { IPayment } from "../../../__types__";
 import Loader from "../../../components/Loader";
 import User from "../../../assets/images/user/user.png";
 
@@ -13,8 +15,8 @@ const UserDetail: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["user", { id }],
-    queryFn: () => getUser(id!),
+    queryKey: ["user"],
+    queryFn: () => getUser(Number(id)),
     cacheTime: 0,
   });
 
@@ -35,7 +37,7 @@ const UserDetail: React.FC = () => {
               alt="user-info-img"
             />
             <p className="text-black dark:text-white">Số dư</p>
-            <p className="text-meta-1 font-bold">đ1.000.000</p>
+            <p className="text-meta-1 font-bold">đ{formatNumber(data.coin)}</p>
           </div>
 
           <div className="w-full flex flex-col justify-between bg-white dark:bg-form-strokedark p-4 gap-8 leading-normal">
@@ -82,17 +84,24 @@ const UserDetail: React.FC = () => {
           </div>
         </div>
 
-        <h3 className="font-bold">Lịch sử hoạt động</h3>
-        <div className="divide-y divide-stroke">
-          <div className="w-full py-2 inline-flex items-center gap-20">
-            <p>20/06/23</p>
-            <p>Thanh toán thành công đơn hàng đ15.000.000</p>
-          </div>
-          <div className="w-full py-2 inline-flex items-center gap-20">
-            <p>20/06/23</p>
-            <p>Thanh toán thành công đơn hàng đ15.000.000</p>
-          </div>
-        </div>
+        {data.payments.length > 0 && (
+          <>
+            <h3 className="font-bold">Lịch sử hoạt động</h3>
+            <div className="divide-y divide-stroke">
+              {data.payments.map((payment: IPayment) => (
+                <div
+                  key={payment.id}
+                  className="w-full py-2 inline-flex items-center gap-40"
+                >
+                  <p className="text-sm">
+                    {new Date(payment.createAt).toLocaleDateString("en-GB")}
+                  </p>
+                  <p className="text-sm">{payment.content}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </>
   );

@@ -43,8 +43,8 @@ export interface IProductInput {
 
 export interface IProductVariant {
   id: number;
-  size: { id: number; title: string; value: string };
-  color: number;
+  sizeId: number;
+  colorValue: string;
   price: number;
   inventory: number;
 }

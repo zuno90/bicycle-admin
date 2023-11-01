@@ -2,7 +2,7 @@ import React from "react";
 import Pagination from "../Pagination";
 import { EOrderStatus, IOrder, ITable } from "../../__types__";
 import { formatNumber } from "../../utils/helper.util";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { config } from "../../utils/config.util";
 import { useQuery } from "@tanstack/react-query";
 import { getOrders } from "../../query";
@@ -142,15 +142,6 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
             onFocus={() => console.log(22)}
             isClearable={true}
           />
-          {/* <svg
-            className="w-4 h-4 ml-4"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path d="M7,10L12,15L17,10H7Z" />
-          </svg> */}
         </div>
       </div>
       <div className="flex flex-col">
@@ -178,9 +169,12 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
               key={order.id}
               className="grid grid-cols-3 border-b border-stroke dark:border-strokedark sm:grid-cols-5"
             >
-              <div className="hidden sm:flex items-center gap-3 p-2.5 xl:p-5">
-                <p className="text-sm">#{order.id}</p>
-              </div>
+              <Link
+                to={`/order/${order.id}`}
+                className="hidden sm:flex items-center gap-3 p-2.5 xl:p-5"
+              >
+                <p className="text-sm">{order.orderCode}</p>
+              </Link>
 
               <div className="flex items-center p-2.5 xl:p-5">
                 <p className="text-sm">01/09/2023</p>

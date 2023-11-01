@@ -17,3 +17,10 @@ export const getOrders = async (
   });
   if (res.success) return res.data;
 };
+
+export const getOrder = async (id: number) => {
+  const res = await fetchGet(`${config.endpoint}/order/${id}`, {
+    Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
+  });
+  if (res.success) return res.data.order;
+};

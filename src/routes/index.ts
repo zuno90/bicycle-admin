@@ -61,7 +61,7 @@ const dashboardRoutes = [
     element: Product,
   },
   {
-    path: "/product/:slug",
+    path: "/product/:id",
     title: "Cập nhật sản phẩm",
     element: ProductDetail,
   },

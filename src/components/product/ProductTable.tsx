@@ -28,6 +28,8 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
     queryFn: () => getProducts(page, limit, status),
   });
 
+  console.log(data, 33);
+
   const handleChangeStatus = (status: string) => {
     queryParams.delete("page");
     queryParams.delete("limit");
@@ -51,7 +53,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
     minPrice = min;
     maxPrice = max;
     inventory = mergeTotal(inventoryArr);
-    dataTotal = data.totalProductStatus[queryParams.get("status") ?? "all"];
+    dataTotal = data.totalStatusProduct[queryParams.get("status") ?? "all"];
   }
 
   console.log(data);
@@ -94,7 +96,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
                 { "bg-[#FBE69E]": !queryParams.get("status") }
               )}
             >
-              Tất cả ({data.totalProductStatus.all})
+              Tất cả ({data.totalStatusProduct.all})
             </button>
             <button
               onClick={() => handleChangeStatus("active")}
@@ -104,7 +106,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
                 { "bg-[#FBE69E]": queryParams.get("status") === "active" }
               )}
             >
-              Đang hoạt động ({data.totalProductStatus.active})
+              Đang hoạt động ({data.totalStatusProduct.active})
             </button>
             <button
               onClick={() => handleChangeStatus("inactive")}
@@ -114,7 +116,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
                 { "bg-[#FBE69E]": queryParams.get("status") === "inactive" }
               )}
             >
-              Đang ẩn ({data.totalProductStatus.inactive})
+              Đang ẩn ({data.totalStatusProduct.inactive})
             </button>
           </div>
         </div>
@@ -160,7 +162,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               className="grid grid-cols-7 border-t border-stroke p-4 dark:border-strokedark sm:grid-cols-7 md:px-6 2xl:px-7.5"
             >
               <Link
-                to={`/product/${product.slug}`}
+                to={`/product/${product.id}`}
                 className="col-span-1 hidden items-center sm:flex"
               >
                 <p className="text-xs text-black dark:text-white">
@@ -169,7 +171,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               </Link>
 
               <Link
-                to={`/product/${product.slug}`}
+                to={`/product/${product.id}`}
                 className="col-span-4 flex items-center gap-1"
               >
                 <div className="w-20 rounded-md">

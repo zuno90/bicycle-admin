@@ -2,11 +2,25 @@ import React from "react";
 import { formatNumber } from "../../../utils/helper.util";
 import User from "../../../assets/images/user/user.png";
 import classNames from "classnames";
-import { EOrderStatus, EOrderStep } from "../../../__types__";
-import { useNavigate } from "react-router-dom";
+import { EOrderStatus, EOrderStep, IOrder } from "../../../__types__";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getOrder } from "../../../query";
+import Loader from "../../../components/Loader";
 
 const OrderDetail: React.FC = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["order"],
+    queryFn: () => getOrder(Number(id)),
+    cacheTime: 0,
+  });
+
+  console.log(data);
+
+  if (isLoading) return <Loader />;
   return (
     <>
       <table className="mb-4 min-w-full border-separate divide-x divide-y">
@@ -57,53 +71,56 @@ const OrderDetail: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td
-              colSpan={1}
-              className="hidden py-3.5 text-xs text-left sm:table-cell"
-            >
-              ABCXYZ
-            </td>
-            <td
-              colSpan={4}
-              className="hidden py-3.5 text-xs text-left sm:table-cell"
-            >
-              <div className="sm:inline-flex sm:items-center sm:gap-2">
-                <img src={User} className="w-15 h-15" alt="user-image" />
-                <div className="flex flex-col gap-2">
-                  <p>
-                    Xe đạp nhập khẩu Đức 2 màu trắng đen Xe đạp nhập khẩu Đức 2
-                    màu trắng đen
-                  </p>
-                  <p>Size S - Màu đỏ</p>
+          {data.orderLines.map((order: IOrder) => (
+            <tr key={order.id}>
+              <td
+                colSpan={1}
+                className="hidden py-3.5 text-xs text-left sm:table-cell"
+              >
+                {order.productVariant.product.id}
+              </td>
+              <td
+                colSpan={4}
+                className="hidden py-3.5 text-xs text-left sm:table-cell"
+              >
+                <div className="sm:inline-flex sm:items-center sm:gap-2">
+                  <img
+                    src={order.productVariant.product.images[0]}
+                    className="w-20 h-20 rounded-lg"
+                    alt="user-image"
+                  />
+                  <div className="flex flex-col gap-2">
+                    <p>{order.productVariant.product.name}</p>
+                    <p>Size S - Màu đỏ</p>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td
-              colSpan={1}
-              className="hidden py-3.5 text-xs text-center sm:table-cell"
-            >
-              Chiếc
-            </td>
-            <td
-              colSpan={1}
-              className="hidden py-3.5 text-xs text-right font-bold sm:table-cell"
-            >
-              7
-            </td>
-            <td
-              colSpan={1}
-              className="hidden py-3.5 text-xs text-center font-bold sm:table-cell"
-            >
-              đ {formatNumber(1000000)}
-            </td>
-            <td
-              colSpan={1}
-              className="hidden py-3.5 text-xs text-right font-bold sm:table-cell"
-            >
-              đ {formatNumber(3000000)}
-            </td>
-          </tr>
+              </td>
+              <td
+                colSpan={1}
+                className="hidden py-3.5 text-xs text-center sm:table-cell"
+              >
+                Chiếc
+              </td>
+              <td
+                colSpan={1}
+                className="hidden py-3.5 text-xs text-right font-bold sm:table-cell"
+              >
+                7
+              </td>
+              <td
+                colSpan={1}
+                className="hidden py-3.5 text-xs text-center font-bold sm:table-cell"
+              >
+                đ {formatNumber(1000000)}
+              </td>
+              <td
+                colSpan={1}
+                className="hidden py-3.5 text-xs text-right font-bold sm:table-cell"
+              >
+                đ {formatNumber(3000000)}
+              </td>
+            </tr>
+          ))}
         </tbody>
         <tfoot>
           <tr>
@@ -146,7 +163,7 @@ const OrderDetail: React.FC = () => {
             <th
               scope="row"
               colSpan={7}
-              className="hidden py-3.5 text-sm font-light text-right sm:table-cell"
+              className="hidden pt-3.5 text-sm font-light text-right sm:table-cell"
             >
               Doanh thu
             </th>

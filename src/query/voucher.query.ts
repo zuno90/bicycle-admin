@@ -5,13 +5,13 @@ import { fetchGet, getCache } from "../utils/helper.util";
 export const getVouchers = async (
   page: number,
   limit: number,
-  status: string | null,
+  status: string | null
 ) => {
   const params = queryString.stringify(
     { page, limit, status },
-    { skipNull: true, skipEmptyString: true },
+    { skipNull: true, skipEmptyString: true }
   );
-  const res = await fetchGet(`${config.endpoint}/all-vouchers?${params}`, {
+  const res = await fetchGet(`${config.endpoint}/vouchers?${params}`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
   if (res.success) return res.data;
