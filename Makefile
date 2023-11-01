@@ -5,4 +5,7 @@ build:
 	yarn build
 
 deploy:
-	@build:
+	yarn build
+	git add .
+	git commit -m "deploy prod"
+	git push
