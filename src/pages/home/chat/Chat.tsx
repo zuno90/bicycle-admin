@@ -36,7 +36,7 @@ import AdminAvatar from "../../../assets/zuno.png";
 import { db } from "../../../utils/firebase.util";
 import { v4 as uuidv4 } from "uuid";
 import { formatTimeAgo, notify } from "../../../utils/helper.util";
-import AWS from "aws-sdk";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { useSearchParams } from "react-router-dom";
 import { getUser } from "../../../query";
 import { useAppDispatch, useAppSelector } from "../../../store";
@@ -49,12 +49,13 @@ import {
 import { clean } from "../../../store/common.action";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
-AWS.config.update({
-  accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
-  secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+const s3Client = new S3Client({
+  credentials: {
+    accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
+    secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+  },
   region: import.meta.env.VITE_AWS_REGION,
 });
-const s3 = new AWS.S3();
 
 const imageMimeType = /image\/(png|jpg|jpeg|webp)/i;
 
@@ -122,16 +123,22 @@ const Chat: React.FC = () => {
   const uploadImageToS3 = async (imgFile: File) => {
     console.log(imgFile, "up xong");
     try {
-      const params = {
+      const genFilename = "admin-chat/" + new Date().getTime() + imgFile.name;
+      const params = new PutObjectCommand({
         Bucket: import.meta.env.VITE_AWS_BUCKET_NAME,
-        Key: "admin-chat/" + new Date().getTime() + imgFile.name,
+        Key: genFilename,
         Body: imgFile,
-      };
-
-      const s3Img = await s3.upload(params).promise();
-      const imgUrl = `${import.meta.env.VITE_AWS_CDN_CLOUDFONT}/${s3Img.Key}`;
-      // send message
-      await sendMessage(imgUrl, "image");
+      });
+      const s3Img = await s3Client.send(params);
+      console.log(s3Img, 3333);
+      if (s3Img.$metadata.httpStatusCode === 200) {
+        const imgUrl = `${
+          import.meta.env.VITE_AWS_CDN_CLOUDFONT
+        }/${genFilename}`;
+        // send message
+        await sendMessage(imgUrl, "image");
+      } else {
+      }
       dispatch(handleImageUpload({ type: "remove" }));
     } catch (error) {
       console.error(error);
