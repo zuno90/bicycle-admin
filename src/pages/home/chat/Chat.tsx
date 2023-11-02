@@ -37,7 +37,6 @@ import { db } from "../../../utils/firebase.util";
 import { v4 as uuidv4 } from "uuid";
 import { formatTimeAgo, notify } from "../../../utils/helper.util";
 import AWS from "aws-sdk";
-import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import { useSearchParams } from "react-router-dom";
 import { getUser } from "../../../query";
 import { useAppDispatch, useAppSelector } from "../../../store";
@@ -48,6 +47,7 @@ import {
   setLoading,
 } from "../../../store/chat/chat.slice";
 import { clean } from "../../../store/common.action";
+import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 AWS.config.update({
   accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
