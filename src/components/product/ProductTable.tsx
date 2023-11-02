@@ -137,7 +137,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
                 to={`/product/${product.id}`}
                 className="col-span-4 flex items-center gap-2"
               >
-                <div className="w-20 rounded-md">
+                <div className="w-14 rounded-md">
                   <img
                     className="rounded-lg"
                     src={product.images[0]}

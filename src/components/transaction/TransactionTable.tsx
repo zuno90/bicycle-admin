@@ -29,8 +29,6 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
     queryFn: () => getTransactions(page, limit, status),
   });
 
-  console.log(commonState);
-
   const handleChangeStatus = (status: string) => {
     queryParams.delete("page");
     queryParams.delete("limit");

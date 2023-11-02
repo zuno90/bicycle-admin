@@ -51,7 +51,6 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
         queryClient.invalidateQueries({
           queryKey: ["vouchers", { page, limit, status }],
         });
-        dispatch(clean());
         notify(
           ENotificationType.success,
           "Cập nhật trạng thái voucher thành công!"
@@ -118,8 +117,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
     </>
   );
 
-  if (isLoading || updateVoucherByStatusLoading || deleteVoucherLoading)
-    return <Loader />;
+  if (isLoading) return <Loader />;
   return (
     <>
       <div className="space-y-10 mb-4">

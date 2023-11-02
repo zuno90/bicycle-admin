@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-import Zuno from "../assets/zuno.png";
+import Zuno from "../assets/images/logo/zuno.png";
+import Admin from "../assets/images/logo/admin.png";
 import { useAppDispatch, useAppSelector } from "../store";
 import { logoutAction } from "../store/auth/auth.slice";
 
@@ -43,7 +43,7 @@ const DropdownUser: React.FC = () => {
   // handle logout
   const handleLogout = () => {
     dispatch(logoutAction(null));
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   return (
@@ -62,7 +62,10 @@ const DropdownUser: React.FC = () => {
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <img src={Zuno} alt="User" />
+          <img
+            src={user?.phoneNumber === "0933663240" ? Zuno : Admin}
+            alt="User"
+          />
         </span>
 
         <svg

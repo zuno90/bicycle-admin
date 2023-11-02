@@ -11,7 +11,6 @@ export const getProducts = async (
     { page, limit, status },
     { skipNull: true, skipEmptyString: true }
   );
-  console.log(`${config.endpoint}/products?${params}`);
   const res = await fetchGet(`${config.endpoint}/products?${params}`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });

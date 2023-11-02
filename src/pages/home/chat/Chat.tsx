@@ -32,7 +32,7 @@ import {
 } from "../../../__types__";
 import ChatWelcome1 from "../../../assets/chat-welcome1.jpeg";
 import UserAvatar from "../../../assets/images/user/user.png";
-import AdminAvatar from "../../../assets/zuno.png";
+import AdminAvatar from "../../../assets/images/logo/admin.png";
 import { db } from "../../../utils/firebase.util";
 import { v4 as uuidv4 } from "uuid";
 import { formatTimeAgo, notify } from "../../../utils/helper.util";
@@ -131,17 +131,15 @@ const Chat: React.FC = () => {
       });
       const s3Img = await s3Client.send(params);
       console.log(s3Img, 3333);
-      if (s3Img.$metadata.httpStatusCode === 200) {
-        const imgUrl = `${
-          import.meta.env.VITE_AWS_CDN_CLOUDFONT
-        }/${genFilename}`;
-        // send message
-        await sendMessage(imgUrl, "image");
-      } else {
-      }
-      dispatch(handleImageUpload({ type: "remove" }));
+      if (s3Img.$metadata.httpStatusCode !== 200)
+        throw new Error("Upload ảnh không thành công, vui lòng thử lại!");
+      const imgUrl = `${import.meta.env.VITE_AWS_CDN_CLOUDFONT}/${genFilename}`;
+      // send message
+      await sendMessage(imgUrl, "image");
     } catch (error) {
       console.error(error);
+    } finally {
+      dispatch(handleImageUpload({ type: "remove" }));
     }
   };
 
