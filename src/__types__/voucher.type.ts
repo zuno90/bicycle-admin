@@ -5,6 +5,11 @@ export enum EVoucherStatus {
   inactive = "Ngừng hoạt động",
 }
 
+export enum EDiscountType {
+  "cash" = "cash",
+  "%" = "%",
+}
+
 export interface IVoucher {
   id: number;
   code: string;

@@ -136,7 +136,7 @@ const ProductDetail: React.FC = () => {
           "top-center"
         );
         dispatch(clean());
-        navigate("/product");
+        navigate("/product", { replace: true });
       }
     },
   });

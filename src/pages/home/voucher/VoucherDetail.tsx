@@ -13,7 +13,6 @@ import { getVoucher } from "../../../query";
 const VoucherDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const voucherState = useAppSelector((state) => state.voucher);
   const dispatch = useAppDispatch();
 
   const { data, isLoading } = useQuery({
@@ -52,8 +51,7 @@ const VoucherDetail: React.FC = () => {
           "success",
           "top-center"
         );
-        dispatch(clean());
-        navigate("/voucher");
+        navigate("/voucher", { replace: true });
       }
     },
   });

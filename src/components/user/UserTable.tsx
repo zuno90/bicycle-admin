@@ -1,8 +1,7 @@
 import React from "react";
 import { ITable, IUser } from "../../__types__";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { config } from "../../utils/config.util";
-import classNames from "classnames";
 import { useQuery } from "@tanstack/react-query";
 import { getUsers } from "../../query";
 import UserAvatar from "../../assets/images/user/user.png";
@@ -12,7 +11,6 @@ import { formatNumber } from "../../utils/helper.util";
 
 const UserTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
-  const navigate = useNavigate();
   const queryParams = new URLSearchParams(search);
 
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
@@ -23,7 +21,6 @@ const UserTable: React.FC<ITable> = ({ title }) => {
     queryKey: ["users", { page, limit, status }],
     queryFn: () => getUsers(page, limit, status),
   });
-  console.log(data, 55);
   const dataTotal = data && data.totalUser;
 
   if (isLoading) return <Loader />;

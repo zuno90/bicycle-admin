@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { formatNumber } from "../../utils/helper.util";
 
 type TCard = {
@@ -6,6 +7,7 @@ type TCard = {
 };
 
 const Card: React.FC<TCard> = ({ title, data }) => {
+  console.log(data);
   return (
     <div className="rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="flex items-center justify-between">
@@ -26,24 +28,35 @@ const Card: React.FC<TCard> = ({ title, data }) => {
 
       <div className="mt-8 flex flex-col justify-between space-y-2">
         <h4 className="text-title-md font-bold text-black dark:text-white">
-          <span className="underline">đ</span> {formatNumber(10000000)}
+          <span className="underline">đ</span> {formatNumber(data.value)}
         </h4>
-        <span className="flex items-center gap-1 text-sm font-medium text-meta-3">
+        <p className="flex items-center gap-1 text-sm font-medium">
           <svg
-            className="fill-meta-3"
-            width="10"
-            height="11"
-            viewBox="0 0 10 11"
-            fill="none"
+            className={classNames("w-4 h-4", {
+              "fill-meta-3": data.status === "increase",
+              "fill-meta-1": data.status === "decrease",
+            })}
             xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
           >
             <path
-              d="M4.35716 2.47737L0.908974 5.82987L5.0443e-07 4.94612L5 0.0848689L10 4.94612L9.09103 5.82987L5.64284 2.47737L5.64284 10.0849L4.35716 10.0849L4.35716 2.47737Z"
-              fill=""
+              d={classNames({
+                "M13,20H11V8L5.5,13.5L4.08,12.08L12,4.16L19.92,12.08L18.5,13.5L13,8V20Z":
+                  data.status === "increase",
+                "M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z":
+                  data.status === "decrease",
+              })}
             />
           </svg>
-          0.43%
-        </span>
+          <span
+            className={classNames({
+              "text-meta-3": data.status === "increase",
+              "text-meta-1": data.status === "decrease",
+            })}
+          >
+            {formatNumber(data.percent)}%
+          </span>
+        </p>
       </div>
     </div>
   );

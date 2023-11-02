@@ -10,3 +10,4 @@ export * from "./table.type";
 export * from "./order.type";
 export * from "./transaction.type";
 export * from "./payment.type";
+export * from "./report.type";

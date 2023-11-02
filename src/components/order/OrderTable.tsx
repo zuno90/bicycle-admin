@@ -16,15 +16,15 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(search);
+  const [dateRange, setDateRange] = React.useState<TDateRange>([
+    new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+  ]);
 
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
   const status = queryParams.get("status");
 
-  const [dateRange, setDateRange] = React.useState<TDateRange>([
-    new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-  ]);
   const [startDate, endDate] = dateRange;
 
   const { data, isLoading } = useQuery({
@@ -33,8 +33,6 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
   });
   const dataTotal =
     data && data.totalOrderStatus[queryParams.get("status") ?? "all"];
-
-  console.log(data);
 
   const handleChangeStatus = (status: string) => {
     queryParams.delete("page");
@@ -124,7 +122,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
       </div>
 
       <div className="flex flex-col">
-        <div className="grid grid-cols-3 rounded-sm dark:bg-meta-4 sm:grid-cols-5 border-b border-stroke">
+        <div className="grid grid-cols-5 rounded-sm dark:bg-meta-4 sm:grid-cols-5 border-stroke">
           <div className="p-2.5 xl:p-5">
             <h5 className="text-sm font-bold xsm:text-base">ID</h5>
           </div>
@@ -138,7 +136,9 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
             <h5 className="text-sm font-bold xsm:text-base">Giá trị</h5>
           </div>
           <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm text-right font-bold xsm:text-base">Trạng thái</h5>
+            <h5 className="text-sm text-right font-bold xsm:text-base">
+              Trạng thái
+            </h5>
           </div>
         </div>
 
@@ -146,37 +146,43 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
           data.orders.map((order: IOrder) => (
             <div
               key={order.id}
-              className="grid grid-cols-3 border-stroke py-2 dark:border-strokedark sm:grid-cols-5"
+              className="grid grid-cols-5 border-t border-stroke dark:border-strokedark sm:grid-cols-5"
             >
               <Link
                 to={`/order/${order.id}`}
-                className="hidden sm:flex items-center gap-3 p-2.5 xl:p-5"
+                className="p-2.5 xl:p-5"
               >
-                <p className="text-xs underline">{order.orderCode}</p>
+                <p className="text-xs text-meta-5 underline">
+                  {order.codeOrder}
+                </p>
               </Link>
 
-              <div className="flex items-center p-2.5 xl:p-5">
-                <p className="text-xs">01/09/2023</p>
-              </div>
-
-              <div className="flex items-center p-2.5 xl:p-5">
-                <p className="text-xs">{order.orderLines[0].id}</p>
-              </div>
-
-              <div className="items-center p-2.5 sm:flex xl:p-5">
+              <div className="p-2.5 xl:p-5">
                 <p className="text-xs">
-                  <span className="underline">đ</span>
-                  {formatNumber(order.totalPrice)}
+                  {new Date(order.updateAt).toLocaleDateString("en-GB")}
                 </p>
               </div>
 
               <div className="p-2.5 xl:p-5">
-                <p className="text-xs text-right">{EOrderStatus[order.status]}</p>
+                <p className="text-xs truncate">{order.name}</p>
+              </div>
+
+              <div className="p-2.5 xl:p-5">
+                <p className="text-xs">
+                  <span className="underline">đ</span>
+                  {formatNumber(order.finalPrice)}
+                </p>
+              </div>
+
+              <div className="p-2.5 xl:p-5">
+                <p className="text-xs text-right">
+                  {EOrderStatus[order.status]}
+                </p>
               </div>
             </div>
           ))}
 
-        {data.orders.length > 0 && (
+        {dataTotal > 0 && (
           <div className="flex justify-center items-center my-4">
             <Pagination page={page} limit={limit} total={dataTotal} />
           </div>

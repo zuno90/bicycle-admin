@@ -1,33 +1,35 @@
 import React from "react";
-import { ITable, ITransaction } from "../../__types__";
+import Pagination from "../Pagination";
+import Modal from "../Modal";
+import { ETransaction, ITable, ITransaction } from "../../__types__";
 import { config } from "../../utils/config.util";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import classNames from "classnames";
-import Pagination from "../Pagination";
-import Modal from "../Modal";
-import DatePicker from "react-datepicker";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { toggleModal } from "../../store/common/common.slice";
 import { formatNumber } from "../../utils/helper.util";
-
-type TDateRange = [Date | null, Date | null];
+import { useQuery } from "@tanstack/react-query";
+import { getTransactions } from "../../query/transaction.query";
+import Loader from "../Loader";
 
 const TransactionTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
   const navigate = useNavigate();
   const commonState = useAppSelector((state) => state.common);
   const dispatch = useAppDispatch();
+
   const queryParams = new URLSearchParams(search);
 
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
   const status = queryParams.get("status");
 
-  const [dateRange, setDateRange] = React.useState<TDateRange>([
-    new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-  ]);
-  const [startDate, endDate] = dateRange;
+  const { data, isLoading } = useQuery({
+    queryKey: ["transactions", { page, limit, status }],
+    queryFn: () => getTransactions(page, limit, status),
+  });
+
+  console.log(commonState);
 
   const handleChangeStatus = (status: string) => {
     queryParams.delete("page");
@@ -37,13 +39,22 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
     navigate({ search: queryParams.toString() });
   };
 
+  const dataTotal =
+    data && data.totalStatusPayment[queryParams.get("status") ?? "all"];
+
   // modal
   const closeModal = () => dispatch(toggleModal(false));
   const ModalBody = () => (
     <div className="flex flex-col gap-4">
       <p>Vui lòng xác nhận số tiền nhận được tại đây</p>
       <div className="py-8 bg-gray text-2xl font-semibold rounded-lg">
-        đ {formatNumber(99999999)}
+        đ{" "}
+        {formatNumber(
+          data &&
+            data.payments?.filter(
+              (p: ITransaction) => p.id === commonState.modalId
+            )[0].amount
+        )}
       </div>
     </div>
   );
@@ -61,7 +72,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
         type="button"
         className="inline-flex w-full justify-center rounded-md bg-[#FBE69E] text-black px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-[#FFC700] hover:bg-gray-50 sm:mt-0 sm:w-auto"
         onClick={() => {
-          closeModal;
+          closeModal();
           navigate("/chat?uid=2");
         }}
       >
@@ -77,6 +88,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
     </>
   );
 
+  if (isLoading) return <Loader />;
   return (
     <>
       <div className="space-y-10 mb-4">
@@ -84,19 +96,6 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
           <h4 className="text-xl font-semibold text-black dark:text-white">
             {title}
           </h4>
-          <div className="inline-flex items-center gap-4">
-            <button type="button" className="text-xs underline">
-              Xuất đơn hàng
-            </button>
-            <DatePicker
-              className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-xs px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 cursor-pointer"
-              selectsRange={true}
-              startDate={startDate}
-              endDate={endDate}
-              onChange={(update) => setDateRange(update)}
-              isClearable={true}
-            />
-          </div>
         </div>
         <div className="inline-flex items-center gap-4">
           <button
@@ -107,27 +106,27 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": !queryParams.get("status") }
             )}
           >
-            Tất cả (100)
+            Tất cả ({data.totalStatusPayment.all})
           </button>
           <button
-            onClick={() => handleChangeStatus("active")}
+            onClick={() => handleChangeStatus("pending")}
             type="button"
             className={classNames(
               "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
-              { "bg-[#FBE69E]": queryParams.get("status") === "active" }
+              { "bg-[#FBE69E]": queryParams.get("status") === "pending" }
             )}
           >
-            Chờ xử lý (10)
+            Chờ xử lý ({data.totalStatusPayment.pending})
           </button>
           <button
-            onClick={() => handleChangeStatus("inactive")}
+            onClick={() => handleChangeStatus("success")}
             type="button"
             className={classNames(
               "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
-              { "bg-[#FBE69E]": queryParams.get("status") === "inactive" }
+              { "bg-[#FBE69E]": queryParams.get("status") === "success" }
             )}
           >
-            Đã xác nhận (23)
+            Đã xác nhận ({data.totalStatusPayment.success})
           </button>
           <button
             onClick={() => handleChangeStatus("canceled")}
@@ -137,7 +136,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": queryParams.get("status") === "canceled" }
             )}
           >
-            Đã huỷ (50)
+            Đã huỷ ({data.totalStatusPayment.canceled})
           </button>
         </div>
       </div>
@@ -183,118 +182,100 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
         </div>
 
         {/* demo */}
-        <div className="grid grid-cols-8 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-8">
-          <Link to={`/transaction/1`} className="col-span-1 items-center">
-            <p className="text-xs text-black dark:text-white">#1</p>
-          </Link>
-
-          <div className="col-span-1 items-center">
-            <p className="text-xs font-semibold text-center text-black dark:text-white text-ellipsis overflow-hidden">
-              11
-            </p>
-          </div>
-
-          <div className="col-span-1 items-center">
-            <p className="text-xs text-center text-black dark:text-white">ss</p>
-          </div>
-
-          <div className="col-span-1 items-center">
-            <p className="text-xs text-center text-black dark:text-white">df</p>
-          </div>
-          <div className="col-span-1 items-center">
-            <p className="text-xs text-center text-black dark:text-white">df</p>
-          </div>
-          <div className="col-span-1 items-center">
-            <p className="text-xs text-center text-black dark:text-white">df</p>
-          </div>
-          <div className="col-span-1 items-center">
-            <p className="text-xs text-center text-black dark:text-white">df</p>
-          </div>
-          <div className="col-span-1 flex justify-center">
-            <button type="button" onClick={() => dispatch(toggleModal(true))}>
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="11"
-                  stroke="#7C7C7C"
-                  strokeWidth="2"
-                />
-                <path
-                  d="M8.41005 7.38995C7.86332 6.84321 7.86332 5.95679 8.41005 5.41005C8.95679 4.86332 9.84321 4.86332 10.3899 5.41005L15.99 11.0101C16.5367 11.5568 16.5367 12.4432 15.99 12.99L10.3899 18.5899C9.84321 19.1367 8.95679 19.1367 8.41005 18.5899C7.86332 18.0432 7.86332 17.1568 8.41005 16.6101L13.0201 12L8.41005 7.38995Z"
-                  fill="#7C7C7C"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* {data.products.length > 0 &&
-          data.products.map((product: ITransaction) => (
+        {data.payments.length > 0 &&
+          data.payments.map((transaction: ITransaction) => (
             <div
-              key={product.id}
-              className="grid grid-cols-7 border-t border-stroke p-4 dark:border-strokedark sm:grid-cols-7 md:px-6 2xl:px-7.5"
+              key={transaction.id}
+              className={classNames(
+                "grid grid-cols-8 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-8",
+                {
+                  "bg-[#FFF7D9] dark:bg-meta-3":
+                    transaction.status === "pending",
+                }
+              )}
             >
               <Link
-                to={`/transaction/${product.slug}`}
-                className="col-span-1 hidden items-center sm:flex"
+                to={`/transaction/${transaction.id}`}
+                className="col-span-1 flex items-center"
               >
                 <p className="text-xs text-black dark:text-white">
-                  #{product.id}
+                  {transaction.id}
                 </p>
               </Link>
 
-              <Link
-                to={`/transaction/${product.slug}`}
-                className="col-span-4 flex items-center gap-1"
-              >
-                <div className="w-20 rounded-md">
-                  <img
-                    className="rounded-lg"
-                    src={product.images[0]}
-                    alt="Product"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
-                    {product.name}
-                  </p>
-                  <p className="text-xs font-thin text-black dark:text-white text-ellipsis overflow-hidden">
-                    Lượt bán: {product.sold}
-                  </p>
-                </div>
-              </Link>
-
-              <div className="col-span-1 flex flex-col items-start justify-center gap-1">
-                <p className="text-sm text-black dark:text-white">
-                  <span className="underline">đ</span>
-                  <span>
-                    {minPrice && formatNumber(minPrice)} -{" "}
-                    {maxPrice && formatNumber(maxPrice)}
-                  </span>
+              <div className="col-span-1 flex justify-center items-center">
+                <p className="text-xs font-semibold text-center text-black dark:text-white text-ellipsis overflow-hidden">
+                  {new Date(transaction.createAt).toLocaleDateString("en-GB")}
                 </p>
               </div>
 
-              <div className="col-span-1 hidden sm:flex flex-col items-start justify-center gap-1">
-                <p className="text-xs text-meta-5">
-                  {EProductStatus[product.status]}
+              <div className="col-span-1 flex justify-center items-center">
+                <p className="text-xs text-center text-black dark:text-white">
+                  {transaction.user.name}
                 </p>
-                <p className="text-xs text-meta-5">Tồn : {inventory}</p>
+              </div>
+
+              <div className="col-span-1 flex justify-center items-center">
+                <p className="text-xs text-center text-black dark:text-white">
+                  {transaction.user.phoneNumber}
+                </p>
+              </div>
+              <div className="col-span-1 flex justify-center items-center">
+                <p className="text-xs text-center text-black dark:text-white">
+                  {transaction.content}
+                </p>
+              </div>
+              <div className="col-span-1 flex justify-center items-center">
+                <p className="text-xs text-center text-black dark:text-white">
+                  đ{formatNumber(transaction.amount)}
+                </p>
+              </div>
+              <div className="col-span-1 flex justify-center items-center">
+                <p
+                  className={classNames(
+                    "text-xs text-center text-black dark:text-white",
+                    { "text-meta-1": transaction.status === "pending" }
+                  )}
+                >
+                  {ETransaction[transaction.status]}
+                </p>
+              </div>
+              <div className="col-span-1 flex justify-center items-center">
+                <button
+                  type="button"
+                  onClick={() =>
+                    dispatch(toggleModal({ id: transaction.id, isOpen: true }))
+                  }
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="11"
+                      stroke="#7C7C7C"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M8.41005 7.38995C7.86332 6.84321 7.86332 5.95679 8.41005 5.41005C8.95679 4.86332 9.84321 4.86332 10.3899 5.41005L15.99 11.0101C16.5367 11.5568 16.5367 12.4432 15.99 12.99L10.3899 18.5899C9.84321 19.1367 8.95679 19.1367 8.41005 18.5899C7.86332 18.0432 7.86332 17.1568 8.41005 16.6101L13.0201 12L8.41005 7.38995Z"
+                      fill="#7C7C7C"
+                    />
+                  </svg>
+                </button>
               </div>
             </div>
           ))}
 
-        {data.products.length > 0 && (
+        {dataTotal > 0 && (
           <div className="flex justify-center items-center my-4">
             <Pagination page={page} limit={limit} total={dataTotal} />
           </div>
-        )} */}
+        )}
 
         {commonState.isOpenModal && (
           <Modal

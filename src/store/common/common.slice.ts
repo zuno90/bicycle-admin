@@ -1,15 +1,24 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { clean } from "../common.action";
 
-type TCommonState = { isOpenModal: boolean; counterValue: number };
+type TCommonState = {
+  isOpenModal: boolean;
+  modalId: number;
+  counterValue: number;
+};
 
-const initialState: TCommonState = { isOpenModal: false, counterValue: 0 };
+const initialState: TCommonState = {
+  isOpenModal: false,
+  modalId: 0,
+  counterValue: 0,
+};
 
 const commonSlice = createSlice({
   name: "common",
   initialState,
   reducers: {
     toggleModal: (state, action) => {
+      if (action.payload.id) state.modalId = action.payload.id;
       state.isOpenModal = !state.isOpenModal;
     },
     increment: (state, action) => {

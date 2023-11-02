@@ -1,9 +1,7 @@
 dev:
 	yarn dev
-
 build:
 	yarn build
-
 deploy:
 	yarn build
 	git add .

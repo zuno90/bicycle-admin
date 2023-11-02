@@ -1,22 +1,51 @@
 import React from "react";
-import { formatNumber } from "../../../utils/helper.util";
-import User from "../../../assets/images/user/user.png";
+import { formatNumber, notify } from "../../../utils/helper.util";
 import classNames from "classnames";
-import { EOrderStatus, EOrderStep, IOrder } from "../../../__types__";
+import {
+  ENotificationType,
+  EOrderStep,
+  IOrderProduct,
+} from "../../../__types__";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getOrder } from "../../../query";
 import Loader from "../../../components/Loader";
+import { updateOrderStatus } from "../../../mutation/order.mutation";
 
 const OrderDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const [stt, setStt] = React.useState<EOrderStep | undefined>();
 
   const { data, isLoading } = useQuery({
     queryKey: ["order"],
     queryFn: () => getOrder(Number(id)),
     cacheTime: 0,
   });
+
+  const {
+    mutate,
+
+    isLoading: isUpdating,
+  } = useMutation(updateOrderStatus, {
+    onSuccess: (res) => {
+      if (!res.success) notify(ENotificationType.error, res.message);
+      else {
+        notify(ENotificationType.success, res.message);
+        navigate("/", { replace: true });
+      }
+    },
+  });
+
+  const handleUpdateOrderStatus = () => {
+    if (!stt)
+      return notify(ENotificationType.error, "Chọn trạng thái đơn hàng!");
+    mutate({
+      id,
+      status: Object.keys(EOrderStep)[Object.values(EOrderStep).indexOf(stt)],
+    });
+  };
 
   console.log(data);
 
@@ -50,7 +79,7 @@ const OrderDetail: React.FC = () => {
             <th
               scope="col"
               colSpan={1}
-              className="hidden py-3.5 text-right text-sm font-bold sm:table-cell"
+              className="hidden py-3.5 text-center text-sm font-bold sm:table-cell"
             >
               Số lượng
             </th>
@@ -71,13 +100,13 @@ const OrderDetail: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {data.orderLines.map((order: IOrder) => (
-            <tr key={order.id}>
+          {data.products.map((order: IOrderProduct, key: number) => (
+            <tr key={key}>
               <td
                 colSpan={1}
                 className="hidden py-3.5 text-xs text-left sm:table-cell"
               >
-                {order.productVariant.product.id}
+                {order.productVariantId}
               </td>
               <td
                 colSpan={4}
@@ -85,13 +114,15 @@ const OrderDetail: React.FC = () => {
               >
                 <div className="sm:inline-flex sm:items-center sm:gap-2">
                   <img
-                    src={order.productVariant.product.images[0]}
+                    src={order.image}
                     className="w-20 h-20 rounded-lg"
                     alt="user-image"
                   />
                   <div className="flex flex-col gap-2">
-                    <p>{order.productVariant.product.name}</p>
-                    <p>Size S - Màu đỏ</p>
+                    <p>{order.name}</p>
+                    <p>
+                      {order.size} - {order.color}
+                    </p>
                   </div>
                 </div>
               </td>
@@ -103,21 +134,21 @@ const OrderDetail: React.FC = () => {
               </td>
               <td
                 colSpan={1}
-                className="hidden py-3.5 text-xs text-right font-bold sm:table-cell"
+                className="hidden py-3.5 text-xs text-center font-bold sm:table-cell"
               >
-                7
+                {order.quantity}
               </td>
               <td
                 colSpan={1}
                 className="hidden py-3.5 text-xs text-center font-bold sm:table-cell"
               >
-                đ {formatNumber(1000000)}
+                đ {formatNumber(order.price)}
               </td>
               <td
                 colSpan={1}
                 className="hidden py-3.5 text-xs text-right font-bold sm:table-cell"
               >
-                đ {formatNumber(3000000)}
+                đ {formatNumber(order.totalPrice)}
               </td>
             </tr>
           ))}
@@ -132,7 +163,7 @@ const OrderDetail: React.FC = () => {
               Tổng cộng
             </th>
             <td colSpan={10} className="pt-3.5 text-sm text-right font-bold">
-              {formatNumber(600)}
+              đ{formatNumber(data.totalPrice)}
             </td>
           </tr>
           <tr>
@@ -144,7 +175,7 @@ const OrderDetail: React.FC = () => {
               Vận chuyển
             </th>
             <td colSpan={10} className="pt-3.5 text-sm font-bold text-right">
-              {formatNumber(212343234)}
+              đ{formatNumber(data.priceDelivery)}
             </td>
           </tr>
           <tr>
@@ -155,8 +186,11 @@ const OrderDetail: React.FC = () => {
             >
               Khuyến mãi
             </th>
-            <td colSpan={10} className="pt-3.5 text-sm text-right font-bold">
-              {formatNumber(222222)}
+            <td
+              colSpan={10}
+              className="pt-3.5 text-sm text-meta-1 text-right font-bold"
+            >
+              -đ{formatNumber(data.pricePromotion)}
             </td>
           </tr>
           <tr>
@@ -167,34 +201,55 @@ const OrderDetail: React.FC = () => {
             >
               Doanh thu
             </th>
-            <td colSpan={10} className="pt-3.5 text-sm text-right font-bold">
-              {formatNumber(1000000)}
+            <td
+              colSpan={10}
+              className="pt-3.5 text-sm text-meta-1 text-right font-bold"
+            >
+              đ{formatNumber(data.finalPrice)}
             </td>
           </tr>
         </tfoot>
       </table>
 
-      <h3 className="font-bold">
-        Trạng thái đơn hàng:{" "}
-        <span className="text-meta-1">
-          {
-            Object.values(EOrderStatus)[
-              Object.keys(EOrderStatus).indexOf(EOrderStep[0])
-            ]
-          }
-        </span>
-      </h3>
-      <h3 className="font-bold">
-        Cập nhật vận chuyển:{" "}
-        <button className="text-meta-5" onClick={() => console.log(23)}>
-          {
-            Object.values(EOrderStatus)[
-              Object.keys(EOrderStatus).indexOf(EOrderStep[1])
-            ]
-          }
-        </button>
-      </h3>
-      <div className="w-full mt-10 justify-end inline-flex space-x-8">
+      <div className="inline-flex items-center space-x-4">
+        <h3 className="font-bold">Cập nhật vận chuyển</h3>
+        <div className="relative">
+          <select
+            className="appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
+            defaultValue=""
+            onChange={(e) => setStt(e.target.value as EOrderStep)}
+          >
+            <option value="" disabled>
+              Chọn trạng thái
+            </option>
+            {Object.entries(EOrderStep).map(([key, value]) => (
+              <option key={key} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+          <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g opacity="0.8">
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                  fill="#637381"
+                />
+              </g>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <div className="w-full mt-20 justify-end inline-flex space-x-8">
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -203,13 +258,14 @@ const OrderDetail: React.FC = () => {
           Trở về
         </button>
         <button
-          type="submit"
-          // disabled={isLoading}
+          type="button"
+          onClick={handleUpdateOrderStatus}
+          disabled={isLoading || isUpdating}
           className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
         >
           <svg
             className={classNames("w-4 h-4 mr-3", {
-              // "animate-spin": isLoading,
+              "animate-spin": isLoading || isUpdating,
             })}
             viewBox="0 0 24 24"
           >

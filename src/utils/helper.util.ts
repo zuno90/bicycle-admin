@@ -171,3 +171,19 @@ export const fetchPutFormData = async (
     return { success: false, message: error.message };
   }
 };
+
+export const fetchDelete = async (url: string, body: string, header?: any) => {
+  try {
+    const r = await fetch(url, {
+      method: "DELETE",
+      body,
+      headers: { "Content-Type": "application/json", ...header },
+    });
+    const res = await r.json();
+    const { success, data, message } = res;
+    if (!success) throw new Error(message);
+    return { success, data, message };
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+};

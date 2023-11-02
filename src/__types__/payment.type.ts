@@ -8,7 +8,7 @@ export interface IPayment {
   type: EPaymentType;
   amount: number;
   content: string;
+  userId: number;
   createAt: Date;
   updateAt: Date;
-  userId: number;
 }

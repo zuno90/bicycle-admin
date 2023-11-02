@@ -1,24 +1,30 @@
 import React from "react";
 import { Message, SubmitHandler, useForm } from "react-hook-form";
 import { notify } from "../../../utils/helper.util";
-import { ENotificationType, IVoucherInput } from "../../../__types__";
+import {
+  EDiscountType,
+  ENotificationType,
+  IVoucherInput,
+} from "../../../__types__";
 import { useMutation } from "@tanstack/react-query";
 import { createVoucher } from "../../../mutation/voucher.mutation";
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../store";
-import { clean } from "../../../store/common.action";
 
 const CreateVoucher: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const {
     register,
     getValues,
     trigger,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      unit: EDiscountType.cash,
+      detail: "Mã khuyến mãi cho khách hàng",
+    },
+  });
 
   const compareStartToNow = "Ngày bắt đầu không được nhỏ hơn hôm nay";
   const compareEndToNow = "Ngày kết thúc không được nhỏ hơn hôm nay";
@@ -40,7 +46,6 @@ const CreateVoucher: React.FC = () => {
           "success",
           "top-center"
         );
-        dispatch(clean());
         navigate("/voucher");
       }
     },
@@ -48,6 +53,7 @@ const CreateVoucher: React.FC = () => {
 
   const onCreateVoucher: SubmitHandler<IVoucherInput> = async (data) => {
     console.log("voucher inputs", data);
+
     mutate(data);
   };
 
@@ -88,7 +94,7 @@ const CreateVoucher: React.FC = () => {
           </div>
           <div className="w-full sm:w-[52%] inline-flex items-center space-x-2">
             <input
-              {...register("discount", {
+              {...register("value", {
                 required: "Số tiền giảm giá không được bỏ trống!",
                 min: { value: 1, message: "Số tiền giảm giá phải lớn hơn 0" },
                 valueAsNumber: true,

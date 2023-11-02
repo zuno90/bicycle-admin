@@ -5,3 +5,5 @@ export * from "./size.query";
 export * from "./color.query";
 export * from "./voucher.query";
 export * from "./order.query";
+export * from "./report.query";
+export * from "./transaction.query";

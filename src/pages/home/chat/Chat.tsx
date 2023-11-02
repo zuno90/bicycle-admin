@@ -56,15 +56,15 @@ AWS.config.update({
 });
 const s3 = new AWS.S3();
 
-const ADMINID = "1698215035570UIHEzfO0vLTr";
-
 const imageMimeType = /image\/(png|jpg|jpeg|webp)/i;
 
+const ADMINID = "1698215035570UIHEzfO0vLTr";
+
 const Chat: React.FC = () => {
-  const chatState = useAppSelector((state) => state.chat);
-  const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const uid = searchParams.get("uid");
+  const chatState = useAppSelector((state) => state.chat);
+  const dispatch = useAppDispatch();
 
   // State
   const [messages, setMessages] = React.useState<MessageModel[]>([]);
