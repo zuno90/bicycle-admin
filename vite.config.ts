@@ -1,3 +1,4 @@
+/// <reference types="aws-sdk" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
