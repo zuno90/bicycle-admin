@@ -64,32 +64,38 @@ const UserTable: React.FC<ITable> = ({ title }) => {
               <Link to={`/user/${user.id}`} className="w-16 rounded-md">
                 <img className="rounded-lg" src={UserAvatar} alt="user-img" />
               </Link>
-              <div className="col-span-1">
+              <div className="col-span-1 flex items-center">
                 <p className="text-xs text-black dark:text-white">
                   {new Date(user.createAt).toLocaleDateString("en-GB")}
                 </p>
               </div>
 
-              <Link to={`/user/${user.id}`} className="col-span-1">
+              <Link
+                to={`/user/${user.id}`}
+                className="col-span-1 flex items-center"
+              >
                 <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
                   {user.name}
                 </p>
               </Link>
 
-              <Link to={`/user/${user.id}`} className="col-span-1">
+              <Link
+                to={`/user/${user.id}`}
+                className="col-span-1 flex items-center"
+              >
                 <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
                   {user.phoneNumber}
                 </p>
               </Link>
 
-              <div className="col-span-1">
+              <div className="col-span-1 flex items-center">
                 <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
                   {user.address}-{user.ward}-{user.district}-{user.city}
                 </p>
               </div>
 
-              <div className="col-span-1">
-                <p className="text-xs text-right font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
+              <div className="col-span-1 flex justify-end items-center">
+                <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
                   đ{formatNumber(user.coin)}
                 </p>
               </div>
