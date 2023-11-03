@@ -1,11 +1,11 @@
 import React from "react";
+import classNames from "classnames";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { ENotificationType, ILoginInput } from "../../__types__";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import classNames from "classnames";
 import { login } from "../../mutation/auth.mutation";
 import { getCache, notify, setCache } from "../../utils/helper.util";
-import { adminAction, loginAction } from "../../store/auth/auth.slice";
+import { loginAction, setAdmin } from "../../store/auth/auth.slice";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { useLocation, useNavigate } from "react-router-dom";
 import { config } from "../../utils/config.util";
@@ -32,7 +32,7 @@ const Login: React.FC = () => {
     queryFn: () => getUserInfo(),
     enabled: adminState.isAuth,
   });
-  userData && dispatch(adminAction(userData));
+  userData && dispatch(setAdmin(userData));
 
   const { mutate, isLoading: isLoadingLogin } = useMutation(login, {
     onSuccess: (res) => {

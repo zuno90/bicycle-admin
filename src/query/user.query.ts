@@ -7,17 +7,16 @@ export const getUserInfo = async () => {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
   if (res.success) return res.data.user;
-  return null;
 };
 
 export const getUsers = async (
   page: number,
   limit: number,
-  status: string | null,
+  status: string | null
 ) => {
   const params = queryString.stringify(
     { page, limit, status },
-    { skipNull: true, skipEmptyString: true },
+    { skipNull: true, skipEmptyString: true }
   );
   const res = await fetchGet(`${config.endpoint}/users?${params}`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,

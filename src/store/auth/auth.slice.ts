@@ -8,14 +8,16 @@ const authSlice = createSlice({
   reducers: {
     loginAction: (state, action) => {
       if (action.payload.success) state.isAuth = true;
-      else return initialState;
+      else state = initialState;
     },
-    logoutAction: (state, action) => initialState,
-    adminAction: (state, action) => {
+    logoutAction: (state, action) => {
+      state = initialState;
+    },
+    setAdmin: (state, action) => {
       state.user = action.payload;
     },
   },
 });
 
-export const { loginAction, logoutAction, adminAction } = authSlice.actions;
+export const { loginAction, logoutAction, setAdmin } = authSlice.actions;
 export default authSlice.reducer;
