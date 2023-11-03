@@ -20,8 +20,8 @@ import {
   updateVoucherByStatus,
 } from "../../mutation/voucher.mutation";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { clean } from "../../store/common.action";
 import { toggleModal } from "../../store/common/common.slice";
+import { clean } from "../../store/common.action";
 
 const VoucherTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
@@ -67,6 +67,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
         if (!res.success)
           notify(ENotificationType.error, "Xảy ra lỗi! Không thể xoá voucher!");
         else {
+          dispatch(clean());
           queryClient.invalidateQueries({
             queryKey: ["vouchers", { page, limit, status }],
           });

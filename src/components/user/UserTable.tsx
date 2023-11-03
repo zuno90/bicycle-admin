@@ -59,9 +59,9 @@ const UserTable: React.FC<ITable> = ({ title }) => {
           data.users.map((user: IUser) => (
             <div
               key={user.id}
-              className="grid grid-cols-6 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-6  "
+              className="grid grid-cols-6 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-6"
             >
-              <Link to={`/user/${user.id}`} className="w-16 rounded-md">
+              <Link to={`/user/${user.id}`} className="w-14 rounded-md">
                 <img className="rounded-lg" src={UserAvatar} alt="user-img" />
               </Link>
               <div className="col-span-1 flex items-center">
@@ -74,7 +74,7 @@ const UserTable: React.FC<ITable> = ({ title }) => {
                 to={`/user/${user.id}`}
                 className="col-span-1 flex items-center"
               >
-                <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
+                <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
                   {user.name}
                 </p>
               </Link>
@@ -83,19 +83,19 @@ const UserTable: React.FC<ITable> = ({ title }) => {
                 to={`/user/${user.id}`}
                 className="col-span-1 flex items-center"
               >
-                <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
+                <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
                   {user.phoneNumber}
                 </p>
               </Link>
 
               <div className="col-span-1 flex items-center">
-                <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
-                  {user.address}-{user.ward}-{user.district}-{user.city}
+                <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
+                  {user.address} - {user.ward} - {user.district} - {user.city}
                 </p>
               </div>
 
               <div className="col-span-1 flex justify-end items-center">
-                <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
+                <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
                   đ{formatNumber(user.coin)}
                 </p>
               </div>

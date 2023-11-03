@@ -1,28 +1,57 @@
 import React from "react";
 import Pagination from "../Pagination";
 import Modal from "../Modal";
-import { ETransaction, ITable, ITransaction } from "../../__types__";
+import {
+  ENotificationType,
+  ETransaction,
+  ITable,
+  ITransaction,
+} from "../../__types__";
 import { config } from "../../utils/config.util";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import classNames from "classnames";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { toggleModal } from "../../store/common/common.slice";
-import { formatNumber } from "../../utils/helper.util";
-import { useQuery } from "@tanstack/react-query";
+import { formatNumber, notify } from "../../utils/helper.util";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTransactions } from "../../query/transaction.query";
 import Loader from "../Loader";
+import { updateTransactionByStatus } from "../../mutation/transaction.mutation";
+import { clean } from "../../store/common.action";
 
 const TransactionTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
   const navigate = useNavigate();
   const commonState = useAppSelector((state) => state.common);
   const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
 
   const queryParams = new URLSearchParams(search);
 
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
   const status = queryParams.get("status");
+
+  // update status
+  const {
+    mutate: updateStatusMutate,
+    isLoading: updateTransactionByStatusLoading,
+  } = useMutation(updateTransactionByStatus, {
+    onSuccess: (res) => {
+      if (!res.success)
+        notify(
+          ENotificationType.error,
+          "Xảy ra lỗi! Không thể xác nhận giao dịch!"
+        );
+      else {
+        dispatch(clean());
+        queryClient.invalidateQueries({
+          queryKey: ["transactions", { page, limit, status }],
+        });
+        notify(ENotificationType.success, "Xác nhận giao dịch thành công!");
+      }
+    },
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: ["transactions", { page, limit, status }],
@@ -61,10 +90,17 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
     <>
       <button
         type="button"
+        disabled={updateTransactionByStatusLoading}
         className="inline-flex w-full justify-center rounded-md bg-[#DDDDDD] text-black px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-[#B6B6B6] hover:bg-gray-50 sm:mt-0 sm:w-auto"
-        onClick={closeModal}
+        onClick={() => {
+          closeModal();
+          updateStatusMutate({
+            id: commonState.modalId,
+            statusPayment: "canceled",
+          });
+        }}
       >
-        Huỷ
+        Huỷ giao dịch
       </button>
       <button
         type="button"
@@ -78,8 +114,15 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
       </button>
       <button
         type="button"
+        disabled={updateTransactionByStatusLoading}
         className="inline-flex w-full justify-center rounded-md bg-primary text-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-        onClick={closeModal}
+        onClick={() => {
+          closeModal();
+          updateStatusMutate({
+            id: commonState.modalId,
+            statusPayment: "success",
+          });
+        }}
       >
         Xác nhận
       </button>
@@ -228,31 +271,39 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
                 <p
                   className={classNames(
                     "text-xs text-center text-black dark:text-white",
-                    { "text-meta-1": transaction.status === "pending" }
+                    {
+                      "text-meta-1": transaction.status === "pending",
+                      "text-success": transaction.status === "success",
+                      "text-warning": transaction.status === "canceled",
+                    }
                   )}
                 >
                   {ETransaction[transaction.status]}
                 </p>
               </div>
-              <div className="col-span-1 flex justify-center items-center">
-                <button
-                  type="button"
-                  onClick={() =>
-                    dispatch(toggleModal({ id: transaction.id, isOpen: true }))
-                  }
-                >
-                  <svg
-                    className="fill-current"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+              {transaction.status === "pending" && (
+                <div className="col-span-1 flex justify-center items-center">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      dispatch(
+                        toggleModal({ id: transaction.id, isOpen: true })
+                      )
+                    }
                   >
-                    <path d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12M8.6,16.6L13.2,12L8.6,7.4L10,6L16,12L10,18L8.6,16.6Z" />
-                  </svg>
-                </button>
-              </div>
+                    <svg
+                      className="fill-current"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12M8.6,16.6L13.2,12L8.6,7.4L10,6L16,12L10,18L8.6,16.6Z" />
+                    </svg>
+                  </button>
+                </div>
+              )}
             </div>
           ))}
 
