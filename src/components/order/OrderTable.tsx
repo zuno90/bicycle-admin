@@ -122,14 +122,14 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
       </div>
 
       <div className="flex flex-col">
-        <div className="grid grid-cols-5 rounded-sm dark:bg-meta-4 sm:grid-cols-5 border-stroke">
+        <div className="grid grid-cols-6 rounded-sm dark:bg-meta-4 sm:grid-cols-6 border-stroke">
           <div className="p-2.5 xl:p-5">
             <h5 className="text-sm font-bold xsm:text-base">ID</h5>
           </div>
           <div className="p-2.5 xl:p-5">
             <h5 className="text-sm font-bold xsm:text-base">Ngày</h5>
           </div>
-          <div className="p-2.5 xl:p-5">
+          <div className="col-span-2 p-2.5 xl:p-5">
             <h5 className="text-sm font-bold xsm:text-base">Tên đơn hàng</h5>
           </div>
           <div className="p-2.5 xl:p-5">
@@ -146,13 +146,10 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
           data.orders.map((order: IOrder) => (
             <div
               key={order.id}
-              className="grid grid-cols-5 border-t border-stroke dark:border-strokedark sm:grid-cols-5"
+              className="grid grid-cols-6 border-t border-stroke dark:border-strokedark sm:grid-cols-6"
             >
-              <Link
-                to={`/order/${order.id}`}
-                className="p-2.5 xl:p-5"
-              >
-                <p className="text-xs text-meta-5 underline">
+              <Link to={`/order/${order.id}`} className="p-2.5 xl:p-5">
+                <p className="text-xs text-meta-5 underline truncate">
                   {order.codeOrder}
                 </p>
               </Link>
@@ -163,7 +160,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
                 </p>
               </div>
 
-              <div className="p-2.5 xl:p-5">
+              <div className="col-span-2 p-2.5 xl:p-5">
                 <p className="text-xs truncate">{order.name}</p>
               </div>
 
@@ -175,7 +172,18 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
               </div>
 
               <div className="p-2.5 xl:p-5">
-                <p className="text-xs text-right">
+                <p
+                  className={classNames("text-xs text-right", {
+                    "text-primary":
+                      EOrderStatus[order.status] === EOrderStatus.pending,
+                    "text-warning":
+                      EOrderStatus[order.status] === EOrderStatus.transported,
+                    "text-success":
+                      EOrderStatus[order.status] === EOrderStatus.success,
+                    "text-danger":
+                      EOrderStatus[order.status] === EOrderStatus.canceled,
+                  })}
+                >
                   {EOrderStatus[order.status]}
                 </p>
               </div>

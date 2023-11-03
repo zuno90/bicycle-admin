@@ -102,7 +102,7 @@ const UserTable: React.FC<ITable> = ({ title }) => {
             </div>
           ))}
 
-        {data.users.length > 0 && (
+        {dataTotal > 0 && (
           <div className="flex justify-center items-center my-4">
             <Pagination page={page} limit={limit} total={dataTotal} />
           </div>

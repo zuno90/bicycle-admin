@@ -185,11 +185,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
             <div
               key={transaction.id}
               className={classNames(
-                "grid grid-cols-8 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-8",
-                {
-                  "bg-[#FFF7D9] dark:bg-meta-3":
-                    transaction.status === "pending",
-                }
+                "grid grid-cols-8 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-8"
               )}
             >
               <Link
@@ -246,23 +242,14 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
                   }
                 >
                   <svg
-                    width="18"
-                    height="18"
+                    className="fill-current"
+                    width="24"
+                    height="24"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="11"
-                      stroke="#7C7C7C"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M8.41005 7.38995C7.86332 6.84321 7.86332 5.95679 8.41005 5.41005C8.95679 4.86332 9.84321 4.86332 10.3899 5.41005L15.99 11.0101C16.5367 11.5568 16.5367 12.4432 15.99 12.99L10.3899 18.5899C9.84321 19.1367 8.95679 19.1367 8.41005 18.5899C7.86332 18.0432 7.86332 17.1568 8.41005 16.6101L13.0201 12L8.41005 7.38995Z"
-                      fill="#7C7C7C"
-                    />
+                    <path d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12M8.6,16.6L13.2,12L8.6,7.4L10,6L16,12L10,18L8.6,16.6Z" />
                   </svg>
                 </button>
               </div>

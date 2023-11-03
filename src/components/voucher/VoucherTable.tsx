@@ -190,7 +190,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
       </div>
 
       <div className="flex flex-col">
-        <div className="grid grid-cols-6 border-stroke py-4 dark:border-strokedark sm:grid-cols-8">
+        <div className="grid grid-cols-8 border-stroke py-4 dark:border-strokedark sm:grid-cols-8">
           <div className="col-span-1 flex items-center"></div>
           <div className="col-span-1 flex items-center">
             <h5 className="text-sm font-bold xsm:text-base">Mã</h5>
@@ -208,7 +208,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
             <h5 className="text-sm font-bold xsm:text-base">Trạng thái</h5>
           </div>
 
-          <div className="col-span-1 flex justify-end text-end">
+          <div className="col-span-1 flex justify-center text-end">
             <h5 className="text-sm font-bold xsm:text-base">Hành động</h5>
           </div>
         </div>
@@ -217,7 +217,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
           data.vouchers.map((voucher: IVoucher) => (
             <div
               key={voucher.id}
-              className="grid grid-cols-6 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-8"
+              className="grid grid-cols-8 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-8"
             >
               <div className="col-span-1 flex items-center">
                 <Switcher
@@ -267,9 +267,9 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
                 >
                   <svg
                     className="fill-current"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 18 18"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
@@ -295,7 +295,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
             </div>
           ))}
 
-        {data.vouchers.length > 0 && (
+        {dataTotal > 0 && (
           <div className="flex justify-center items-center my-4">
             <Pagination page={page} limit={limit} total={dataTotal} />
           </div>

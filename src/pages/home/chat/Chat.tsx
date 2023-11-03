@@ -78,7 +78,7 @@ const Chat: React.FC = () => {
   const attachImage = (event: any) => {
     const file = event.target.files[0];
     if (!file.type.match(imageMimeType))
-      return notify(ENotificationType.error, "Chỉ cho phép up ảnh!");
+      return notify(ENotificationType.error, "Chỉ cho phép up ảnh!", "error");
     if (file) {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
@@ -130,7 +130,7 @@ const Chat: React.FC = () => {
         Body: imgFile,
       });
       const s3Img = await s3Client.send(params);
-      console.log(s3Img, 3333);
+      dispatch(handleImageUpload({ type: "remove" }));
       if (s3Img.$metadata.httpStatusCode !== 200)
         throw new Error("Upload ảnh không thành công, vui lòng thử lại!");
       const imgUrl = `${import.meta.env.VITE_AWS_CDN_CLOUDFONT}/${genFilename}`;
@@ -138,8 +138,6 @@ const Chat: React.FC = () => {
       await sendMessage(imgUrl, "image");
     } catch (error) {
       console.error(error);
-    } finally {
-      dispatch(handleImageUpload({ type: "remove" }));
     }
   };
 
@@ -217,6 +215,7 @@ const Chat: React.FC = () => {
   }, []);
 
   const getUserById = async (id: number | string) => {
+    if (chatState.currentUser?._id === Number(id)) return;
     const chatDocByUser = doc(db, "chat", `user:${id}`);
     try {
       const userDoc = await getDoc(chatDocByUser);
@@ -323,6 +322,7 @@ const Chat: React.FC = () => {
                   active={chatState.currentUser?._id === user.user._id ?? false}
                   onClick={async () => {
                     if (chatState.currentUser?._id !== user.user._id) {
+                      console.log(chatState.currentUser?._id, user.user._id);
                       dispatch(setLoading(true));
                       setSearchParams((params) => {
                         params.delete("uid");

@@ -1,8 +1,15 @@
 import React from "react";
-import OrderInvoice from "../../../components/order/OrderInvoice";
+import Loader from "../../../components/Loader";
+const OrderInvoice = React.lazy(
+  () => import("../../../components/order/OrderInvoice")
+);
 
 const Test: React.FC = () => {
-  return <OrderInvoice data={null} />;
+  return (
+    <React.Suspense fallback={<Loader />}>
+      <OrderInvoice data={null} />
+    </React.Suspense>
+  );
 };
 
 export default Test;

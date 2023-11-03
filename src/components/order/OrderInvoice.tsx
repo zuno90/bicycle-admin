@@ -9,47 +9,49 @@ const OrderInvoice: React.FC<TInvoice> = ({ data }) => {
 
   return (
     <>
-      <button type="button" onClick={() => toPDF()}>
+      <button
+        type="button"
+        onClick={() => toPDF()}
+        className="px-5 py-2.5 rounded-full bg-primary text-whiten"
+      >
         DOWNLOAD
       </button>
       <div ref={targetRef} className="mx-auto bg-white">
         <article className="px-10 py-20 overflow-hidden">
           <div className="rounded-b-md">
-            <div className="mb-4">
-              <div className="space-y-2 text-slate-400">
-                <div className="font-light">
-                  <p>CÔNG TY TNHH MỘT THÀNH VIÊN NGƯ CỤ QUÁN VŨ</p>
-                  <p>35 Đướng số 26A, Phường 10, Quận 6, TP.HCM</p>
+            <div className="space-y-2 mb-4">
+              <div className="font-light">
+                <p>CÔNG TY TNHH MỘT THÀNH VIÊN NGƯ CỤ QUÁN VŨ</p>
+                <p>35 Đướng số 26A, Phường 10, Quận 6, TP.HCM</p>
+              </div>
+              <p className="text-center text-xl font-extrabold tracking-tight uppercase font-body">
+                HOÁ ĐƠN BÁN HÀNG
+              </p>
+              <div className="font-light text-md space-y-1">
+                <div className="flex justify-between items-center">
+                  <p>
+                    Tên khách hàng: <b>Anh Zuno</b>
+                  </p>
+                  <p>Ngày: 01/01/2023</p>
                 </div>
-                <p className="text-center text-xl font-extrabold tracking-tight uppercase font-body">
-                  HOÁ ĐƠN BÁN HÀNG
-                </p>
-                <div className="font-light text-md space-y-1">
-                  <div className="flex justify-between items-center">
-                    <p>
-                      Tên khách hàng: <b>Anh Zuno</b>
-                    </p>
-                    <p>Ngày: 01/01/2023</p>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p>
-                      Địa chỉ: <b>ZXXZX</b>
-                    </p>
-                    <p>
-                      NVKD: <b>ZUNO</b>
-                    </p>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p>
-                      Liên hệ: <b>0933663240</b>
-                    </p>
-                    <p>
-                      Hotline cty: <b>09xxxxxxxxx</b>
-                    </p>
-                    <p>
-                      SĐT: <b>09xxxxxxxx</b>
-                    </p>
-                  </div>
+                <div className="flex justify-between items-center">
+                  <p>
+                    Địa chỉ: <b>ZXXZX</b>
+                  </p>
+                  <p>
+                    NVKD: <b>ZUNO</b>
+                  </p>
+                </div>
+                <div className="flex justify-between items-center">
+                  <p>
+                    Liên hệ: <b>0933663240</b>
+                  </p>
+                  <p>
+                    Hotline cty: <b>09xxxxxxxxx</b>
+                  </p>
+                  <p>
+                    SĐT: <b>09xxxxxxxx</b>
+                  </p>
                 </div>
               </div>
             </div>
