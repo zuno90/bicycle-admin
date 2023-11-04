@@ -57,13 +57,14 @@ const Login: React.FC = () => {
       deviceToken: getCache(config.cache.deviceToken),
     };
     mutate(payload);
-    console.log(userData ?? "khong co data usẻr");
-    dispatch(setAdmin(userData));
-    console.log(authState, "sau khi login");
   };
 
+  authState.isAuth && userData
+    ? dispatch(setAdmin(userData))
+    : dispatch(setAdmin(null));
   const redirectUrl = location.state?.from?.pathname ?? "/";
-  if (authState.isAuth && authState.user)
+  authState.isAuth &&
+    authState.user &&
     navigate(redirectUrl, { replace: true });
 
   if (isLoadingLogin || isFetchingUser) return <Loader />;

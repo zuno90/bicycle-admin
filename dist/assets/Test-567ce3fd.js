@@ -1,1 +1,0 @@
-import{R as s,_ as a,j as e,L as t}from"./index-6bc28259.js";const r=s.lazy(()=>a(()=>import("./OrderInvoice-d99a2808.js"),["assets/OrderInvoice-d99a2808.js","assets/index-6bc28259.js","assets/index-55b21325.css"])),l=()=>e.jsx(s.Suspense,{fallback:e.jsx(t,{}),children:e.jsx(r,{data:null})});export{l as default};
