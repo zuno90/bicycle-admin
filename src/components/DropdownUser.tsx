@@ -2,14 +2,13 @@ import React from "react";
 import classNames from "classnames";
 import Zuno from "../assets/images/logo/zuno.png";
 import Admin from "../assets/images/logo/admin.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store";
 import { clean } from "../store/common.action";
 
 const DropdownUser: React.FC = () => {
   const authState = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
   const trigger = React.useRef<any>(null);
@@ -46,7 +45,6 @@ const DropdownUser: React.FC = () => {
     window.localStorage.removeItem("accessToken");
     window.localStorage.removeItem("refreshToken");
     dispatch(clean());
-    navigate("/", { replace: true });
   };
 
   return (

@@ -1,8 +1,9 @@
 import React from "react";
+import Loader from "../../components/Loader";
 import classNames from "classnames";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { ENotificationType, ILoginInput } from "../../__types__";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { login } from "../../mutation/auth.mutation";
 import { getCache, notify, setCache } from "../../utils/helper.util";
 import { loginAction, setAdmin } from "../../store/auth/auth.slice";
@@ -10,7 +11,6 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { useLocation, useNavigate } from "react-router-dom";
 import { config } from "../../utils/config.util";
 import { getUserInfo } from "../../query";
-import Loader from "../../components/Loader";
 import { clean } from "../../store/common.action";
 
 const Login: React.FC = () => {
@@ -18,8 +18,6 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const authState = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-
-  const queryClient = useQueryClient();
 
   const {
     register,
@@ -62,6 +60,7 @@ const Login: React.FC = () => {
   authState.isAuth && userData
     ? dispatch(setAdmin(userData))
     : dispatch(setAdmin(null));
+
   const redirectUrl = location.state?.from?.pathname ?? "/";
   authState.isAuth &&
     authState.user &&
@@ -73,7 +72,7 @@ const Login: React.FC = () => {
       <div className="w-[80%] sm:w-[50%] lg:max-w-[40%] rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
           <h3 className="font-medium text-center text-black dark:text-white">
-            Đăng nhập - BICYCLE
+            BICYCLE - Dashboard
           </h3>
         </div>
         <form onSubmit={handleSubmit(onSubmitLogin)}>

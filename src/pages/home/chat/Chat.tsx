@@ -46,7 +46,6 @@ import {
   setCurrentUser,
   setLoading,
 } from "../../../store/chat/chat.slice";
-import { clean } from "../../../store/common.action";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 const s3Client = new S3Client({
@@ -167,7 +166,6 @@ const Chat: React.FC = () => {
   };
 
   const initFetch = async () => {
-    dispatch(clean());
     dispatch(setLoading(true));
     try {
       const allDoc = await getDocs(userCollection);
