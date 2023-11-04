@@ -6,13 +6,15 @@ import { useAppDispatch, useAppSelector } from "../store";
 import { logoutAction } from "../store/auth/auth.slice";
 
 const DropdownUser: React.FC = () => {
-  const { user } = useAppSelector((state) => state.admin);
+  const adminState = useAppSelector((state) => state.admin);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
   const trigger = React.useRef<any>(null);
   const dropdown = React.useRef<any>(null);
+
+  console.log(adminState);
 
   // close on click outside
   React.useEffect(() => {
@@ -42,6 +44,7 @@ const DropdownUser: React.FC = () => {
 
   // handle logout
   const handleLogout = () => {
+    window.localStorage.clear();
     dispatch(logoutAction(null));
     navigate("/", { replace: true });
   };
@@ -56,14 +59,14 @@ const DropdownUser: React.FC = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            {user?.name ?? "ADMIN"}
+            {adminState.user?.name ?? "ADMIN"}
           </span>
           <span className="block text-xs">Super Admin</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
           <img
-            src={user?.phoneNumber === "0933663240" ? Zuno : Admin}
+            src={adminState.user?.phoneNumber === "0933663240" ? Zuno : Admin}
             alt="User"
           />
         </span>

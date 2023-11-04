@@ -10,9 +10,7 @@ const authSlice = createSlice({
       if (action.payload.success) state.isAuth = true;
       else state = initialState;
     },
-    logoutAction: (state, action) => {
-      state = initialState;
-    },
+    logoutAction: (state, action) => initialState,
     setAdmin: (state, action) => {
       state.user = action.payload;
     },
