@@ -5,6 +5,7 @@ import Admin from "../assets/images/logo/admin.png";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store";
 import { clean } from "../store/common.action";
+import { loginAction, setAdmin } from "../store/auth/auth.slice";
 
 const DropdownUser: React.FC = () => {
   const authState = useAppSelector((state) => state.auth);
@@ -45,6 +46,8 @@ const DropdownUser: React.FC = () => {
     window.localStorage.removeItem("accessToken");
     window.localStorage.removeItem("refreshToken");
     dispatch(clean());
+    dispatch(loginAction(false));
+    dispatch(setAdmin(null));
   };
 
   return (

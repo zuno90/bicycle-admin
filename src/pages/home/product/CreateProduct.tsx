@@ -106,7 +106,6 @@ const CreateProduct: React.FC = () => {
           "success",
           "top-center"
         );
-        dispatch(clean());
         navigate("/product");
       }
     },

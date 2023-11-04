@@ -47,6 +47,7 @@ import {
   setLoading,
 } from "../../../store/chat/chat.slice";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+import { clean } from "../../../store/common.action";
 
 const s3Client = new S3Client({
   credentials: {
@@ -166,8 +167,9 @@ const Chat: React.FC = () => {
   };
 
   const initFetch = async () => {
-    dispatch(setLoading(true));
+    dispatch(clean());
     try {
+      dispatch(setLoading(true));
       const allDoc = await getDocs(userCollection);
       if (!allDoc) throw new Error("User Doc not found!");
       dispatch(loadSidebar(takeLastMessage(allDoc)));

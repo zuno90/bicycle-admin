@@ -51,6 +51,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
         queryClient.invalidateQueries({
           queryKey: ["vouchers", { page, limit, status }],
         });
+        dispatch(clean());
         notify(
           ENotificationType.success,
           "Cập nhật trạng thái voucher thành công!"
@@ -67,7 +68,6 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
         if (!res.success)
           notify(ENotificationType.error, "Xảy ra lỗi! Không thể xoá voucher!");
         else {
-          dispatch(clean());
           queryClient.invalidateQueries({
             queryKey: ["vouchers", { page, limit, status }],
           });
