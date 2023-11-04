@@ -13,8 +13,6 @@ const Order: React.FC = () => {
     queryFn: () => getReports(),
   });
 
-  console.log(data);
-
   if (isLoading) return <Loader />;
   return (
     <>

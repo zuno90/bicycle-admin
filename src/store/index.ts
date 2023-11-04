@@ -1,6 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import adminSlice from "./auth/auth.slice";
 import {
   persistStore,
   persistReducer,
@@ -17,14 +16,16 @@ import productSlice from "./product/product.slice";
 import commonSlice from "./common/common.slice";
 import voucherSlice from "./voucher/voucher.slice";
 import userSlice from "./user/user.slice";
+import authSlice from "./auth/auth.slice";
 
 const persistConfig = { key: "root", version: 1, storage };
 
-const rootReducer = persistReducer(persistConfig, adminSlice);
+const rootReducer = persistReducer(persistConfig, authSlice);
+
 const store = configureStore({
   reducer: {
     common: commonSlice,
-    admin: rootReducer,
+    auth: rootReducer,
     chat: chatSlice,
     product: productSlice,
     voucher: voucherSlice,
@@ -32,10 +33,10 @@ const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      // serializableCheck: {
-      //   ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      // },
-      serializableCheck: false,
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+      // serializableCheck: false,
     }),
 });
 

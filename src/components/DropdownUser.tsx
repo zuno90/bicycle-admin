@@ -1,20 +1,19 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import classNames from "classnames";
 import Zuno from "../assets/images/logo/zuno.png";
 import Admin from "../assets/images/logo/admin.png";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store";
-import { logoutAction } from "../store/auth/auth.slice";
+import { clean } from "../store/common.action";
 
 const DropdownUser: React.FC = () => {
-  const adminState = useAppSelector((state) => state.admin);
+  const authState = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
   const trigger = React.useRef<any>(null);
   const dropdown = React.useRef<any>(null);
-
-  console.log(adminState);
 
   // close on click outside
   React.useEffect(() => {
@@ -43,9 +42,10 @@ const DropdownUser: React.FC = () => {
   });
 
   // handle logout
-  const handleLogout = () => {
-    window.localStorage.clear();
-    dispatch(logoutAction(null));
+  const handleLogout = async () => {
+    window.localStorage.removeItem("accessToken");
+    window.localStorage.removeItem("refreshToken");
+    dispatch(clean());
     navigate("/", { replace: true });
   };
 
@@ -59,22 +59,22 @@ const DropdownUser: React.FC = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            {adminState.user?.name ?? "ADMIN"}
+            {authState.user.name ?? "ADMIN"}
           </span>
           <span className="block text-xs">Super Admin</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
           <img
-            src={adminState.user?.phoneNumber === "0933663240" ? Zuno : Admin}
+            src={authState.user.phoneNumber === "0933663240" ? Zuno : Admin}
             alt="User"
           />
         </span>
 
         <svg
-          className={`hidden fill-current sm:block ${
-            dropdownOpen ? "rotate-180" : ""
-          }`}
+          className={classNames("hidden fill-current sm:block", {
+            "rotate-180": dropdownOpen,
+          })}
           width="12"
           height="8"
           viewBox="0 0 12 8"

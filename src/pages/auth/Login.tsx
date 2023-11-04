@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { ENotificationType, ILoginInput } from "../../__types__";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { login } from "../../mutation/auth.mutation";
 import { getCache, notify, setCache } from "../../utils/helper.util";
 import { loginAction, setAdmin } from "../../store/auth/auth.slice";
@@ -10,16 +10,16 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { useLocation, useNavigate } from "react-router-dom";
 import { config } from "../../utils/config.util";
 import { getUserInfo } from "../../query";
+import Loader from "../../components/Loader";
+import { clean } from "../../store/common.action";
 
 const Login: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const adminState = useAppSelector((state) => state.admin);
+  const authState = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
-  const redirectUrl = location.state?.from?.pathname ?? "/";
-  if (adminState.isAuth && adminState.user)
-    navigate(redirectUrl, { replace: true });
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -28,19 +28,20 @@ const Login: React.FC = () => {
   } = useForm<ILoginInput>();
 
   const { isFetching: isFetchingUser, data: userData } = useQuery({
-    queryKey: ["user"],
+    queryKey: ["userInfo"],
     queryFn: () => getUserInfo(),
-    enabled: adminState.isAuth,
+    enabled: authState.isAuth,
   });
-  userData && dispatch(setAdmin(userData));
 
   const { mutate, isLoading: isLoadingLogin } = useMutation(login, {
     onSuccess: (res) => {
-      dispatch(loginAction(res));
-      if (!res.success) notify(ENotificationType.error, res.message, "error");
-      else {
+      if (!res.success) {
+        dispatch(clean());
+        notify(ENotificationType.error, res.message, "error");
+      } else {
         setCache("accessToken", res.data.accessToken);
         setCache("refreshToken", res.data.refreshToken);
+        dispatch(loginAction(true));
         notify(
           ENotificationType.success,
           "Đăng nhập thành công với quyền admin!",
@@ -56,8 +57,16 @@ const Login: React.FC = () => {
       deviceToken: getCache(config.cache.deviceToken),
     };
     mutate(payload);
+    console.log(userData ?? "khong co data usẻr");
+    dispatch(setAdmin(userData));
+    console.log(authState, "sau khi login");
   };
 
+  const redirectUrl = location.state?.from?.pathname ?? "/";
+  if (authState.isAuth && authState.user)
+    navigate(redirectUrl, { replace: true });
+
+  if (isLoadingLogin || isFetchingUser) return <Loader />;
   return (
     <section className="w-full h-screen flex justify-center items-center bg-gray-200">
       <div className="w-[80%] sm:w-[50%] lg:max-w-[40%] rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

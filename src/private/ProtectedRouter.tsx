@@ -4,7 +4,7 @@ import { useAppSelector } from "../store";
 
 const ProtectedRouter: React.FC = () => {
   const location = useLocation();
-  const { isAuth } = useAppSelector((state) => state.admin);
+  const { isAuth } = useAppSelector((state) => state.auth);
   return !isAuth ? (
     <Navigate to="/auth/login" state={{ from: location }} replace />
   ) : (

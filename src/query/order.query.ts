@@ -11,7 +11,6 @@ export const getOrders = async (
     { page, limit, status },
     { skipNull: true, skipEmptyString: true }
   );
-  console.log(params);
   const res = await fetchGet(`${config.endpoint}/orders?${params}`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
