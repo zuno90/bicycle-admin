@@ -37,10 +37,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
   const status = queryParams.get("status");
 
   // update status
-  const {
-    mutate: updateStatusMutate,
-    isLoading: updateVoucherByStatusLoading,
-  } = useMutation(updateVoucherByStatus, {
+  const { mutate: updateStatusMutate } = useMutation(updateVoucherByStatus, {
     onSuccess: (res) => {
       if (!res.success)
         notify(
@@ -61,21 +58,18 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
   });
 
   // delete
-  const { mutate: deleteMutate, isLoading: deleteVoucherLoading } = useMutation(
-    deleteVoucher,
-    {
-      onSuccess: (res) => {
-        if (!res.success)
-          notify(ENotificationType.error, "Xảy ra lỗi! Không thể xoá voucher!");
-        else {
-          queryClient.invalidateQueries({
-            queryKey: ["vouchers", { page, limit, status }],
-          });
-          notify(ENotificationType.success, "Xoá voucher thành công!");
-        }
-      },
-    }
-  );
+  const { mutate: deleteMutate } = useMutation(deleteVoucher, {
+    onSuccess: (res) => {
+      if (!res.success)
+        notify(ENotificationType.error, "Xảy ra lỗi! Không thể xoá voucher!");
+      else {
+        queryClient.invalidateQueries({
+          queryKey: ["vouchers", { page, limit, status }],
+        });
+        notify(ENotificationType.success, "Xoá voucher thành công!");
+      }
+    },
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: ["vouchers", { page, limit, status }],

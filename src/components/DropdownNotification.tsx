@@ -1,6 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { channel } from "../utils/helper.util";
+import Loader from "./Loader";
+import { channel, notify } from "../utils/helper.util";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getNotifications } from "../query";
+import { ENotificationType, IUnreadNotification } from "../__types__";
+import { updateStatusNotification } from "../mutation/notification.mutation";
 
 const DropdownNotification: React.FC = () => {
   const [hasNewNoti, setHasNewNoti] = React.useState(false);
@@ -34,23 +38,47 @@ const DropdownNotification: React.FC = () => {
 
   // close if the esc key is pressed
   React.useEffect(() => {
-    const keyHandler = ({ keyCode }: KeyboardEvent) => {
-      if (!dropdownOpen || keyCode !== 27) return;
+    const keyHandler = ({ key }: KeyboardEvent) => {
+      if (!dropdownOpen || key !== "Escape") return;
       setDropdownOpen(false);
     };
     document.addEventListener("keydown", keyHandler);
     return () => document.removeEventListener("keydown", keyHandler);
   });
 
+  const { data, isLoading } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: () => getNotifications(),
+  });
+  console.log(data);
+
+  const { mutate } = useMutation(updateStatusNotification, {
+    onSuccess: (res) => {
+      if (!res.success) {
+        notify(
+          ENotificationType.error,
+          "Xảy ra lỗi! Thử lại sau",
+          "update-noti"
+        );
+      } else {
+        notify(ENotificationType.info, "Đã đánh dấu đọc", "update-noti");
+      }
+    },
+  });
+
+  const handleUpdateNotiStatus = (id: number) => {
+    mutate(id);
+  };
+
+  if (isLoading) return <Loader />;
   return (
     <li className="relative">
-      <Link
+      <div
         ref={trigger}
         onClick={() => {
           setHasNewNoti(false);
           setDropdownOpen(!dropdownOpen);
         }}
-        to="#"
         className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
       >
         {hasNewNoti && (
@@ -72,26 +100,41 @@ const DropdownNotification: React.FC = () => {
             fill=""
           />
         </svg>
-      </Link>
+      </div>
 
       <div
         ref={dropdown}
         onFocus={() => setDropdownOpen(true)}
         onBlur={() => setDropdownOpen(false)}
-        className={`absolute -right-27 mt-2.5 flex h-90 w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80 ${
+        className={`absolute -right-27 mt-2.5 flex w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80 ${
           dropdownOpen === true ? "block" : "hidden"
         }`}
       >
         <div className="px-4.5 py-3">
-          <h5 className="text-sm font-medium text-bodydark2">Notification</h5>
+          <h5 className="text-sm font-medium text-bodydark2">Thông báo</h5>
         </div>
 
         <ul className="flex h-auto flex-col overflow-y-auto">
-          <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
-            >
+          {data && data.length > 0 ? (
+            data.map((notification: IUnreadNotification) => (
+              <li
+                key={notification.id}
+                onClick={() => handleUpdateNotiStatus(notification.id)}
+                className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
+              >
+                <p className="text-sm">
+                  <span className="text-black dark:text-white">
+                    Edit your information in a swipe
+                  </span>{" "}
+                  Sint occaecat cupidatat non proident, sunt in culpa qui
+                  officia deserunt mollit anim.
+                </p>
+
+                <p className="text-xs">12 May, 2025</p>
+              </li>
+            ))
+          ) : (
+            <li className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
               <p className="text-sm">
                 <span className="text-black dark:text-white">
                   Edit your information in a swipe
@@ -101,55 +144,8 @@ const DropdownNotification: React.FC = () => {
               </p>
 
               <p className="text-xs">12 May, 2025</p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
-            >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  It is a long established fact
-                </span>{" "}
-                that a reader will be distracted by the readable.
-              </p>
-
-              <p className="text-xs">24 Feb, 2025</p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
-            >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  There are many variations
-                </span>{" "}
-                of passages of Lorem Ipsum available, but the majority have
-                suffered
-              </p>
-
-              <p className="text-xs">04 Jan, 2025</p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
-            >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  There are many variations
-                </span>{" "}
-                of passages of Lorem Ipsum available, but the majority have
-                suffered
-              </p>
-
-              <p className="text-xs">01 Dec, 2024</p>
-            </Link>
-          </li>
+            </li>
+          )}
         </ul>
       </div>
     </li>

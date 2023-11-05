@@ -9,3 +9,7 @@ export interface INotification {
   title: string;
   body: string;
 }
+
+export interface IUnreadNotification {
+  id: number;
+}

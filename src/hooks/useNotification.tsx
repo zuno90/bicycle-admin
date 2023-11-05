@@ -17,7 +17,6 @@ const useNotification = () => {
 
     channel.addEventListener("message", (event) => {
       console.log("Receive background from FB worker: ", event);
-      console.log(event);
       notify(
         ENotificationType.info,
         <CustomToast
