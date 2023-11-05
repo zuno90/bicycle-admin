@@ -45,6 +45,7 @@ const Login: React.FC = () => {
     onSuccess: (res) => {
       if (!res.success) {
         dispatch(clean());
+        navigate("/auth/login", { replace: true });
         notify(ENotificationType.error, res.message, "error");
       } else {
         setCache("accessToken", res.data.accessToken);

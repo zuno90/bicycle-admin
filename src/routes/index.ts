@@ -2,6 +2,9 @@ import React from "react";
 
 const Order = React.lazy(() => import("../pages/home/order/Order"));
 const OrderDetail = React.lazy(() => import("../pages/home/order/OrderDetail"));
+const OrderInvoice = React.lazy(
+  () => import("../pages/home/order/OrderInvoice")
+);
 const Transaction = React.lazy(
   () => import("../pages/home/transaction/Transaction")
 );
@@ -39,6 +42,11 @@ const dashboardRoutes = [
     path: "/order/:id",
     title: "Chi tiết đơn hàng",
     element: OrderDetail,
+  },
+  {
+    path: "/order/invoice/:id",
+    title: "Chi tiết đơn hàng",
+    element: OrderInvoice,
   },
   {
     path: "/transaction",

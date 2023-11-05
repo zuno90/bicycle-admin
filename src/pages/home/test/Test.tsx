@@ -1,8 +1,6 @@
 import React from "react";
 import Loader from "../../../components/Loader";
-const OrderInvoice = React.lazy(
-  () => import("../../../components/order/OrderInvoice")
-);
+const OrderInvoice = React.lazy(() => import("../order/OrderInvoice"));
 
 const Test: React.FC = () => {
   return (

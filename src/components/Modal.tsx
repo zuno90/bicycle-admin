@@ -3,9 +3,9 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useAppSelector } from "../store";
 
 type TModal = {
-  title: string;
+  title?: string;
   body: React.ReactNode;
-  footer: React.ReactNode;
+  footer?: React.ReactNode;
   close: () => void;
 };
 

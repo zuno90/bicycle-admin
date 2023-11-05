@@ -18,17 +18,12 @@ const OrderDetail: React.FC = () => {
 
   const [stt, setStt] = React.useState<EOrderStep | undefined>();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["order"],
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["order", { id }],
     queryFn: () => getOrder(Number(id)),
-    cacheTime: 0,
   });
 
-  const {
-    mutate,
-
-    isLoading: isUpdating,
-  } = useMutation(updateOrderStatus, {
+  const { mutate, isLoading: isUpdating } = useMutation(updateOrderStatus, {
     onSuccess: (res) => {
       if (!res.success) notify(ENotificationType.error, res.message);
       else {
@@ -47,53 +42,57 @@ const OrderDetail: React.FC = () => {
     });
   };
 
-  console.log(data);
-
+  if (isError) navigate(-1);
   if (isLoading) return <Loader />;
   return (
     <>
+      <div className="mb-6 flex justify-between items-center">
+        <h1 className="text-xl">
+          Đơn hàng {">"} {data?.codeOrder}
+        </h1>
+        <button
+          type="button"
+          onClick={() => navigate(`/order/invoice/${data?.id}`)}
+          className="text-sm text-meta-5 underline"
+        >
+          Xuất thông tin đơn hàng
+        </button>
+      </div>
       <table className="mb-4 min-w-full border-separate divide-x divide-y">
         <thead>
           <tr>
             <th
               scope="col"
               colSpan={1}
-              className="hidden py-3.5 text-left text-sm font-bold sm:table-cell"
+              className="py-3.5 text-left text-sm font-bold table-cell"
             >
-              Mã hàng
+              Mã sản phẩm
             </th>
             <th
               scope="col"
               colSpan={4}
-              className="hidden py-3.5 text-left text-sm font-bold sm:table-cell"
+              className="py-3.5 text-left text-sm font-bold table-cell"
             >
-              Tên hàng
+              Sản phẩm
             </th>
             <th
               scope="col"
               colSpan={1}
-              className="hidden py-3.5 text-center text-sm font-bold sm:table-cell"
-            >
-              Đơn vị
-            </th>
-            <th
-              scope="col"
-              colSpan={1}
-              className="hidden py-3.5 text-center text-sm font-bold sm:table-cell"
+              className="py-3.5 text-center text-sm font-bold table-cell"
             >
               Số lượng
             </th>
             <th
               scope="col"
               colSpan={1}
-              className="hidden py-3.5 text-center text-sm font-bold sm:table-cell"
+              className="py-3.5 text-center text-sm font-bold table-cell"
             >
               Đơn giá
             </th>
             <th
               scope="col"
               colSpan={1}
-              className="py-3.5 text-right text-sm font-bold sm:table-cell"
+              className="py-3.5 text-right text-sm font-bold table-cell"
             >
               Thành tiền
             </th>
@@ -102,20 +101,14 @@ const OrderDetail: React.FC = () => {
         <tbody>
           {data.products.map((order: IOrderProduct, key: number) => (
             <tr key={key}>
-              <td
-                colSpan={1}
-                className="hidden py-3.5 text-xs text-left sm:table-cell"
-              >
+              <td colSpan={1} className="py-3.5 text-xs text-left table-cell">
                 {order.productVariantId}
               </td>
-              <td
-                colSpan={4}
-                className="hidden py-3.5 text-xs text-left sm:table-cell"
-              >
-                <div className="sm:inline-flex sm:items-center sm:gap-2">
+              <td colSpan={4} className="py-3.5 text-xs text-left table-cell">
+                <div className="inline-flex items-center gap-2">
                   <img
                     src={order.image}
-                    className="w-20 h-20 rounded-lg"
+                    className="w-16 h-16 rounded-lg"
                     alt="user-image"
                   />
                   <div className="flex flex-col gap-2">
@@ -126,29 +119,14 @@ const OrderDetail: React.FC = () => {
                   </div>
                 </div>
               </td>
-              <td
-                colSpan={1}
-                className="hidden py-3.5 text-xs text-center sm:table-cell"
-              >
-                Chiếc
-              </td>
-              <td
-                colSpan={1}
-                className="hidden py-3.5 text-xs text-center font-bold sm:table-cell"
-              >
+              <td colSpan={1} className="py-3.5 text-xs text-center table-cell">
                 {order.quantity}
               </td>
-              <td
-                colSpan={1}
-                className="hidden py-3.5 text-xs text-center font-bold sm:table-cell"
-              >
-                đ {formatNumber(order.price)}
+              <td colSpan={1} className="py-3.5 text-xs text-center table-cell">
+                đ{formatNumber(order.price)}
               </td>
-              <td
-                colSpan={1}
-                className="hidden py-3.5 text-xs text-right font-bold sm:table-cell"
-              >
-                đ {formatNumber(order.totalPrice)}
+              <td colSpan={1} className="py-3.5 text-xs text-right table-cell">
+                đ{formatNumber(order.totalPrice)}
               </td>
             </tr>
           ))}
@@ -158,7 +136,7 @@ const OrderDetail: React.FC = () => {
             <th
               scope="row"
               colSpan={7}
-              className="hidden pt-3.5 text-sm font-bold text-right sm:table-cell"
+              className="pt-3.5 text-sm font-bold text-right table-cell"
             >
               Tổng cộng
             </th>
@@ -170,7 +148,7 @@ const OrderDetail: React.FC = () => {
             <th
               scope="row"
               colSpan={7}
-              className="hidden pt-3.5 text-sm font-light text-right sm:table-cell"
+              className="pt-3.5 text-sm font-light text-right table-cell"
             >
               Vận chuyển
             </th>
@@ -182,7 +160,7 @@ const OrderDetail: React.FC = () => {
             <th
               scope="row"
               colSpan={7}
-              className="hidden pt-3.5 text-sm font-light text-right sm:table-cell"
+              className="pt-3.5 text-sm font-light text-right table-cell"
             >
               Khuyến mãi
             </th>
@@ -197,7 +175,7 @@ const OrderDetail: React.FC = () => {
             <th
               scope="row"
               colSpan={7}
-              className="hidden pt-3.5 text-sm font-light text-right sm:table-cell"
+              className="pt-3.5 text-sm font-light text-right table-cell"
             >
               Doanh thu
             </th>

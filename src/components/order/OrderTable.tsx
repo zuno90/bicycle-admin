@@ -58,7 +58,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
               className="text-xs underline"
               onClick={handleExportOrder}
             >
-              Xuất đơn hàng
+              Báo cáo
             </button>
             <DatePicker
               className="text-black bg-[#FBE69E] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-xs px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 cursor-pointer"
