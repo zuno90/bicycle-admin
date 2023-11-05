@@ -16,7 +16,6 @@ import {
   removeByIndex,
 } from "../../../store/product/product.slice";
 import { useNavigate } from "react-router-dom";
-import { clean } from "../../../store/common.action";
 
 const ProductVariant = React.lazy(
   () => import("../../../components/product/ProductVariant")

@@ -1,11 +1,17 @@
 import React from "react";
 import { usePDF } from "react-to-pdf";
 import { formatNumber } from "../../utils/helper.util";
+import Dropzone, { useDropzone } from "react-dropzone";
+import { useAppDispatch, useAppSelector } from "../../store";
+import Modal from "../Modal";
+import { toggleModal } from "../../store/common/common.slice";
 
 type TInvoice = { data: any };
 
 const OrderInvoice: React.FC<TInvoice> = ({ data }) => {
   const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
+  const commonState = useAppSelector((state) => state.common);
+  const dispatch = useAppDispatch();
 
   return (
     <>
@@ -15,6 +21,13 @@ const OrderInvoice: React.FC<TInvoice> = ({ data }) => {
         className="px-5 py-2.5 rounded-full bg-primary text-whiten"
       >
         DOWNLOAD
+      </button>
+      <button
+        type="button"
+        onClick={() => dispatch(toggleModal({ isOpen: true }))}
+        className="hover:text-primary"
+      >
+        MODAL
       </button>
       <div ref={targetRef} className="mx-auto bg-white">
         <article className="px-10 py-20 overflow-hidden">
@@ -236,7 +249,115 @@ const OrderInvoice: React.FC<TInvoice> = ({ data }) => {
           </div>
         </article>
       </div>
+
+      {commonState.isOpenModal && <ModalX />}
     </>
+  );
+};
+
+const ModalX: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  // delete modal
+  const closeModal = () => dispatch(toggleModal(false));
+  const ModalBody: React.FC = () => {
+    // handle images
+    const [images, setImages] = React.useState<File[]>([]);
+
+    const onDrop = React.useCallback((acceptedFiles: File[]) => {
+      if (acceptedFiles?.length) {
+        setImages((prevFiles: File[]) => [
+          ...prevFiles,
+          ...acceptedFiles.map((file: File) =>
+            Object.assign(file, { preview: URL.createObjectURL(file) })
+          ),
+        ]);
+      }
+    }, []);
+
+    const { getRootProps, getInputProps } = useDropzone({
+      onDrop,
+      accept: { "image/*": [] },
+    });
+    const removeImage = (index: number) =>
+      setImages(images.filter((_, ind: number) => ind !== index));
+
+    return (
+      <div className="w-full sm:inline-flex">
+        <div className="sm:w-[30%]">
+          <label className="inline-flex space-x-2 text-black dark:text-white">
+            <span>Hình ảnh</span>
+            <span className="text-meta-1">*</span>
+          </label>
+        </div>
+        <div className="inline-flex space-x-4">
+          {images.map((image, index) => (
+            <div key={index} className="relative">
+              <svg
+                className="absolute w-6 h-6 fill-danger -top-3 -right-3 cursor-pointer"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                onClick={() => removeImage(index)}
+              >
+                <path d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M14.59,8L12,10.59L9.41,8L8,9.41L10.59,12L8,14.59L9.41,16L12,13.41L14.59,16L16,14.59L13.41,12L16,9.41L14.59,8Z" />
+              </svg>
+              <img
+                className="w-20 h-20 object-cover"
+                src={image?.preview}
+                alt="preview-image"
+              />
+            </div>
+          ))}
+
+          <label
+            {...getRootProps({ className: "dropzone" })}
+            className="bg-[#D9D9D9] rounded-lg"
+          >
+            <div className="flex justify-center items-center box-border h-20 w-20 cursor-pointer">
+              <svg
+                className="w-10 h-10"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+              </svg>
+            </div>
+          </label>
+          <input {...getInputProps()} />
+        </div>
+      </div>
+    );
+  };
+  const ModalFooter = () => (
+    <>
+      <button
+        type="button"
+        className="inline-flex w-full justify-center rounded-md bg-[#DDDDDD] text-black px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-[#B6B6B6] hover:bg-gray-50 sm:mt-0 sm:w-auto"
+        onClick={closeModal}
+      >
+        Huỷ
+      </button>
+      <button
+        type="button"
+        className="inline-flex w-full justify-center rounded-md bg-primary text-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+        onClick={() => {
+          closeModal();
+        }}
+      >
+        Xác nhận
+      </button>
+    </>
+  );
+
+  return (
+    <Modal
+      title="Xoá voucher"
+      body={<ModalBody />}
+      footer={<ModalFooter />}
+      close={closeModal}
+    />
   );
 };
 

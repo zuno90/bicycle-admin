@@ -12,4 +12,11 @@ export interface INotification {
 
 export interface IUnreadNotification {
   id: number;
+  code: string;
+  content: string;
+  title: string;
+  type: "topup" | "other";
+  isRead: boolean;
+  createAt: Date;
+  updateAt: Date;
 }

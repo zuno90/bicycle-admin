@@ -1,7 +1,21 @@
-const Loader: React.FC = () => {
+import classNames from "classnames";
+import React from "react";
+
+type TLoader = { loadInside?: boolean };
+
+const Loader: React.FC<TLoader> = ({ loadInside }) => {
   return (
-    <div className="flex h-screen items-center justify-center">
-      <div className="w-16 h-16 animate-spin rounded-full border-4 border-solid border-blue-500 border-t-transparent"></div>
+    <div
+      className={classNames("flex h-screen items-center justify-center", {
+        "h-auto": loadInside,
+      })}
+    >
+      <div
+        className={classNames(
+          "w-16 h-16 animate-spin rounded-full border-4 border-solid border-blue-500 border-t-transparent",
+          { "w-8 h-8": loadInside }
+        )}
+      ></div>
     </div>
   );
 };

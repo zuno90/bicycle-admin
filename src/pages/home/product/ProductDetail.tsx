@@ -22,7 +22,6 @@ import {
   removeByIndex,
   setInitialList,
 } from "../../../store/product/product.slice";
-import { clean } from "../../../store/common.action";
 
 const ProductVariant = React.lazy(
   () => import("../../../components/product/ProductVariant")
