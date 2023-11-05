@@ -1,12 +1,13 @@
 import React from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useAppSelector } from "../store";
+import classNames from "classnames";
 
 type TModal = {
   title?: string;
   body: React.ReactNode;
   footer?: React.ReactNode;
-  close: () => void;
+  close?: () => void;
   isForm?: boolean;
 };
 
@@ -15,7 +16,13 @@ const Modal: React.FC<TModal> = ({ title, body, footer, close, isForm }) => {
 
   return (
     <Transition.Root show={commonState.isOpenModal} as={React.Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={close}>
+      <Dialog
+        as="div"
+        className="relative z-10"
+        onClose={() => {
+          close && close();
+        }}
+      >
         <Transition.Child
           as={React.Fragment}
           enter="ease-out duration-300"
@@ -39,41 +46,27 @@ const Modal: React.FC<TModal> = ({ title, body, footer, close, isForm }) => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              {isForm === true ? (
-                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all sm:w-230">
-                  <div className="bg-white p-4 sm:p-6 sm:pb-4">
-                    <div className="text-center">
-                        <Dialog.Title
-                          as="h1"
-                          className="text-xl font-semibold leading-6 text-gray-900"
-                        >
-                          {title}
-                        </Dialog.Title>
-                      <div className="mt-2">{body}</div>
-                    </div>
+              <Dialog.Panel
+                className={classNames(
+                  "relative transform z-10 overflow-hidden rounded-lg bg-white shadow-xl transition-all w-full max-w-lg",
+                  { "max-w-2xl": isForm }
+                )}
+              >
+                <div className="bg-white p-4 sm:p-6 sm:pb-4">
+                  <div className="text-center">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-base font-semibold leading-6"
+                    >
+                      {title}
+                    </Dialog.Title>
+                    <div className="mt-2">{body}</div>
                   </div>
-                  <div className="p-4 flex justify-center items-center gap-4">
-                    {footer}
-                  </div>
-                </Dialog.Panel>
-              ) : (
-                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all sm:w-full sm:max-w-lg">
-                  <div className="bg-white p-4 sm:p-6 sm:pb-4">
-                    <div className="text-center">
-                        <Dialog.Title
-                          as="h3"
-                          className="text-base font-semibold leading-6 text-gray-900"
-                        >
-                          {title}
-                        </Dialog.Title>
-                      <div className="mt-2">{body}</div>
-                    </div>
-                  </div>
-                  <div className="p-4 flex justify-center items-center gap-4">
-                    {footer}
-                  </div>
-                </Dialog.Panel>
-              )}
+                </div>
+                <div className="p-4 flex justify-center items-center gap-4">
+                  {footer}
+                </div>
+              </Dialog.Panel>
             </Transition.Child>
           </div>
         </div>

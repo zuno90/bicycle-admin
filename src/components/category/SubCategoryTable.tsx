@@ -1,35 +1,36 @@
 import React from "react";
 import Pagination from "../Pagination";
 import Loader from "../Loader";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getCategories, getCategory } from "../../query";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { config } from "../../utils/config.util";
+import { ENotificationType, ISubCategory, ITable } from "../../__types__";
 import {
-  ENotificationType,
-  ICategory,
-  ISubCategory,
-  ITable,
-} from "../../__types__";
+  getSubCategories,
+  getSubCategory,
+} from "../../query/subCategory.query";
+import { getCategory } from "../../query";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { toggleModal } from "../../store/common/common.slice";
-import {
-  createCategory,
-  updateCategory,
-} from "../../mutation/category.mutation";
-import { notify } from "../../utils/helper.util";
-import Modal from "../Modal";
 import {
   FormProvider,
   SubmitHandler,
   useForm,
   useFormContext,
 } from "react-hook-form";
+import { toggleModal } from "../../store/common/common.slice";
 import { clean } from "../../store/common.action";
+import { notify } from "../../utils/helper.util";
+import Modal from "../Modal";
 
-const noThumbErrMessage = "Ảnh danh mục không được bỏ trống!";
+const noThumbErrMessage = "Ảnh danh mục phụ không được bỏ trống!";
 
-const CategoryTable: React.FC<ITable> = ({ title }) => {
+const SubCategoryTable: React.FC<ITable> = ({ title }) => {
+  const { id } = useParams();
   const { search } = useLocation();
   const navigate = useNavigate();
   const commonState = useAppSelector((state) => state.common);
@@ -42,24 +43,32 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["categories", { page, limit }],
-    queryFn: () => getCategories(page, limit),
+  const [category, subCategories] = useQueries({
+    queries: [
+      { queryKey: ["category"], queryFn: () => getCategory(Number(id)) },
+      {
+        queryKey: ["subCategories", { page, limit }],
+        queryFn: () => getSubCategories(page, limit, Number(id)),
+      },
+    ],
   });
-  const dataTotal = data && data.totalCategory;
 
+  console.log(subCategories.data);
+
+  const dataTotal = subCategories.data && subCategories.data.totalSubCategory;
   const closeModal = () => {
     methods.reset();
     dispatch(clean());
   };
 
-  if (isLoading) return <Loader />;
+  if (category.isError) navigate(-1);
+  if (subCategories.isLoading) return <Loader />;
   return (
     <>
       <div className="space-y-10 mb-6">
         <div className="w-full inline-flex items-center justify-between">
           <h4 className="text-xl font-semibold text-black dark:text-white">
-            {title}
+            {title} {">"} {category.data.name}
           </h4>
           <div className="inline-flex items-center gap-4">
             <button
@@ -70,7 +79,7 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
                 dispatch(toggleModal({ id: 0, isOpen: true }));
               }}
             >
-              Tạo danh mục chính
+              Tạo danh mục phụ
               <svg
                 className="w-4 h-4 ml-4"
                 aria-hidden="true"
@@ -85,64 +94,53 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
         </div>
       </div>
       <div className="flex flex-col">
-        <div className="grid grid-cols-7 border-stroke py-4 dark:border-strokedark sm:grid-cols-7">
+        <div className="grid grid-cols-4 border-stroke py-4 dark:border-strokedark sm:grid-cols-4">
           <div className="col-span-1">
             <h5 className="text-sm font-bold xsm:text-base">HÌnh ảnh</h5>
           </div>
           <div className="col-span-1">
-            <h5 className="text-sm font-bold xsm:text-base">Danh mục chính</h5>
-          </div>
-          <div className="col-span-4">
-            <h5 className="text-sm font-bold xsm:text-base">Danh mục phụ</h5>
+            <h5 className="text-sm font-bold xl:text-base">Danh mục phụ</h5>
           </div>
           <div className="col-span-1">
-            <h5 className="text-sm font-bold text-center xsm:text-base">
+            <h5 className="text-sm text-center font-bold xl:text-base">
+              Số lượng sản phẩm
+            </h5>
+          </div>
+          <div className="col-span-1">
+            <h5 className="text-sm text-center font-bold xsm:text-base">
               Hành động
             </h5>
           </div>
         </div>
 
-        {data.categories.length > 0 &&
-          data.categories.map((category: ICategory) => (
+        {subCategories.data.subCategories.length > 0 &&
+          subCategories.data.subCategories.map((subCategory: ISubCategory) => (
             <div
-              key={category.id}
-              className="grid grid-cols-7 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-7"
+              key={subCategory.id}
+              className="grid grid-cols-4 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-4"
             >
-              <div className="col-span-1 flex items-center gap-2">
-                <img
-                  className="w-14 rounded-lg cursor-pointer"
-                  src={category.thumbnail}
-                  alt="category"
-                  onClick={() => navigate(`/category/${category.id}`)}
-                />
-              </div>
-              <div className="col-span-1 flex flex-col gap-2 justify-center">
-                <p
-                  onClick={() => navigate(`/category/${category.id}`)}
-                  className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden cursor-pointer"
-                >
-                  {category.name}
+              <img
+                className="col-span-1 w-14 rounded-md"
+                src={subCategory.thumbnail}
+                alt="subCategory"
+              />
+              <div className="flex flex-col gap-2 justify-center">
+                <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
+                  {subCategory.name}
                 </p>
               </div>
-              <div className="col-span-4 flex items-center">
-                <div className="text-xs text-left text-black dark:text-white inline-flex items-center space-x-2">
-                  {category.subCategories.map((subCategory: ISubCategory) => (
-                    <button
-                      key={subCategory.id}
-                      type="button"
-                      className="bg-[#D7D7D7] px-2.5 py-1.5 rounded-full"
-                    >
-                      {subCategory.name}
-                    </button>
-                  ))}
-                </div>
+              <div className="col-span-1 flex justify-center items-center">
+                <p className="text-xs text-center text-black dark:text-white">
+                  {subCategory.totalProduct}
+                </p>
               </div>
+
               <div className="col-span-1 inline-flex items-center justify-center gap-2">
                 <button
                   type="button"
                   onClick={() => {
                     setModalType("update");
-                    dispatch(toggleModal({ id: category.id, isOpen: true }));
+                    dispatch(toggleModal({ id: subCategory.id, isOpen: true }));
                   }}
                   className="hover:text-primary"
                 >
@@ -158,10 +156,10 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setModalType("remove");
-                    dispatch(toggleModal({ id: category.id, isOpen: true }));
-                  }}
+                  // onClick={() => {
+                  //   setModalType("remove");
+                  //   dispatch(toggleModal({ id: category.id, isOpen: true }));
+                  // }}
                   className="hover:text-primary"
                 >
                   <svg
@@ -189,8 +187,14 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
           commonState.modalId === 0 && (
             <FormProvider {...methods}>
               <Modal
-                title="Tạo danh mục chính"
-                body={<ModalBodyCreate close={closeModal} />}
+                title="Tạo danh mục phụ"
+                body={
+                  <ModalBodyCreate
+                    cateId={category.data.id}
+                    cateName={category.data.name}
+                    close={closeModal}
+                  />
+                }
                 isForm
               />
             </FormProvider>
@@ -200,10 +204,12 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
           commonState.modalId > 0 && (
             <FormProvider {...methods}>
               <Modal
-                title="Cập nhật danh mục"
+                title="Cập nhật danh mục phụ"
                 body={
                   <ModalBodyUpdate
                     id={commonState.modalId}
+                    cateId={category.data.id}
+                    cateName={category.data.name}
                     close={closeModal}
                   />
                 }
@@ -217,7 +223,11 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
 };
 
 // modal
-const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
+const ModalBodyCreate: React.FC<{
+  cateId: number;
+  cateName: string;
+  close: () => void;
+}> = ({ cateId, cateName, close }) => {
   const queryClient = useQueryClient();
   const {
     register,
@@ -237,24 +247,21 @@ const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
     }
   };
 
-  const { mutate, isLoading: createCategoryLoading } = useMutation(
-    createCategory,
-    {
-      onSuccess: (res) => {
-        if (!res.success) notify(ENotificationType.error, res.message);
-        else {
-          notify(
-            ENotificationType.success,
-            "Tạo mới danh mục thành công!",
-            "success",
-            "top-center"
-          );
-          queryClient.invalidateQueries({ queryKey: ["categories"] });
-          close();
-        }
-      },
-    }
-  );
+  const { mutate, isLoading: createSubCategoryLoading } = useMutation(null, {
+    onSuccess: (res) => {
+      if (!res.success) notify(ENotificationType.error, res.message);
+      else {
+        notify(
+          ENotificationType.success,
+          "Tạo mới danh mục phụ thành công!",
+          "success",
+          "top-center"
+        );
+        queryClient.invalidateQueries({ queryKey: ["subCategories"] });
+        close();
+      }
+    },
+  });
 
   const onCreatePost: SubmitHandler<any> = async (data) => {
     const { name } = data;
@@ -278,12 +285,21 @@ const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
     >
       <div className="w-full flex flex-col justify-between bg-white dark:bg-form-strokedark p-4 gap-8 leading-normal">
         <div className="inline-flex items-center gap-4">
+          <p className="w-1/4 text-sm text-left">Tên danh mục chính</p>
+          <input
+            type="text"
+            defaultValue={cateName}
+            disabled
+            className="w-full rounded-lg border-[1.5px] border-stroke bg-gray py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+          />
+        </div>
+        <div className="inline-flex items-center gap-4">
           <p className="w-1/4 text-sm text-left">
-            Tên danh mục <span className="text-meta-1">*</span>
+            Tên danh mục phụ <span className="text-meta-1">*</span>
           </p>
           <input
             {...register("name", {
-              required: "Tên danh mục không được bỏ trống",
+              required: "Tên danh mục phụ không được bỏ trống",
             })}
             type="text"
             className="w-full rounded-lg border-[1.5px] border-stroke bg-gray py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -322,7 +338,7 @@ const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
         </button>
         <button
           type="submit"
-          disabled={createCategoryLoading}
+          disabled={createSubCategoryLoading}
           className="inline-flex w-full justify-center rounded-md bg-primary text-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
         >
           Tạo danh mục
@@ -334,8 +350,10 @@ const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
 
 const ModalBodyUpdate: React.FC<{
   id: number | string;
+  cateId: number;
+  cateName: string;
   close: () => void;
-}> = ({ id, close }) => {
+}> = ({ id, cateId, cateName, close }) => {
   const queryClient = useQueryClient();
   const {
     register,
@@ -354,8 +372,8 @@ const ModalBodyUpdate: React.FC<{
     }
   };
   const { data, isLoading } = useQuery({
-    queryKey: ["category", { id }],
-    queryFn: () => getCategory(Number(id)),
+    queryKey: ["subcategory", { id }],
+    queryFn: () => getSubCategory(Number(id)),
   });
   const [file, setFile] = React.useState<File | null>(null);
   const [previewImg, setPreviewImg] = React.useState<string>("");
@@ -367,24 +385,23 @@ const ModalBodyUpdate: React.FC<{
     }
   }, [data]);
 
-  const { mutate, isLoading: updateCategoryLoading } = useMutation(
-    updateCategory,
-    {
-      onSuccess: (res) => {
-        if (!res.success) notify(ENotificationType.error, res.message);
-        else {
-          notify(
-            ENotificationType.success,
-            "Cập nhật danh mục thành công!",
-            "success",
-            "top-center"
-          );
-          queryClient.invalidateQueries({ queryKey: ["categories"] });
-          close();
-        }
-      },
-    }
-  );
+  console.log(data);
+
+  const { mutate, isLoading: updateSubCategoryLoading } = useMutation(null, {
+    onSuccess: (res) => {
+      if (!res.success) notify(ENotificationType.error, res.message);
+      else {
+        notify(
+          ENotificationType.success,
+          "Cập nhật danh mục phụ thành công!",
+          "success",
+          "top-center"
+        );
+        queryClient.invalidateQueries({ queryKey: ["subCategories"] });
+        close();
+      }
+    },
+  });
 
   const onCreatePost: SubmitHandler<any> = async (data) => {
     const { name } = data;
@@ -409,6 +426,15 @@ const ModalBodyUpdate: React.FC<{
       }}
     >
       <div className="w-full flex flex-col justify-between bg-white dark:bg-form-strokedark p-4 gap-8 leading-normal">
+        <div className="inline-flex items-center gap-4">
+          <p className="w-1/4 text-sm text-left">Tên danh mục chính</p>
+          <input
+            type="text"
+            defaultValue={cateName}
+            disabled
+            className="w-full rounded-lg border-[1.5px] border-stroke bg-gray py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+          />
+        </div>
         <div className="inline-flex items-center gap-4">
           <p className="w-1/4 text-sm text-left">
             Tên danh mục <span className="text-meta-1">*</span>
@@ -459,7 +485,7 @@ const ModalBodyUpdate: React.FC<{
         </button>
         <button
           type="submit"
-          disabled={updateCategoryLoading}
+          disabled={updateSubCategoryLoading}
           className="inline-flex w-full justify-center rounded-md bg-primary text-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
         >
           Cập nhật danh mục
@@ -469,4 +495,4 @@ const ModalBodyUpdate: React.FC<{
   );
 };
 
-export default CategoryTable;
+export default SubCategoryTable;

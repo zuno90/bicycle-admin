@@ -1,4 +1,5 @@
 export * from "./category.query";
+export * from "./subCategory.query";
 export * from "./product.query";
 export * from "./user.query";
 export * from "./size.query";

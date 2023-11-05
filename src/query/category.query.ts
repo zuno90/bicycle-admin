@@ -2,10 +2,7 @@ import queryString from "query-string";
 import { config } from "../utils/config.util";
 import { fetchGet, getCache } from "../utils/helper.util";
 
-export const getCategories = async (
-  page: number,
-  limit: number,
-) => {
+export const getCategories = async (page?: number, limit?: number) => {
   const params = queryString.stringify(
     { page, limit },
     { skipNull: true, skipEmptyString: true }
@@ -20,6 +17,6 @@ export const getCategory = async (id: number) => {
   const res = await fetchGet(`${config.endpoint}/category/${id}`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
-  console.log(res.data.category);
+  console.log(res);
   if (res.success) return res.data.category;
 };

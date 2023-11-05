@@ -258,7 +258,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
                 </p>
               </div>
               <div className="col-span-1 flex justify-center items-center">
-                <p className="text-xs text-center text-black dark:text-white">
+                <p className="text-xs text-left text-black dark:text-white">
                   {transaction.content}
                 </p>
               </div>

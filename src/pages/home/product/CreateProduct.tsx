@@ -87,6 +87,7 @@ const CreateProduct: React.FC = () => {
       { queryKey: ["sizes"], queryFn: () => getSizes() },
     ],
   });
+
   const subCategories =
     categories.data &&
     categories.data.filter(
@@ -111,13 +112,11 @@ const CreateProduct: React.FC = () => {
   });
 
   if (categories.isLoading || sizes.isLoading) return <Loader />;
-
   return (
     <form
       onSubmit={async (e) => {
         e.preventDefault();
         const ok = await methods.trigger();
-
         if (!ok) {
           for (let e in methods.formState.errors) {
             if (e === "productVariants") {
@@ -401,7 +400,10 @@ const CreateProduct: React.FC = () => {
               {...getRootProps({ className: "dropzone" })}
               className="bg-[#D9D9D9] rounded-lg"
             >
-              <div className="flex justify-center items-center box-border h-20 w-20 cursor-pointer">
+              <button
+                type="button"
+                className="flex justify-center items-center box-border h-20 w-20"
+              >
                 <svg
                   className="w-10 h-10"
                   aria-hidden="true"
@@ -411,7 +413,7 @@ const CreateProduct: React.FC = () => {
                 >
                   <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
                 </svg>
-              </div>
+              </button>
             </label>
             <input {...getInputProps()} />
           </div>
