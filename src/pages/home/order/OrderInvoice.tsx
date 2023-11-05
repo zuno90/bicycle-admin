@@ -24,7 +24,7 @@ const OrderInvoice: React.FC = () => {
   if (isLoading) return <Loader />;
   return (
     <div className="mx-auto bg-white">
-      <article ref={targetRef} className="px-10 py-20 overflow-hidden">
+      <article ref={targetRef} className="p-10 overflow-hidden">
         <div className="rounded-b-md">
           <div className="space-y-8 mb-4">
             <div className="inline-flex items-center gap-4">
@@ -56,13 +56,17 @@ const OrderInvoice: React.FC = () => {
                 </p>
               </div>
               <p>
-                Tên khách hàng: <b>Anh Zuno</b>
+                Tên khách hàng: <b>Anh {data?.information.name}</b>
               </p>
               <p>
-                Địa chỉ giao hàng: <b>ZXXZX</b>
+                Địa chỉ giao hàng:{" "}
+                <b>
+                  {data?.information.address} - {data?.information.ward} -{" "}
+                  {data?.information.district} - {data?.information.city}
+                </b>
               </p>
               <p>
-                Số điện thoại: <b>0933663240</b>
+                Số điện thoại: <b>{data?.information.phoneNumber}</b>
               </p>
             </div>
           </div>
@@ -293,7 +297,11 @@ const OrderInvoice: React.FC = () => {
               </svg>
               <p className="text-sm font-bold">Hình thức thanh toán</p>
             </div>
-            <p>Thanh toán chuyển khoản</p>
+            <p>
+              {data?.paymentMethod === "coin"
+                ? "Dùng xu"
+                : "Thanh toán chuyển khoản"}
+            </p>
           </div>
 
           <div className="flex justify-around items-center text-xs">

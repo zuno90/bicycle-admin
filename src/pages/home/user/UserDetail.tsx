@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../store";
 import { useQuery } from "@tanstack/react-query";
 import { getUser } from "../../../query";
 import { formatNumber } from "../../../utils/helper.util";
@@ -11,17 +10,14 @@ import User from "../../../assets/images/user/user.png";
 const UserDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const userState = useAppSelector((state) => state.user);
-  const dispatch = useAppDispatch();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["user"],
     queryFn: () => getUser(Number(id)),
     cacheTime: 0,
   });
 
-  console.log(data, "data id 2");
-
+  if (isError) navigate(-1);
   if (isLoading) return <Loader />;
   return (
     <>
@@ -32,7 +28,7 @@ const UserDetail: React.FC = () => {
         <div className="flex flex-col items-center bg-gray-100 rounded-lg shadow-lg md:flex-row hover:bg-gray-100 dark:border-gray-700 dark:bg-form-strokedark dark:hover:bg-gray-700">
           <div className="p-4 flex flex-col items-center gap-2">
             <img
-              className="object-cover rounded-t-lg h-24 md:h-auto md:w-52 md:rounded-none md:rounded-l-lg"
+              className="object-cover rounded-t-lg h-24 md:h-auto md:w-40 md:rounded-none md:rounded-l-lg"
               src={User}
               alt="user-info-img"
             />

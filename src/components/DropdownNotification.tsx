@@ -60,8 +60,6 @@ const DropdownNotification: React.FC = () => {
     queryFn: () => getNotifications(page, limit),
   });
 
-  console.log(data);
-
   // update unread -> read
   const { mutate } = useMutation(updateStatusNotification, {
     onSuccess: (res) => {

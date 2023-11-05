@@ -127,13 +127,17 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
             <h5 className="text-sm font-bold xsm:text-base">ID</h5>
           </div>
           <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-bold xsm:text-base">Ngày</h5>
+            <h5 className="text-sm text-center font-bold xsm:text-base">
+              Ngày
+            </h5>
           </div>
           <div className="col-span-2 p-2.5 xl:p-5">
             <h5 className="text-sm font-bold xsm:text-base">Tên đơn hàng</h5>
           </div>
           <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-bold xsm:text-base">Giá trị</h5>
+            <h5 className="text-sm text-center font-bold xsm:text-base">
+              Giá trị
+            </h5>
           </div>
           <div className="p-2.5 xl:p-5">
             <h5 className="text-sm text-right font-bold xsm:text-base">
@@ -155,7 +159,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
               </Link>
 
               <div className="p-2.5 xl:p-5">
-                <p className="text-xs">
+                <p className="text-xs text-center">
                   {new Date(order.updateAt).toLocaleDateString("en-GB")}
                 </p>
               </div>
@@ -165,7 +169,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
               </div>
 
               <div className="p-2.5 xl:p-5">
-                <p className="text-xs">
+                <p className="text-xs text-center">
                   <span className="underline">đ</span>
                   {formatNumber(order.finalPrice)}
                 </p>

@@ -33,18 +33,18 @@ const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [
-          FLUSH,
-          REHYDRATE,
-          PAUSE,
-          PERSIST,
-          PURGE,
-          REGISTER,
-          "chat/loadSidebar",
-        ],
-      },
-      // serializableCheck: false,
+      // serializableCheck: {
+      //   ignoredActions: [
+      //     FLUSH,
+      //     REHYDRATE,
+      //     PAUSE,
+      //     PERSIST,
+      //     PURGE,
+      //     REGISTER,
+      //     "chat",
+      //   ],
+      // },
+      serializableCheck: false,
     }),
 });
 
