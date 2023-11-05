@@ -13,6 +13,7 @@ export interface ISubCategory {
   name: string;
   slug: string;
   thumbnail: string;
+  totalProduct?: number;
   updateAt: Date;
   createAt: Date;
 }

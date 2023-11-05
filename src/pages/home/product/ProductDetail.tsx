@@ -54,6 +54,7 @@ const ProductDetail: React.FC = () => {
 
   const removeOldImage = (index: number) =>
     dispatch(removeByIndex({ type: "previewImage", payload: index }));
+  
   const removeImage = (index: number) =>
     setImages(images.filter((_, ind: number) => ind !== index));
 

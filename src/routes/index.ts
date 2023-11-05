@@ -1,4 +1,5 @@
 import React from "react";
+import SubCategory from "../pages/home/subCategory/SubCategory";
 
 const Order = React.lazy(() => import("../pages/home/order/Order"));
 const OrderDetail = React.lazy(() => import("../pages/home/order/OrderDetail"));
@@ -8,7 +9,7 @@ const Transaction = React.lazy(
 const TransactionDetail = React.lazy(
   () => import("../pages/home/transaction/TransactionDetail")
 );
-const Category = React.lazy(() => import("../pages/home/Category"));
+const Category = React.lazy(() => import("../pages/home/category/Category"));
 const Product = React.lazy(() => import("../pages/home/product/Product"));
 const ProductDetail = React.lazy(
   () => import("../pages/home/product/ProductDetail")
@@ -54,6 +55,11 @@ const dashboardRoutes = [
     path: "/category",
     title: "Danh mục",
     element: Category,
+  },
+  {
+    path: "/category/:slug",
+    title: "Danh mục",
+    element: SubCategory,
   },
   {
     path: "/product",
