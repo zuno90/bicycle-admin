@@ -43,8 +43,7 @@ const DropdownUser: React.FC = () => {
 
   // handle logout
   const handleLogout = async () => {
-    window.localStorage.removeItem("accessToken");
-    window.localStorage.removeItem("refreshToken");
+    window.localStorage.clear();
     dispatch(clean());
     dispatch(loginAction(false));
     dispatch(setAdmin(null));

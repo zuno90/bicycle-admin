@@ -12,6 +12,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { config } from "../../utils/config.util";
 import { getUserInfo } from "../../query";
 import { clean } from "../../store/common.action";
+import { getToken } from "firebase/messaging";
+import { requestPermission } from "../../utils/firebase.util";
 
 const Login: React.FC = () => {
   const location = useLocation();
@@ -30,6 +32,14 @@ const Login: React.FC = () => {
     queryFn: () => getUserInfo(),
     enabled: authState.isAuth,
   });
+  authState.isAuth && userData
+    ? dispatch(setAdmin(userData))
+    : dispatch(setAdmin(null));
+
+  const redirectUrl = location.state?.from?.pathname ?? "/";
+  authState.isAuth &&
+    authState.user &&
+    navigate(redirectUrl, { replace: true });
 
   const { mutate, isLoading: isLoadingLogin } = useMutation(login, {
     onSuccess: (res) => {
@@ -50,21 +60,13 @@ const Login: React.FC = () => {
   });
 
   const onSubmitLogin: SubmitHandler<ILoginInput> = async (data) => {
+    await requestPermission();
     const payload = {
       ...data,
       deviceToken: getCache(config.cache.deviceToken),
     };
     mutate(payload);
   };
-
-  authState.isAuth && userData
-    ? dispatch(setAdmin(userData))
-    : dispatch(setAdmin(null));
-
-  const redirectUrl = location.state?.from?.pathname ?? "/";
-  authState.isAuth &&
-    authState.user &&
-    navigate(redirectUrl, { replace: true });
 
   if (isLoadingLogin || isFetchingUser) return <Loader />;
   return (
