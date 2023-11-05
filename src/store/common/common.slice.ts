@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { clean } from "../common.action";
 
-type TCommonState = {
+export type TCommonState = {
   isOpenModal: boolean;
   modalId: number;
   counterValue: number;
