@@ -18,7 +18,6 @@ const OrderInvoice: React.FC = () => {
     queryKey: ["order", { id }],
     queryFn: () => getOrder(Number(id)),
   });
-  console.log(data);
 
   if (isError) navigate(-1);
   if (isLoading) return <Loader />;

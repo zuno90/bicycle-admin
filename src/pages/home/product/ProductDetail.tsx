@@ -123,7 +123,7 @@ const ProductDetail: React.FC = () => {
     )[0]?.subCategories;
 
   // upload data
-  const { mutate, isLoading, data } = useMutation(updateProduct, {
+  const { mutate, isLoading } = useMutation(updateProduct, {
     onSuccess: (res) => {
       if (!res.success)
         notify(ENotificationType.error, res.message, "error", "top-center");
@@ -155,6 +155,7 @@ const ProductDetail: React.FC = () => {
     mutate({ id: product.data.id, payload: formD });
   };
 
+  if (product.isError) navigate(-1);
   if (product.isLoading || categories.isLoading || sizes.isLoading)
     return <Loader />;
   return (
