@@ -17,6 +17,5 @@ export const getCategory = async (id: number) => {
   const res = await fetchGet(`${config.endpoint}/category/${id}`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
-  console.log(res);
   if (res.success) return res.data.category;
 };

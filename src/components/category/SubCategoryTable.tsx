@@ -26,6 +26,10 @@ import { toggleModal } from "../../store/common/common.slice";
 import { clean } from "../../store/common.action";
 import { notify } from "../../utils/helper.util";
 import Modal from "../Modal";
+import {
+  createSubCategory,
+  updateSubCategory,
+} from "../../mutation/subCategory.mutation";
 
 const noThumbErrMessage = "Ảnh danh mục phụ không được bỏ trống!";
 
@@ -52,8 +56,6 @@ const SubCategoryTable: React.FC<ITable> = ({ title }) => {
       },
     ],
   });
-
-  console.log(subCategories.data);
 
   const dataTotal = subCategories.data && subCategories.data.totalSubCategory;
   const closeModal = () => {
@@ -247,25 +249,29 @@ const ModalBodyCreate: React.FC<{
     }
   };
 
-  const { mutate, isLoading: createSubCategoryLoading } = useMutation(null, {
-    onSuccess: (res) => {
-      if (!res.success) notify(ENotificationType.error, res.message);
-      else {
-        notify(
-          ENotificationType.success,
-          "Tạo mới danh mục phụ thành công!",
-          "success",
-          "top-center"
-        );
-        queryClient.invalidateQueries({ queryKey: ["subCategories"] });
-        close();
-      }
-    },
-  });
+  const { mutate, isLoading: createSubCategoryLoading } = useMutation(
+    createSubCategory,
+    {
+      onSuccess: (res) => {
+        if (!res.success) notify(ENotificationType.error, res.message);
+        else {
+          notify(
+            ENotificationType.success,
+            "Tạo mới danh mục phụ thành công!",
+            "success",
+            "top-center"
+          );
+          queryClient.invalidateQueries({ queryKey: ["subCategories"] });
+          close();
+        }
+      },
+    }
+  );
 
-  const onCreatePost: SubmitHandler<any> = async (data) => {
+  const onCreateSubCate: SubmitHandler<any> = async (data) => {
     const { name } = data;
     const formD = new FormData();
+    formD.append("categoryId", cateId);
     formD.append("name", name);
     formD.append("thumbnail", file);
     mutate(formD);
@@ -280,7 +286,7 @@ const ModalBodyCreate: React.FC<{
           for (let e in errors)
             return notify(ENotificationType.error, errors[e]?.message);
         if (!file) return notify(ENotificationType.error, noThumbErrMessage);
-        handleSubmit(onCreatePost)();
+        handleSubmit(onCreateSubCate)();
       }}
     >
       <div className="w-full flex flex-col justify-between bg-white dark:bg-form-strokedark p-4 gap-8 leading-normal">
@@ -375,7 +381,7 @@ const ModalBodyUpdate: React.FC<{
     queryKey: ["subcategory", { id }],
     queryFn: () => getSubCategory(Number(id)),
   });
-  const [file, setFile] = React.useState<File | null>(null);
+  const [file, setFile] = React.useState<File>();
   const [previewImg, setPreviewImg] = React.useState<string>("");
 
   React.useEffect(() => {
@@ -385,33 +391,36 @@ const ModalBodyUpdate: React.FC<{
     }
   }, [data]);
 
-  console.log(data);
+  const { mutate, isLoading: updateSubCategoryLoading } = useMutation(
+    updateSubCategory,
+    {
+      onSuccess: (res) => {
+        if (!res.success) notify(ENotificationType.error, res.message);
+        else {
+          notify(
+            ENotificationType.success,
+            "Cập nhật danh mục phụ thành công!",
+            "success",
+            "top-center"
+          );
+          queryClient.invalidateQueries({ queryKey: ["subCategories"] });
+          close();
+        }
+      },
+    }
+  );
 
-  const { mutate, isLoading: updateSubCategoryLoading } = useMutation(null, {
-    onSuccess: (res) => {
-      if (!res.success) notify(ENotificationType.error, res.message);
-      else {
-        notify(
-          ENotificationType.success,
-          "Cập nhật danh mục phụ thành công!",
-          "success",
-          "top-center"
-        );
-        queryClient.invalidateQueries({ queryKey: ["subCategories"] });
-        close();
-      }
-    },
-  });
-
-  const onCreatePost: SubmitHandler<any> = async (data) => {
+  const onUpdateSubCate: SubmitHandler<any> = async (data) => {
     const { name } = data;
     const formD = new FormData();
+    formD.append("categoryId", cateId.toString());
     formD.append("name", name);
     formD.append("thumbnail", previewImg);
     formD.append("newThumbnail", file);
     mutate({ id, payload: formD });
   };
 
+  if (isLoading) return <Loader loadInside />;
   return (
     <form
       onSubmit={async (e) => {
@@ -422,7 +431,7 @@ const ModalBodyUpdate: React.FC<{
             return notify(ENotificationType.error, errors[e]?.message);
         if (!previewImg && !file)
           return notify(ENotificationType.error, noThumbErrMessage);
-        handleSubmit(onCreatePost)();
+        handleSubmit(onUpdateSubCate)();
       }}
     >
       <div className="w-full flex flex-col justify-between bg-white dark:bg-form-strokedark p-4 gap-8 leading-normal">

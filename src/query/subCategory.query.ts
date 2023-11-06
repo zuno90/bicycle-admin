@@ -13,9 +13,7 @@ export const getSubCategories = async (
   );
   const res = await fetchGet(
     `${config.endpoint}/sub-category/category/${id}?${params}`,
-    {
-      Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
-    }
+    { Authorization: `Bearer ${getCache(config.cache.accessToken)}` }
   );
   if (res.success) return res.data;
 };

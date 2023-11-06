@@ -6,7 +6,8 @@ type TLoader = { loadInside?: boolean };
 const Loader: React.FC<TLoader> = ({ loadInside }) => {
   return (
     <div
-      className={classNames("flex h-screen items-center justify-center", {
+      className={classNames("flex items-center justify-center", {
+        "h-screen": !loadInside,
         "h-auto": loadInside,
       })}
     >

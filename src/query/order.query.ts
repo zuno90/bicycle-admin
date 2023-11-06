@@ -23,3 +23,15 @@ export const getOrder = async (id: number) => {
   });
   if (res.success) return res.data.order;
 };
+
+export const getOrderCsv = async (fromAt: string, toAt: string) => {
+  const params = queryString.stringify(
+    { fromAt, toAt },
+    { skipNull: true, skipEmptyString: true }
+  );
+  console.log(`${config.endpoint}/report/csv?${params}`);
+  const res = await fetchGet(`${config.endpoint}/report/csv?${params}`, {
+    Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
+  });
+  return res;
+};

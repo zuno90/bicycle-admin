@@ -225,7 +225,7 @@ const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
     handleSubmit,
     formState: { errors },
   } = useFormContext();
-  const [file, setFile] = React.useState<File | null>(null);
+  const [file, setFile] = React.useState<File>();
   const [previewImg, setPreviewImg] = React.useState<string>("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -256,7 +256,7 @@ const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
     }
   );
 
-  const onCreatePost: SubmitHandler<any> = async (data) => {
+  const onCreateCate: SubmitHandler<any> = async (data) => {
     const { name } = data;
     const formD = new FormData();
     formD.append("name", name);
@@ -273,7 +273,7 @@ const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
           for (let e in errors)
             return notify(ENotificationType.error, errors[e]?.message);
         if (!file) return notify(ENotificationType.error, noThumbErrMessage);
-        handleSubmit(onCreatePost)();
+        handleSubmit(onCreateCate)();
       }}
     >
       <div className="w-full flex flex-col justify-between bg-white dark:bg-form-strokedark p-4 gap-8 leading-normal">
@@ -386,7 +386,7 @@ const ModalBodyUpdate: React.FC<{
     }
   );
 
-  const onCreatePost: SubmitHandler<any> = async (data) => {
+  const onUpdateCate: SubmitHandler<any> = async (data) => {
     const { name } = data;
     const formD = new FormData();
     formD.append("name", name);
@@ -395,6 +395,7 @@ const ModalBodyUpdate: React.FC<{
     mutate({ id, payload: formD });
   };
 
+  if (isLoading) return <Loader loadInside />;
   return (
     <form
       onSubmit={async (e) => {
@@ -405,7 +406,7 @@ const ModalBodyUpdate: React.FC<{
             return notify(ENotificationType.error, errors[e]?.message);
         if (!previewImg && !file)
           return notify(ENotificationType.error, noThumbErrMessage);
-        handleSubmit(onCreatePost)();
+        handleSubmit(onUpdateCate)();
       }}
     >
       <div className="w-full flex flex-col justify-between bg-white dark:bg-form-strokedark p-4 gap-8 leading-normal">

@@ -5,7 +5,7 @@ import { formatNumber } from "../../utils/helper.util";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { config } from "../../utils/config.util";
 import { useQuery } from "@tanstack/react-query";
-import { getOrders } from "../../query";
+import { getOrderCsv, getOrders } from "../../query";
 import classNames from "classnames";
 import DatePicker from "react-datepicker";
 import Loader from "../Loader";
@@ -42,7 +42,19 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
     navigate({ search: queryParams.toString() });
   };
 
-  const handleExportOrder = () => {};
+  // export report
+  const { data: reportData, refetch } = useQuery({
+    queryKey: ["ordercsv", { startDate, endDate }],
+    queryFn: () =>
+      getOrderCsv(
+        startDate?.toLocaleDateString("UTC").replaceAll("/", "-"),
+        endDate?.toLocaleDateString("UTC").replaceAll("/", "-")
+      ),
+    enabled: false,
+  });
+  console.log(reportData);
+
+  const handleExportOrder = () => refetch();
 
   if (isLoading) return <Loader />;
   return (
@@ -87,9 +99,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
             type="button"
             className={classNames(
               "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-              {
-                "bg-[#FBE69E]": queryParams.get("status") === "pending",
-              }
+              { "bg-[#FBE69E]": queryParams.get("status") === "pending" }
             )}
           >
             Đang xử lý ({data.totalOrderStatus.pending})
@@ -99,9 +109,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
             type="button"
             className={classNames(
               "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-              {
-                "bg-[#FBE69E]": queryParams.get("status") === "transported",
-              }
+              { "bg-[#FBE69E]": queryParams.get("status") === "transported" }
             )}
           >
             Đang vận chuyển ({data.totalOrderStatus.transported})
@@ -111,9 +119,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
             type="button"
             className={classNames(
               "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
-              {
-                "bg-[#FBE69E]": queryParams.get("status") === "success",
-              }
+              { "bg-[#FBE69E]": queryParams.get("status") === "success" }
             )}
           >
             Đã giao hàng ({data.totalOrderStatus.success})
