@@ -87,7 +87,7 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
       <div className="flex flex-col">
         <div className="grid grid-cols-7 border-stroke py-4 dark:border-strokedark sm:grid-cols-7">
           <div className="col-span-1">
-            <h5 className="text-sm font-bold xsm:text-base">HÌnh ảnh</h5>
+            <h5 className="text-sm font-bold xsm:text-base">Hình ảnh</h5>
           </div>
           <div className="col-span-1">
             <h5 className="text-sm font-bold xsm:text-base">Danh mục chính</h5>
@@ -349,8 +349,8 @@ const ModalBodyUpdate: React.FC<{
     if (e.target.files) {
       setFile(e.target.files[0]);
       const reader = new FileReader();
-      reader.onload = () => setPreviewImg(reader.result);
       reader.readAsDataURL(e.target.files[0]);
+      reader.onload = () => setPreviewImg(reader.result);
     }
   };
   const { data, isLoading } = useQuery({
@@ -363,6 +363,7 @@ const ModalBodyUpdate: React.FC<{
   React.useEffect(() => {
     if (data) {
       setValue("name", data.name, { shouldDirty: true });
+      setValue("thumbnail", data.thumbnail, { shouldDirty: true });
       setPreviewImg(data.thumbnail);
     }
   }, [data]);
@@ -386,12 +387,14 @@ const ModalBodyUpdate: React.FC<{
     }
   );
 
-  const onUpdateCate: SubmitHandler<any> = async (data) => {
-    const { name } = data;
+  const onUpdateCate: SubmitHandler<any> = async (formData) => {
+    console.log(formData);
+    const { name, thumbnail } = formData;
     const formD = new FormData();
     formD.append("name", name);
-    formD.append("thumbnail", previewImg);
+    formD.append("thumbnail", !file ? thumbnail : null);
     formD.append("newThumbnail", file);
+
     mutate({ id, payload: formD });
   };
 

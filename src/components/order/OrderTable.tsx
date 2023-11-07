@@ -9,12 +9,18 @@ import { getOrderCsv, getOrders } from "../../query";
 import classNames from "classnames";
 import DatePicker from "react-datepicker";
 import Loader from "../Loader";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { toggleModal } from "../../store/common/common.slice";
+import Modal from "../Modal";
+import { clean } from "../../store/common.action";
 
 type TDateRange = [Date | null, Date | null];
 
 const HomeTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
   const navigate = useNavigate();
+  const commonState = useAppSelector((state) => state.common);
+  const dispatch = useAppDispatch();
   const queryParams = new URLSearchParams(search);
   const [dateRange, setDateRange] = React.useState<TDateRange>([
     new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -43,18 +49,36 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
   };
 
   // export report
-  const { data: reportData, refetch } = useQuery({
+  const { refetch } = useQuery({
     queryKey: ["ordercsv", { startDate, endDate }],
-    queryFn: () =>
-      getOrderCsv(
-        startDate?.toLocaleDateString("UTC").replaceAll("/", "-"),
-        endDate?.toLocaleDateString("UTC").replaceAll("/", "-")
-      ),
+    queryFn: () => getOrderCsv(startDate?.getTime()!, endDate?.getTime()!),
     enabled: false,
   });
-  console.log(reportData);
 
-  const handleExportOrder = () => refetch();
+  // export csv modal
+  const closeModal = () => dispatch(clean());
+  const ModalBody = () => <p>Xuất đơn hàng có thể mất 1 lúc để lấy dữ liệu</p>;
+  const ModalFooter = () => (
+    <>
+      <button
+        type="button"
+        className="inline-flex w-full justify-center rounded-md bg-[#DDDDDD] text-black px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-[#B6B6B6] hover:bg-gray-50 sm:mt-0 sm:w-auto"
+        onClick={closeModal}
+      >
+        Huỷ
+      </button>
+      <button
+        type="button"
+        className="inline-flex w-full justify-center rounded-md bg-primary text-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+        onClick={async () => {
+          await refetch();
+          closeModal();
+        }}
+      >
+        Xuất Excel
+      </button>
+    </>
+  );
 
   if (isLoading) return <Loader />;
   return (
@@ -64,11 +88,11 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
           <h4 className="text-xl font-semibold text-black dark:text-white">
             {title}
           </h4>
-          <div className="inline-flex items-center gap-4">
+          <div className="inline-flex items-center gap-10">
             <button
               type="button"
-              className="text-xs underline"
-              onClick={handleExportOrder}
+              className="text-xs text-meta-5 underline"
+              onClick={() => dispatch(toggleModal({ id: 0, isOpen: true }))}
             >
               Báo cáo
             </button>
@@ -206,6 +230,15 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
           </div>
         )}
       </div>
+
+      {commonState.isOpenModal && (
+        <Modal
+          title="Xuất đơn hàng"
+          body={<ModalBody />}
+          footer={<ModalFooter />}
+          close={closeModal}
+        />
+      )}
     </>
   );
 };

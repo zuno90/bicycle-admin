@@ -1,10 +1,7 @@
 import classNames from "classnames";
 import { formatNumber } from "../../utils/helper.util";
 
-type TCard = {
-  title: string;
-  data?: any;
-};
+type TCard = { title: string; data?: any };
 
 const Card: React.FC<TCard> = ({ title, data }) => {
   return (

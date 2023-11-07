@@ -88,7 +88,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
   };
 
   // delete modal
-  const closeModal = () => dispatch(toggleModal(false));
+  const closeModal = () => dispatch(clean());
   const ModalBody = () => <p>Bạn muốn xoá voucher này?</p>;
   const ModalFooter = () => (
     <>

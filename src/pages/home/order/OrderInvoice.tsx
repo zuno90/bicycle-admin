@@ -228,22 +228,6 @@ const OrderInvoice: React.FC = () => {
                   đ{formatNumber(data?.pricePromotion)}
                 </td>
               </tr>
-              <tr className="border-b">
-                <th
-                  scope="row"
-                  colSpan={8}
-                  className="py-3.5 text-sm font-light text-center table-cell"
-                >
-                  Cộng nợ cũ
-                </th>
-                <td colSpan={4}></td>
-                <td
-                  colSpan={2}
-                  className="py-3.5 text-sm text-center font-light"
-                >
-                  đ{formatNumber(0)}
-                </td>
-              </tr>
               <tr>
                 <th
                   scope="row"

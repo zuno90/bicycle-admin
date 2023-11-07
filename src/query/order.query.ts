@@ -24,14 +24,30 @@ export const getOrder = async (id: number) => {
   if (res.success) return res.data.order;
 };
 
-export const getOrderCsv = async (fromAt: string, toAt: string) => {
+export const getOrderCsv = async (fromAt: number, toAt: number) => {
   const params = queryString.stringify(
     { fromAt, toAt },
     { skipNull: true, skipEmptyString: true }
   );
-  console.log(`${config.endpoint}/report/csv?${params}`);
-  const res = await fetchGet(`${config.endpoint}/report/csv?${params}`, {
-    Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
-  });
-  return res;
+  try {
+    const r = await fetch(`${config.endpoint}/report/csv?${params}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
+      },
+    });
+    if (!r.ok) throw new Error("Không thể download file!");
+    const res = await r.blob();
+    const url = window.URL.createObjectURL(res);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "VPBicycle_Bao_cao_don_hang.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    return res;
+  } catch (error) {
+    console.error(error);
+  }
 };

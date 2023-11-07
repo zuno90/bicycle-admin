@@ -37,7 +37,7 @@ import { db } from "../../../utils/firebase.util";
 import { v4 as uuidv4 } from "uuid";
 import { formatTimeAgo, notify } from "../../../utils/helper.util";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getUser } from "../../../query";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import {
@@ -62,6 +62,7 @@ const imageMimeType = /image\/(png|jpg|jpeg|webp)/i;
 const ADMINID = "1698215035570UIHEzfO0vLTr";
 
 const Chat: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const uid = searchParams.get("uid");
   const chatState = useAppSelector((state) => state.chat);
@@ -322,7 +323,6 @@ const Chat: React.FC = () => {
                   active={chatState.currentUser?._id === user.user._id ?? false}
                   onClick={async () => {
                     if (chatState.currentUser?._id !== user.user._id) {
-                      console.log(chatState.currentUser?._id, user.user._id);
                       dispatch(setLoading(true));
                       setSearchParams((params) => {
                         params.delete("uid");
@@ -365,8 +365,11 @@ const Chat: React.FC = () => {
               <ChatContainer>
                 <ConversationHeader>
                   <Avatar
+                    className="cursor-pointer"
                     src={UserAvatar}
-                    onClick={() => console.log("go to user profile")}
+                    onClick={() =>
+                      navigate(`/user/${chatState.currentUser?._id}`)
+                    }
                   />
                   <ConversationHeader.Content
                     userName={chatState.currentUser?.name}
