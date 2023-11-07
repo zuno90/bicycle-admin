@@ -30,7 +30,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
   const status = queryParams.get("status");
-
+ 
   const [startDate, endDate] = dateRange;
 
   const { data, isLoading } = useQuery({
@@ -57,7 +57,9 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
 
   // export csv modal
   const closeModal = () => dispatch(clean());
-  const ModalBody = () => <p>Xuất đơn hàng có thể mất 1 lúc để lấy dữ liệu</p>;
+  const ModalBody = () => (
+    <p className="text-sm">Xuất đơn hàng có thể mất 1 lúc để lấy dữ liệu</p>
+  );
   const ModalFooter = () => (
     <>
       <button
