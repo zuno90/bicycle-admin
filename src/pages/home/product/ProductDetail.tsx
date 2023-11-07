@@ -53,7 +53,7 @@ const ProductDetail: React.FC = () => {
 
   const removeOldImage = (index: number) =>
     dispatch(removeByIndex({ type: "previewImage", payload: index }));
-  
+
   const removeImage = (index: number) =>
     setImages(images.filter((_, ind: number) => ind !== index));
 
@@ -114,12 +114,13 @@ const ProductDetail: React.FC = () => {
 
   const initSubCategories =
     categories.data &&
-    categories.data.filter(
+    categories.data.categories.filter(
       (cate: ICategory) => cate.id === product.data?.categoryId
     )[0]?.subCategories;
+
   const subCategories =
     categories.data &&
-    categories.data.filter(
+    categories.data.categories.filter(
       (cate: ICategory) => cate.id === Number(methods.watch("categoryId"))
     )[0]?.subCategories;
 
@@ -141,7 +142,6 @@ const ProductDetail: React.FC = () => {
   });
 
   const onUpdatePost: SubmitHandler<any> = async (data) => {
-    console.log(data);
     const { productVariants, ...others } = data;
     const formD = new FormData();
     formD.append("name", others.name);
@@ -222,8 +222,8 @@ const ProductDetail: React.FC = () => {
                 <option value="" disabled>
                   Chọn danh mục
                 </option>
-                {categories.data.length > 0 &&
-                  categories.data.map((category: ICategory) => (
+                {categories.data.categories.length > 0 &&
+                  categories.data.categories.map((category: ICategory) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>

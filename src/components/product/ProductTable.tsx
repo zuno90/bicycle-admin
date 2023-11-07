@@ -36,6 +36,8 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
     navigate({ search: queryParams.toString() });
   };
 
+  console.log(data);
+
   const dataTotal =
     data && data.totalStatusProduct[queryParams.get("status") ?? "all"];
 
