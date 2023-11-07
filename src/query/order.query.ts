@@ -40,10 +40,14 @@ export const getOrderCsv = async (fromAt: number, toAt: number) => {
     if (!r.ok) throw new Error("Không thể download file!");
     const res = await r.blob();
     const url = window.URL.createObjectURL(res);
-    const a = document.createElement("a");
+    let a = document.getElementById("order-csv-download");
+    if (!a) {
+      a = document.createElement("a");
+      a.setAttribute("id", "order-csv-download");
+      document.body.appendChild(a);
+    }
     a.href = url;
     a.download = "VPBicycle_Bao_cao_don_hang.xlsx";
-    document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);
     return res;
