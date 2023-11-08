@@ -6,6 +6,10 @@ import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store";
 import { clean } from "../store/common.action";
 import { loginAction, setAdmin } from "../store/auth/auth.slice";
+import { useMutation } from "@tanstack/react-query";
+import { logout } from "../mutation";
+import { notify } from "../utils/helper.util";
+import { ENotificationType } from "../__types__";
 
 const DropdownUser: React.FC = () => {
   const authState = useAppSelector((state) => state.auth);
@@ -41,13 +45,20 @@ const DropdownUser: React.FC = () => {
     return () => document.removeEventListener("keydown", keyHandler);
   });
 
+  const { mutate, isLoading } = useMutation(logout, {
+    onSuccess: (res) => {
+      if (!res.success)
+        return notify(ENotificationType.error, "Lỗi! Không thể đăng xuất!");
+      dispatch(clean());
+      dispatch(loginAction(false));
+      dispatch(setAdmin(null));
+      window.localStorage.clear();
+      notify(ENotificationType.info, "Đăng xuất tài khoản thành công!");
+    },
+  });
+
   // handle logout
-  const handleLogout = async () => {
-    window.localStorage.clear();
-    dispatch(clean());
-    dispatch(loginAction(false));
-    dispatch(setAdmin(null));
-  };
+  const handleLogout = async () => mutate();
 
   return (
     <div className="relative">
@@ -174,6 +185,7 @@ const DropdownUser: React.FC = () => {
         </ul>
         <button
           onClick={handleLogout}
+          disabled={isLoading}
           className="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
         >
           <svg

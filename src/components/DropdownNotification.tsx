@@ -4,7 +4,7 @@ import { channel, notify } from "../utils/helper.util";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getNotifications } from "../query";
 import { ENotificationType, IUnreadNotification } from "../__types__";
-import { updateStatusNotification } from "../mutation/notification.mutation";
+import { updateStatusNotification } from "../mutation";
 import { useLocation } from "react-router-dom";
 import { config } from "../utils/config.util";
 import classNames from "classnames";

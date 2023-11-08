@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { ENotificationType, ILoginInput } from "../../__types__";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { login } from "../../mutation/auth.mutation";
+import { login } from "../../mutation";
 import { getCache, notify, setCache } from "../../utils/helper.util";
 import { loginAction, setAdmin } from "../../store/auth/auth.slice";
 import { useAppDispatch, useAppSelector } from "../../store";

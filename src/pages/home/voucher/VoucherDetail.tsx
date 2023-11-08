@@ -1,13 +1,12 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../store";
+import { useAppDispatch } from "../../../store";
 import classNames from "classnames";
 import { Message, SubmitHandler, useForm } from "react-hook-form";
 import { notify } from "../../../utils/helper.util";
 import { ENotificationType, IVoucherInput } from "../../../__types__";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { updateVoucher } from "../../../mutation/voucher.mutation";
-import { clean } from "../../../store/common.action";
+import { updateVoucher } from "../../../mutation";
 import { getVoucher } from "../../../query";
 
 const VoucherDetail: React.FC = () => {

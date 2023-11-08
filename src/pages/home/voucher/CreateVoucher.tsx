@@ -7,7 +7,7 @@ import {
   IVoucherInput,
 } from "../../../__types__";
 import { useMutation } from "@tanstack/react-query";
-import { createVoucher } from "../../../mutation/voucher.mutation";
+import { createVoucher } from "../../../mutation";
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
 

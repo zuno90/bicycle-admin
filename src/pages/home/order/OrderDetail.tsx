@@ -10,7 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getOrder } from "../../../query";
 import Loader from "../../../components/Loader";
-import { updateOrderStatus } from "../../../mutation/order.mutation";
+import { updateOrderStatus } from "../../../mutation";
 
 const OrderDetail: React.FC = () => {
   const { id } = useParams();

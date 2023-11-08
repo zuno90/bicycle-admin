@@ -15,10 +15,7 @@ import { config } from "../../utils/config.util";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getVouchers } from "../../query";
 import classNames from "classnames";
-import {
-  deleteVoucher,
-  updateVoucherByStatus,
-} from "../../mutation/voucher.mutation";
+import { deleteVoucher, updateVoucherByStatus } from "../../mutation";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { toggleModal } from "../../store/common/common.slice";
 import { clean } from "../../store/common.action";

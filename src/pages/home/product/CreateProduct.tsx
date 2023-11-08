@@ -9,7 +9,7 @@ import queryString from "query-string";
 import Loader from "../../../components/Loader";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { notify } from "../../../utils/helper.util";
-import { createProduct } from "../../../mutation/product.mutation";
+import { createProduct } from "../../../mutation";
 import classNames from "classnames";
 import {
   addByIndex,

@@ -13,10 +13,7 @@ import {
 } from "../../__types__";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { toggleModal } from "../../store/common/common.slice";
-import {
-  createCategory,
-  updateCategory,
-} from "../../mutation/category.mutation";
+import { createCategory, updateCategory } from "../../mutation";
 import { notify } from "../../utils/helper.util";
 import Modal from "../Modal";
 import {
@@ -246,8 +243,7 @@ const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
           notify(
             ENotificationType.success,
             "Tạo mới danh mục thành công!",
-            "success",
-            "top-center"
+            "success"
           );
           queryClient.invalidateQueries({ queryKey: ["categories"] });
           close();
@@ -377,8 +373,7 @@ const ModalBodyUpdate: React.FC<{
           notify(
             ENotificationType.success,
             "Cập nhật danh mục thành công!",
-            "success",
-            "top-center"
+            "success"
           );
           queryClient.invalidateQueries({ queryKey: ["categories"] });
           close();

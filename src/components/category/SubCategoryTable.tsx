@@ -21,10 +21,7 @@ import { toggleModal } from "../../store/common/common.slice";
 import { clean } from "../../store/common.action";
 import { notify } from "../../utils/helper.util";
 import Modal from "../Modal";
-import {
-  createSubCategory,
-  updateSubCategory,
-} from "../../mutation/subCategory.mutation";
+import { createSubCategory, updateSubCategory } from "../../mutation";
 
 const noThumbErrMessage = "Ảnh danh mục phụ không được bỏ trống!";
 
@@ -263,8 +260,7 @@ const ModalBodyCreate: React.FC<{
           notify(
             ENotificationType.success,
             "Tạo mới danh mục phụ thành công!",
-            "success",
-            "top-center"
+            "success"
           );
           queryClient.invalidateQueries({ queryKey: ["subCategories"] });
           close();
@@ -406,8 +402,7 @@ const ModalBodyUpdate: React.FC<{
           notify(
             ENotificationType.success,
             "Cập nhật danh mục phụ thành công!",
-            "success",
-            "top-center"
+            "success"
           );
           queryClient.invalidateQueries({ queryKey: ["subCategories"] });
           close();
