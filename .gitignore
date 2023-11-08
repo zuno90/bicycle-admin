@@ -8,10 +8,10 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+./free-react-tailwind-admin-dashboard-main
 # dist
 dist-ssr
 *.local
-free-react-tailwind-admin-dashboard-main
 
 # Editor directories and files
 .vscode/*

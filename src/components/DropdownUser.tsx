@@ -37,8 +37,8 @@ const DropdownUser: React.FC = () => {
 
   // close if the esc key is pressed
   React.useEffect(() => {
-    const keyHandler = ({ keyCode }: KeyboardEvent) => {
-      if (!dropdownOpen || keyCode !== 27) return;
+    const keyHandler = ({ key }: KeyboardEvent) => {
+      if (!dropdownOpen || key !== "Escape") return;
       setDropdownOpen(false);
     };
     document.addEventListener("keydown", keyHandler);
@@ -106,11 +106,12 @@ const DropdownUser: React.FC = () => {
         ref={dropdown}
         onFocus={() => setDropdownOpen(true)}
         onBlur={() => setDropdownOpen(false)}
-        className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ${
-          dropdownOpen === true ? "block" : "hidden"
-        }`}
+        className={classNames(
+          "absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark",
+          { block: dropdownOpen === true, hidden: dropdownOpen === false }
+        )}
       >
-        <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
+        {/* <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
           <li>
             <Link
               to="/profile"
@@ -182,7 +183,7 @@ const DropdownUser: React.FC = () => {
               Account Settings
             </Link>
           </li>
-        </ul>
+        </ul> */}
         <button
           onClick={handleLogout}
           disabled={isLoading}
@@ -205,7 +206,7 @@ const DropdownUser: React.FC = () => {
               fill=""
             />
           </svg>
-          Log Out
+          Đăng xuất
         </button>
       </div>
       {/* <!-- Dropdown End --> */}
