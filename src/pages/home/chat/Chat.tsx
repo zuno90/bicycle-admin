@@ -392,6 +392,7 @@ const Chat: React.FC = () => {
                       >
                         {msg.type === "image" && (
                           <Message.ImageContent
+                            width={120}
                             src={msg.message}
                             alt="image-content"
                           />
