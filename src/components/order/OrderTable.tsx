@@ -30,12 +30,25 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
   const limit = Number(queryParams.get("limit")) || config.pagination.LIMIT;
   const status = queryParams.get("status");
- 
+
   const [startDate, endDate] = dateRange;
 
   const { data, isLoading } = useQuery({
     queryKey: ["orders", { page, limit, status }],
-    queryFn: () => getOrders(page, limit, status),
+    queryFn: () =>
+      getOrders(
+        page,
+        limit,
+        status,
+        startDate?.getTime(),
+        endDate?.getTime() ||
+          new Date(
+            startDate.getFullYear(),
+            startDate.getMonth() + 1,
+            0
+          ).getTime()
+      ),
+    enabled: !!startDate && !!endDate,
   });
   const dataTotal =
     data && data.totalOrderStatus[queryParams.get("status") ?? "all"];

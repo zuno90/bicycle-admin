@@ -44,7 +44,7 @@
 }
 
 .cs-conversation__unread {
-  padding: auto 10px !important;
+  padding: 0 8px !important;
   border-radius: 100% !important;
   font-size: 1em !important;
   bottom: 0.8em !important;
