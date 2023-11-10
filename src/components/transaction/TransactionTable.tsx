@@ -58,6 +58,9 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
     queryFn: () => getTransactions(page, limit, status),
   });
 
+  const dataTotal =
+    data && data.totalStatusPayment[queryParams.get("status") ?? "all"];
+
   const handleChangeStatus = (status: string) => {
     queryParams.delete("page");
     queryParams.delete("limit");
@@ -65,9 +68,6 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
     else queryParams.set("status", status);
     navigate({ search: queryParams.toString() });
   };
-
-  const dataTotal =
-    data && data.totalStatusPayment[queryParams.get("status") ?? "all"];
 
   // modal
   const closeModal = () => dispatch(toggleModal(false));
@@ -183,7 +183,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
       </div>
 
       <div className="flex flex-col">
-        <div className="grid grid-cols-8 border-stroke py-4 dark:border-strokedark sm:grid-cols-8">
+        <div className="grid grid-cols-9 border-stroke py-4 dark:border-strokedark sm:grid-cols-9">
           <div className="col-span-1">
             <h5 className="text-sm font-bold xsm:text-base">ID</h5>
           </div>
@@ -200,7 +200,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
               Số điện thoại
             </h5>
           </div>
-          <div className="col-span-1">
+          <div className="col-span-2">
             <h5 className="text-sm text-center font-bold xsm:text-base">
               Nội dung
             </h5>
@@ -228,7 +228,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
             <div
               key={transaction.id}
               className={classNames(
-                "grid grid-cols-8 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-8"
+                "grid grid-cols-9 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-9"
               )}
             >
               <Link
@@ -236,7 +236,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
                 className="col-span-1 flex items-center"
               >
                 <p className="text-xs text-black dark:text-white">
-                  {transaction.id}
+                  {transaction.paymentCode}
                 </p>
               </Link>
 
@@ -257,7 +257,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
                   {transaction.user.phoneNumber}
                 </p>
               </div>
-              <div className="col-span-1 flex justify-center items-center">
+              <div className="col-span-2 flex justify-center items-center">
                 <p className="text-xs text-left text-black dark:text-white">
                   {transaction.content}
                 </p>

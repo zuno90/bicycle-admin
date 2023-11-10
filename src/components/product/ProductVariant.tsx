@@ -13,12 +13,13 @@ const ProductVariant: React.FC<TProductVariantProps> = ({
   defaultValues,
   sizes,
 }) => {
-  const { register, setValue } = useFormContext();
+  const { register, setValue, getValues } = useFormContext();
 
   React.useEffect(() => {
     setValue(
       `productVariants.${index}.sizeId`,
-      defaultValues ? `${defaultValues[index]?.sizeId}` : "undefined"
+      defaultValues ? `${defaultValues[index]?.sizeId}` : "undefined",
+      { shouldDirty: true }
     );
   }, []);
 

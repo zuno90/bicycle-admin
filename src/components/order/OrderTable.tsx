@@ -40,6 +40,8 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
   const dataTotal =
     data && data.totalOrderStatus[queryParams.get("status") ?? "all"];
 
+  console.log(data, 65766767);
+
   const handleChangeStatus = (status: string) => {
     queryParams.delete("page");
     queryParams.delete("limit");
@@ -119,6 +121,18 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
             Tất cả ({data.totalOrderStatus.all})
           </button>
           <button
+            onClick={() => handleChangeStatus("waiting_payment")}
+            type="button"
+            className={classNames(
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+              {
+                "bg-[#FBE69E]": queryParams.get("status") === "waiting_payment",
+              }
+            )}
+          >
+            Chờ thanh toán ({data.totalOrderStatus.waiting_payment})
+          </button>
+          <button
             onClick={() => handleChangeStatus("pending")}
             type="button"
             className={classNames(
@@ -147,6 +161,16 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
             )}
           >
             Đã giao hàng ({data.totalOrderStatus.success})
+          </button>
+          <button
+            onClick={() => handleChangeStatus("canceled")}
+            type="button"
+            className={classNames(
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+              { "bg-[#FBE69E]": queryParams.get("status") === "canceled" }
+            )}
+          >
+            Đã huỷ ({data.totalOrderStatus.canceled})
           </button>
         </div>
       </div>

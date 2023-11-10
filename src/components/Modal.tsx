@@ -32,7 +32,7 @@ const Modal: React.FC<TModal> = ({ title, body, footer, close, isForm }) => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-black bg-opacity-75 transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -60,7 +60,7 @@ const Modal: React.FC<TModal> = ({ title, body, footer, close, isForm }) => {
                     >
                       {title}
                     </Dialog.Title>
-                    <div className="mt-2">{body}</div>
+                    <div className="mt-2 text-xs">{body}</div>
                   </div>
                 </div>
                 <div className="p-4 flex justify-center items-center gap-4">
