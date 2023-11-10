@@ -16,7 +16,6 @@ import { clean } from "../../../store/common.action";
 import { toggleModal } from "../../../store/common/common.slice";
 import { updateOrderStatus } from "../../../mutation";
 
-
 const OrderDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -40,7 +39,7 @@ const OrderDetail: React.FC = () => {
     },
   });
 
-  const handleUpdateOrderStatus = (status: keyof typeof EOrderStep) => {
+  const handleUpdateOrderStatus = (status: string) => {
     mutate({
       id,
       status,
@@ -71,13 +70,11 @@ const OrderDetail: React.FC = () => {
         type="button"
         className="inline-flex w-full justify-center rounded-md bg-primary text-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
         onClick={() => {
-          modalType === "canceled"
-            ? handleUpdateOrderStatus("canceled")
-            : handleUpdateOrderStatus(data.status);
+          handleUpdateOrderStatus(modalType);
           closeModal();
         }}
       >
-        Xác nhận
+        Xác nhận {modalType}
       </button>
     </>
   );
