@@ -9,7 +9,7 @@ import queryString from "query-string";
 import Loader from "../../../components/Loader";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { notify } from "../../../utils/helper.util";
-import { createProduct } from "../../../mutation/product.mutation";
+import { createProduct } from "../../../mutation";
 import classNames from "classnames";
 import {
   addByIndex,
@@ -67,7 +67,6 @@ const CreateProduct: React.FC = () => {
   };
 
   const onCreatePost: SubmitHandler<any> = async (data) => {
-    console.log(data);
     const { productVariants, ...others } = data;
     const formD = new FormData();
     formD.append("name", others.name);
@@ -90,7 +89,7 @@ const CreateProduct: React.FC = () => {
 
   const subCategories =
     categories.data &&
-    categories.data.filter(
+    categories.data.categories.filter(
       (cate: ICategory) => cate.id === Number(methods.watch("categoryId"))
     )[0]?.subCategories;
 
@@ -173,8 +172,8 @@ const CreateProduct: React.FC = () => {
                 <option value="" disabled>
                   Chọn danh mục
                 </option>
-                {categories.data.length > 0 &&
-                  categories.data.map((category: ICategory) => (
+                {categories.data.categories.length > 0 &&
+                  categories.data.categories.map((category: ICategory) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>

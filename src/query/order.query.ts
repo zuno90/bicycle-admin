@@ -5,10 +5,12 @@ import { config } from "../utils/config.util";
 export const getOrders = async (
   page: number,
   limit: number,
-  status: string | null
+  status: string | null,
+  fromAt: number,
+  toAt: number
 ) => {
   const params = queryString.stringify(
-    { page, limit, status },
+    { page, limit, status, fromAt, toAt },
     { skipNull: true, skipEmptyString: true }
   );
   const res = await fetchGet(`${config.endpoint}/orders?${params}`, {

@@ -10,11 +10,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getOrder } from "../../../query";
 import Loader from "../../../components/Loader";
-import { updateOrderStatus } from "../../../mutation/order.mutation";
+import Modal from "../../../components/Modal";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { clean } from "../../../store/common.action";
 import { toggleModal } from "../../../store/common/common.slice";
-import Modal from "../../../components/Modal";
+import { updateOrderStatus } from "../../../mutation";
+
 
 const OrderDetail: React.FC = () => {
   const { id } = useParams();

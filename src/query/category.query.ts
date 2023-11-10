@@ -3,10 +3,11 @@ import { config } from "../utils/config.util";
 import { fetchGet, getCache } from "../utils/helper.util";
 
 export const getCategories = async (page?: number, limit?: number) => {
-  const params = queryString.stringify(
-    { page, limit },
-    { skipNull: true, skipEmptyString: true }
-  );
+  const params =
+    queryString.stringify(
+      { page, limit },
+      { skipNull: true, skipEmptyString: true }
+    ) || "select=true";
   const res = await fetchGet(`${config.endpoint}/categories?${params}`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });

@@ -16,7 +16,7 @@ import { formatNumber, notify } from "../../utils/helper.util";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTransactions } from "../../query/transaction.query";
 import Loader from "../Loader";
-import { updateTransactionByStatus } from "../../mutation/transaction.mutation";
+import { updateTransactionByStatus } from "../../mutation";
 import { clean } from "../../store/common.action";
 
 const TransactionTable: React.FC<ITable> = ({ title }) => {

@@ -35,8 +35,20 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
 
   const { data, isLoading } = useQuery({
     queryKey: ["orders", { page, limit, status }],
-    queryFn: () => getOrders(page, limit, status),
-    enabled: !!endDate
+    queryFn: () =>
+      getOrders(
+        page,
+        limit,
+        status,
+        startDate?.getTime(),
+        endDate?.getTime() ||
+          new Date(
+            startDate.getFullYear(),
+            startDate.getMonth() + 1,
+            0
+          ).getTime()
+      ),
+    enabled: !!startDate && !!endDate,
   });
   const dataTotal =
     data && data.totalOrderStatus[queryParams.get("status") ?? "all"];
@@ -58,7 +70,9 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
 
   // export csv modal
   const closeModal = () => dispatch(clean());
-  const ModalBody = () => <p>Xuất đơn hàng có thể mất 1 lúc để lấy dữ liệu</p>;
+  const ModalBody = () => (
+    <p className="text-sm">Xuất đơn hàng có thể mất 1 lúc để lấy dữ liệu</p>
+  );
   const ModalFooter = () => (
     <>
       <button

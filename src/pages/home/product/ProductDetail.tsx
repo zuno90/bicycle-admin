@@ -14,7 +14,7 @@ import queryString from "query-string";
 import Loader from "../../../components/Loader";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { notify } from "../../../utils/helper.util";
-import { updateProduct } from "../../../mutation/product.mutation";
+import { updateProduct } from "../../../mutation";
 import classNames from "classnames";
 import { useNavigate, useParams } from "react-router-dom";
 import {
