@@ -36,11 +36,10 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
   const { data, isLoading } = useQuery({
     queryKey: ["orders", { page, limit, status }],
     queryFn: () => getOrders(page, limit, status),
+    enabled: !!endDate
   });
   const dataTotal =
     data && data.totalOrderStatus[queryParams.get("status") ?? "all"];
-
-  console.log(data, 65766767);
 
   const handleChangeStatus = (status: string) => {
     queryParams.delete("page");
