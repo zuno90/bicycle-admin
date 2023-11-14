@@ -13,7 +13,7 @@ import {
 } from "../../__types__";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { toggleModal } from "../../store/common/common.slice";
-import { createCategory, updateCategory } from "../../mutation";
+import { createCategory, removeCategory, updateCategory } from "../../mutation";
 import { notify } from "../../utils/helper.util";
 import Modal from "../Modal";
 import {
@@ -31,6 +31,7 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
   const navigate = useNavigate();
   const commonState = useAppSelector((state) => state.common);
   const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const methods = useForm();
 
   const [modalType, setModalType] = React.useState<string>("");
@@ -45,10 +46,54 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
   });
   const dataTotal = data && data.totalCategory;
 
+  // delete
+  const { mutate } = useMutation(removeCategory, {
+    onSuccess: (res) => {
+      if (!res.success)
+        notify(ENotificationType.error, "Xảy ra lỗi! Không thể xoá danh mục!");
+      else {
+        queryClient.invalidateQueries({
+          queryKey: ["categories", { page, limit }],
+        });
+        notify(ENotificationType.success, "Xoá danh mục thành công!");
+      }
+    },
+  });
+
   const closeModal = () => {
     methods.reset();
     dispatch(clean());
   };
+
+  const ModalBody = () => (
+    <>
+      <p className="text-meta-1 italic">
+        Các danh mục con và sản phẩm thuộc danh mục này sẽ bị xoá!
+      </p>
+      <p>Bạn vẫn muốn xoá danh mục này?</p>
+    </>
+  );
+  const ModalFooter = () => (
+    <>
+      <button
+        type="button"
+        className="inline-flex w-full justify-center rounded-md bg-[#DDDDDD] text-black px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-[#B6B6B6] hover:bg-gray-50 sm:mt-0 sm:w-auto"
+        onClick={closeModal}
+      >
+        Huỷ
+      </button>
+      <button
+        type="button"
+        className="inline-flex w-full justify-center rounded-md bg-primary text-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+        onClick={() => {
+          mutate(commonState.modalId);
+          closeModal();
+        }}
+      >
+        Xác nhận
+      </button>
+    </>
+  );
 
   if (isLoading) return <Loader />;
   return (
@@ -187,7 +232,13 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
             <FormProvider {...methods}>
               <Modal
                 title="Tạo danh mục chính"
-                body={<ModalBodyCreate close={closeModal} />}
+                body={
+                  <ModalBodyCreate
+                    close={closeModal}
+                    page={page}
+                    limit={limit}
+                  />
+                }
                 isForm
               />
             </FormProvider>
@@ -202,11 +253,23 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
                   <ModalBodyUpdate
                     id={commonState.modalId}
                     close={closeModal}
+                    page={page}
+                    limit={limit}
                   />
                 }
                 isForm
               />
             </FormProvider>
+          )}
+        {commonState.isOpenModal &&
+          modalType === "remove" &&
+          commonState.modalId > 0 && (
+            <Modal
+              title="Xoá danh mục"
+              body={<ModalBody />}
+              footer={<ModalFooter />}
+              close={closeModal}
+            />
           )}
       </div>
     </>
@@ -214,7 +277,11 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
 };
 
 // modal
-const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
+const ModalBodyCreate: React.FC<{
+  close: () => void;
+  page: number;
+  limit: number;
+}> = ({ close, page, limit }) => {
   const queryClient = useQueryClient();
   const {
     register,
@@ -245,7 +312,9 @@ const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
             "Tạo mới danh mục thành công!",
             "success"
           );
-          queryClient.invalidateQueries({ queryKey: ["categories"] });
+          queryClient.invalidateQueries({
+            queryKey: ["categories", { page, limit }],
+          });
           close();
         }
       },
@@ -331,7 +400,9 @@ const ModalBodyCreate: React.FC<{ close: () => void }> = ({ close }) => {
 const ModalBodyUpdate: React.FC<{
   id: number | string;
   close: () => void;
-}> = ({ id, close }) => {
+  page: number;
+  limit: number;
+}> = ({ id, close, page, limit }) => {
   const queryClient = useQueryClient();
   const {
     register,
@@ -375,7 +446,9 @@ const ModalBodyUpdate: React.FC<{
             "Cập nhật danh mục thành công!",
             "success"
           );
-          queryClient.invalidateQueries({ queryKey: ["categories"] });
+          queryClient.invalidateQueries({
+            queryKey: ["categories", { page, limit }],
+          });
           close();
         }
       },
@@ -383,7 +456,6 @@ const ModalBodyUpdate: React.FC<{
   );
 
   const onUpdateCate: SubmitHandler<any> = async (formData) => {
-    console.log(formData);
     const { name, thumbnail } = formData;
     const formD = new FormData();
     formD.append("name", name);

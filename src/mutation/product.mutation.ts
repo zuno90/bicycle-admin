@@ -1,5 +1,6 @@
 import { config } from "../utils/config.util";
 import {
+  fetchDelete,
   fetchPostFormData,
   fetchPutFormData,
   getCache,
@@ -16,6 +17,15 @@ export const updateProduct = async (data: any) => {
   const res = await fetchPutFormData(
     `${config.endpoint}/product/${data.id}`,
     data.payload,
+    { Authorization: `Bearer ${getCache(config.cache.accessToken)}` }
+  );
+  return res;
+};
+
+export const removeProduct = async (id: number) => {
+  const res = await fetchDelete(
+    `${config.endpoint}/product/${id}`,
+    JSON.stringify({}),
     { Authorization: `Bearer ${getCache(config.cache.accessToken)}` }
   );
   return res;

@@ -345,15 +345,14 @@ const Chat: React.FC = () => {
         {!chatState.isLoading ? (
           !chatState.currentUser ? (
             <div className="w-full flex flex-col justify-center items-center space-y-4">
-              <div className="text-2xl">HELLO mấy ní!</div>
-              <div className="text-xl">Bấm vào user để chat!</div>
+              <div className="text-2xl">Bấm vào user để chat!</div>
               <img
                 className="w-[40vw] object-cover"
                 src={ChatWelcome1}
                 alt="chat-welcome1"
               />
               <div className="text-xs italic">
-                Để thuận tiện, mấy ní nên thao tác trên <b>Desktop</b> hoặc{" "}
+                Để thuận tiện, cần thao tác trên <b>Desktop</b> hoặc{" "}
                 <b>Tablet</b>.
               </div>
               <div className="text-xs italic">

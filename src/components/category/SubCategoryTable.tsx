@@ -21,7 +21,11 @@ import { toggleModal } from "../../store/common/common.slice";
 import { clean } from "../../store/common.action";
 import { notify } from "../../utils/helper.util";
 import Modal from "../Modal";
-import { createSubCategory, updateSubCategory } from "../../mutation";
+import {
+  createSubCategory,
+  removeSubCategory,
+  updateSubCategory,
+} from "../../mutation";
 
 const noThumbErrMessage = "Ảnh danh mục phụ không được bỏ trống!";
 
@@ -31,6 +35,7 @@ const SubCategoryTable: React.FC<ITable> = ({ title }) => {
   const navigate = useNavigate();
   const commonState = useAppSelector((state) => state.common);
   const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const methods = useForm();
 
   const [modalType, setModalType] = React.useState<string>("");
@@ -56,6 +61,52 @@ const SubCategoryTable: React.FC<ITable> = ({ title }) => {
     methods.reset();
     dispatch(clean());
   };
+
+  // delete
+  const { mutate } = useMutation(removeSubCategory, {
+    onSuccess: (res) => {
+      if (!res.success)
+        notify(
+          ENotificationType.error,
+          "Xảy ra lỗi! Không thể xoá danh mục con!"
+        );
+      else {
+        queryClient.invalidateQueries({
+          queryKey: ["subCategories", { page, limit }],
+        });
+        notify(ENotificationType.success, "Xoá danh mục con thành công!");
+      }
+    },
+  });
+  const ModalBody = () => (
+    <>
+      <p className="text-meta-1 italic">
+        Các sản phẩm thuộc danh mục con này sẽ bị xoá!
+      </p>
+      <p>Bạn vẫn muốn xoá danh mục này?</p>
+    </>
+  );
+  const ModalFooter = () => (
+    <>
+      <button
+        type="button"
+        className="inline-flex w-full justify-center rounded-md bg-[#DDDDDD] text-black px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-[#B6B6B6] hover:bg-gray-50 sm:mt-0 sm:w-auto"
+        onClick={closeModal}
+      >
+        Huỷ
+      </button>
+      <button
+        type="button"
+        className="inline-flex w-full justify-center rounded-md bg-primary text-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+        onClick={() => {
+          mutate(commonState.modalId);
+          closeModal();
+        }}
+      >
+        Xác nhận
+      </button>
+    </>
+  );
 
   if (category.isError || subCategories.isError) navigate(-1);
   if (category.isLoading) return <Loader />;
@@ -158,10 +209,12 @@ const SubCategoryTable: React.FC<ITable> = ({ title }) => {
                     </button>
                     <button
                       type="button"
-                      // onClick={() => {
-                      //   setModalType("remove");
-                      //   dispatch(toggleModal({ id: category.id, isOpen: true }));
-                      // }}
+                      onClick={() => {
+                        setModalType("remove");
+                        dispatch(
+                          toggleModal({ id: subCategory.id, isOpen: true })
+                        );
+                      }}
                       className="hover:text-primary"
                     >
                       <svg
@@ -196,6 +249,8 @@ const SubCategoryTable: React.FC<ITable> = ({ title }) => {
                       cateId={category.data.id}
                       cateName={category.data.name}
                       close={closeModal}
+                      page={page}
+                      limit={limit}
                     />
                   }
                   isForm
@@ -214,11 +269,23 @@ const SubCategoryTable: React.FC<ITable> = ({ title }) => {
                       cateId={category.data.id}
                       cateName={category.data.name}
                       close={closeModal}
+                      page={page}
+                      limit={limit}
                     />
                   }
                   isForm
                 />
               </FormProvider>
+            )}
+          {commonState.isOpenModal &&
+            modalType === "remove" &&
+            commonState.modalId > 0 && (
+              <Modal
+                title="Xoá danh mục"
+                body={<ModalBody />}
+                footer={<ModalFooter />}
+                close={closeModal}
+              />
             )}
         </div>
       )}
@@ -231,7 +298,9 @@ const ModalBodyCreate: React.FC<{
   cateId: number;
   cateName: string;
   close: () => void;
-}> = ({ cateId, cateName, close }) => {
+  page: number;
+  limit: number;
+}> = ({ cateId, cateName, close, page, limit }) => {
   const queryClient = useQueryClient();
   const {
     register,
@@ -262,7 +331,9 @@ const ModalBodyCreate: React.FC<{
             "Tạo mới danh mục phụ thành công!",
             "success"
           );
-          queryClient.invalidateQueries({ queryKey: ["subCategories"] });
+          queryClient.invalidateQueries({
+            queryKey: ["subCategories", { page, limit }],
+          });
           close();
         }
       },
@@ -360,7 +431,9 @@ const ModalBodyUpdate: React.FC<{
   cateId: number;
   cateName: string;
   close: () => void;
-}> = ({ id, cateId, cateName, close }) => {
+  page: number;
+  limit: number;
+}> = ({ id, cateId, cateName, close, page, limit }) => {
   const queryClient = useQueryClient();
   const {
     register,
@@ -404,7 +477,9 @@ const ModalBodyUpdate: React.FC<{
             "Cập nhật danh mục phụ thành công!",
             "success"
           );
-          queryClient.invalidateQueries({ queryKey: ["subCategories"] });
+          queryClient.invalidateQueries({
+            queryKey: ["subCategories", { page, limit }],
+          });
           close();
         }
       },
