@@ -21,6 +21,8 @@ const ProductVariant = React.lazy(
   () => import("../../../components/product/ProductVariant")
 );
 
+const youtubePrefix = "https://youtube.com/embed/";
+
 const CreateProduct: React.FC = () => {
   const navigate = useNavigate();
   const productState = useAppSelector((state) => state.product);
@@ -68,13 +70,17 @@ const CreateProduct: React.FC = () => {
 
   const onCreatePost: SubmitHandler<any> = async (data) => {
     const { productVariants, ...others } = data;
+    // handle video url
+    let vidUrl = others.video;
+    if (vidUrl.includes("/watch?v="))
+      vidUrl = vidUrl.replace("/watch?v=", "/embed/");
     const formD = new FormData();
     formD.append("name", others.name);
     formD.append("categoryId", others.categoryId);
     formD.append("subCategoryId", others.subCategoryId);
     formD.append("productVariants", JSON.stringify(productVariants));
     formD.append("discount", others.discount);
-    formD.append("video", others.video);
+    formD.append("video", vidUrl);
     for (let i of images) formD.append("images", i);
     formD.append("detail", others.detail);
     mutate(formD);
@@ -355,7 +361,7 @@ const CreateProduct: React.FC = () => {
               <iframe
                 width="100%"
                 height="315"
-                src={`https://youtube.com/embed/${
+                src={`${youtubePrefix}${
                   Object.values(
                     queryString.parse(methods.getValues("video"))
                   )[0]

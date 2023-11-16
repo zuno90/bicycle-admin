@@ -27,6 +27,8 @@ const ProductVariant = React.lazy(
   () => import("../../../components/product/ProductVariant")
 );
 
+const youtubePrefix = "https://youtube.com/embed/";
+
 const ProductDetail: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -143,13 +145,18 @@ const ProductDetail: React.FC = () => {
 
   const onUpdatePost: SubmitHandler<any> = async (data) => {
     const { productVariants, ...others } = data;
+    // handle video url
+    let vidUrl = others.video;
+    if (vidUrl.includes("/watch?v="))
+      vidUrl = vidUrl.replace("/watch?v=", "/embed/");
+
     const formD = new FormData();
     formD.append("name", others.name);
     formD.append("categoryId", others.categoryId);
     formD.append("subCategoryId", others.subCategoryId);
     formD.append("productVariants", JSON.stringify(productVariants));
     formD.append("discount", others.discount);
-    formD.append("video", others.video);
+    formD.append("video", vidUrl);
     formD.append("images", JSON.stringify(productState.previewImageList));
     if (images.length > 0) for (let i of images) formD.append("newImages", i);
     formD.append("detail", others.detail);
@@ -400,7 +407,7 @@ const ProductDetail: React.FC = () => {
             {...methods.register("video")}
             type="text"
             placeholder="Link youtube"
-            defaultValue={product.data.video}
+            defaultValue={product.data.video.replace("/embed/", "/watch?v=")}
             className="w-full sm:w-[70%] rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
           />
         </div>
@@ -416,7 +423,7 @@ const ProductDetail: React.FC = () => {
               <iframe
                 width="100%"
                 height="315"
-                src={`https://youtube.com/embed/${
+                src={`${youtubePrefix}${
                   Object.values(
                     queryString.parse(methods.getValues("video"))
                   )[0]
@@ -440,9 +447,7 @@ const ProductDetail: React.FC = () => {
                 <iframe
                   width="100%"
                   height="315"
-                  src={`https://youtube.com/embed/${
-                    Object.values(queryString.parse(product.data.video))[0]
-                  }`}
+                  src={product.data.video}
                   title="YouTube video player"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
