@@ -5,7 +5,12 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { ENotificationType, ILoginInput } from "../../__types__";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { login } from "../../mutation";
-import { getCache, notify, setCache } from "../../utils/helper.util";
+import {
+  clearCache,
+  getCache,
+  notify,
+  setCache,
+} from "../../utils/helper.util";
 import { loginAction, setAdmin } from "../../store/auth/auth.slice";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -24,6 +29,7 @@ const Login: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<ILoginInput>();
+
 
   const redirectUrl = location.state?.from?.pathname ?? "/";
   authState.isAuth &&
@@ -45,7 +51,7 @@ const Login: React.FC = () => {
       dispatch(clean());
       dispatch(loginAction(false));
       dispatch(setAdmin(null));
-      window.localStorage.clear();
+      clearCache();
       notify(
         ENotificationType.error,
         "Không thể đăng nhập tài khoản. Vui lòng thử lại!"
@@ -63,7 +69,6 @@ const Login: React.FC = () => {
         setCache("accessToken", res.data.accessToken);
         setCache("refreshToken", res.data.refreshToken);
         dispatch(loginAction(true));
-        // queryClient.invalidateQueries({ queryKey: ["userInfo"] });
         notify(
           ENotificationType.success,
           "Đăng nhập thành công với quyền admin!",
@@ -81,7 +86,6 @@ const Login: React.FC = () => {
     };
     mutate(payload);
   };
-
   if (isLoadingLogin || isFetchingUser) return <Loader />;
   return (
     <section className="w-full h-screen flex justify-center items-center bg-gray-200">

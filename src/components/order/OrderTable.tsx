@@ -2,7 +2,7 @@ import React from "react";
 import Pagination from "../Pagination";
 import { EOrderStatus, IOrder, ITable } from "../../__types__";
 import { formatNumber } from "../../utils/helper.util";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { config } from "../../utils/config.util";
 import { useQuery } from "@tanstack/react-query";
 import { getOrderCsv, getOrders } from "../../query";
@@ -33,7 +33,11 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
 
   const [startDate, endDate] = dateRange;
 
-  const { data, isLoading } = useQuery({
+  const {
+    data,
+    isLoading,
+    error: orderErr,
+  } = useQuery({
     queryKey: ["orders", { page, limit, status }],
     queryFn: () =>
       getOrders(
@@ -50,6 +54,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
       ),
     enabled: !!startDate && !!endDate,
   });
+  console.log({ data, orderErr });
   const dataTotal =
     data && data.totalOrderStatus[queryParams.get("status") ?? "all"];
 
@@ -62,7 +67,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
   };
 
   // export report
-  const { refetch } = useQuery({
+  const { refetch, error: orderCsvErr } = useQuery({
     queryKey: ["ordercsv", { startDate, endDate }],
     queryFn: () => getOrderCsv(startDate?.getTime()!, endDate?.getTime()!),
     enabled: false,
