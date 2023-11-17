@@ -3,7 +3,7 @@ import Loader from "../../components/Loader";
 import classNames from "classnames";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { ENotificationType, ILoginInput } from "../../__types__";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { login } from "../../mutation";
 import { getCache, notify, setCache } from "../../utils/helper.util";
 import { loginAction, setAdmin } from "../../store/auth/auth.slice";
@@ -12,7 +12,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { config } from "../../utils/config.util";
 import { getUserInfo } from "../../query";
 import { clean } from "../../store/common.action";
-import { getToken } from "firebase/messaging";
 import { requestPermission } from "../../utils/firebase.util";
 
 const Login: React.FC = () => {
@@ -20,7 +19,6 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const authState = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
