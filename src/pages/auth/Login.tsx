@@ -3,7 +3,7 @@ import Loader from "../../components/Loader";
 import classNames from "classnames";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { ENotificationType, ILoginInput } from "../../__types__";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { login } from "../../mutation";
 import { getCache, notify, setCache } from "../../utils/helper.util";
 import { loginAction, setAdmin } from "../../store/auth/auth.slice";
@@ -20,26 +20,40 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const authState = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ILoginInput>();
 
-  const { isFetching: isFetchingUser, data: userData } = useQuery({
-    queryKey: ["userInfo"],
-    queryFn: () => getUserInfo(),
-    enabled: authState.isAuth,
-  });
-  authState.isAuth && userData
-    ? dispatch(setAdmin(userData))
-    : dispatch(setAdmin(null));
-
   const redirectUrl = location.state?.from?.pathname ?? "/";
   authState.isAuth &&
     authState.user &&
     navigate(redirectUrl, { replace: true });
+
+  const {
+    isFetching: isFetchingUser,
+    data: userData,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["userInfo"],
+    queryFn: () => getUserInfo(),
+    enabled: authState.isAuth,
+  });
+
+  if (isSuccess) {
+    if (!userData.success) {
+      dispatch(clean());
+      dispatch(loginAction(false));
+      dispatch(setAdmin(null));
+      window.localStorage.clear();
+      notify(
+        ENotificationType.error,
+        "Không thể đăng nhập tài khoản. Vui lòng thử lại!"
+      );
+    } else dispatch(setAdmin(userData.data.user));
+  }
 
   const { mutate, isLoading: isLoadingLogin } = useMutation(login, {
     onSuccess: (res) => {
@@ -51,6 +65,7 @@ const Login: React.FC = () => {
         setCache("accessToken", res.data.accessToken);
         setCache("refreshToken", res.data.refreshToken);
         dispatch(loginAction(true));
+        // queryClient.invalidateQueries({ queryKey: ["userInfo"] });
         notify(
           ENotificationType.success,
           "Đăng nhập thành công với quyền admin!",

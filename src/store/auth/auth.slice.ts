@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { clean } from "../common.action";
 
 type TInitialState = { isAuth: boolean; user: any };
 
@@ -15,6 +16,7 @@ const authSlice = createSlice({
       state.user = action.payload;
     },
   },
+  extraReducers: (builder) => builder.addCase(clean, () => initialState),
 });
 
 export const { loginAction, setAdmin } = authSlice.actions;

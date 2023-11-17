@@ -6,7 +6,7 @@ export const getUserInfo = async () => {
   const res = await fetchGet(`${config.endpoint}/fetch-me`, {
     Authorization: `Bearer ${getCache(config.cache.accessToken)}`,
   });
-  if (res.success) return res.data.user;
+  return res;
 };
 
 export const getUsers = async (
