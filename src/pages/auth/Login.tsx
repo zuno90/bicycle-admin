@@ -79,7 +79,11 @@ const Login: React.FC = () => {
   });
 
   const onSubmitLogin: SubmitHandler<ILoginInput> = async (data) => {
+    window.alert("vao day!!!!!");
+
     await requestPermission();
+
+    window.alert("request device token!!!!!");
     const payload = {
       ...data,
       deviceToken: getCache(config.cache.deviceToken),
