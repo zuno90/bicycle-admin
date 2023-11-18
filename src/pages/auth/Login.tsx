@@ -30,12 +30,6 @@ const Login: React.FC = () => {
     formState: { errors },
   } = useForm<ILoginInput>();
 
-
-  const redirectUrl = location.state?.from?.pathname ?? "/";
-  authState.isAuth &&
-    authState.user &&
-    navigate(redirectUrl, { replace: true });
-
   const {
     isFetching: isFetchingUser,
     data: userData,
@@ -46,18 +40,24 @@ const Login: React.FC = () => {
     enabled: authState.isAuth,
   });
 
-  if (isSuccess) {
-    if (!userData.success) {
-      dispatch(clean());
-      dispatch(loginAction(false));
-      dispatch(setAdmin(null));
-      clearCache();
-      notify(
-        ENotificationType.error,
-        "Không thể đăng nhập tài khoản. Vui lòng thử lại!"
-      );
-    } else dispatch(setAdmin(userData.data.user));
-  }
+  const redirectUrl = location.state?.from?.pathname ?? "/";
+  React.useEffect(() => {
+    if (isSuccess && userData) {
+      if (!userData.success) {
+        dispatch(clean());
+        dispatch(loginAction(false));
+        dispatch(setAdmin(null));
+        clearCache();
+        notify(
+          ENotificationType.error,
+          "Không thể đăng nhập tài khoản. Vui lòng thử lại!"
+        );
+      } else dispatch(setAdmin(userData.data.user));
+    }
+    authState.isAuth &&
+      authState.user &&
+      navigate(redirectUrl, { replace: true });
+  }, [navigate, userData]);
 
   const { mutate, isLoading: isLoadingLogin } = useMutation(login, {
     onSuccess: (res) => {
@@ -86,6 +86,7 @@ const Login: React.FC = () => {
     };
     mutate(payload);
   };
+
   if (isLoadingLogin || isFetchingUser) return <Loader />;
   return (
     <section className="w-full h-screen flex justify-center items-center bg-gray-200">
@@ -138,12 +139,12 @@ const Login: React.FC = () => {
 
             <button
               type="submit"
-              disabled={isLoadingLogin ?? isFetchingUser}
+              disabled={isLoadingLogin || isFetchingUser}
               className="flex w-full justify-center items-center rounded bg-primary p-3 font-medium text-gray"
             >
               <svg
                 className={classNames("w-4 h-4 mr-3", {
-                  "animate-spin": isLoadingLogin ?? isFetchingUser,
+                  "animate-spin": isLoadingLogin || isFetchingUser,
                 })}
                 viewBox="0 0 24 24"
               >
