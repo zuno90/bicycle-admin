@@ -19,6 +19,11 @@ import { getUserInfo } from "../../query";
 import { clean } from "../../store/common.action";
 import { requestPermission } from "../../utils/firebase.util";
 
+const isIos = () => {
+  if (/iPad|iPhone|iPod/.test(window.navigator.userAgent)) return true;
+  return false;
+};
+
 const Login: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -81,7 +86,7 @@ const Login: React.FC = () => {
   });
 
   const onSubmitLogin: SubmitHandler<ILoginInput> = async (data) => {
-    await requestPermission();
+    !isIos && (await requestPermission());
     const payload = {
       ...data,
       deviceToken: getCache(config.cache.deviceToken),
