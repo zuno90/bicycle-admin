@@ -54,7 +54,6 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
       ),
     enabled: !!startDate && !!endDate,
   });
-  console.log({ data, orderErr });
   const dataTotal =
     data && data.totalOrderStatus[queryParams.get("status") ?? "all"];
 

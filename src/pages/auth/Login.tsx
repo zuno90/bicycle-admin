@@ -41,6 +41,9 @@ const Login: React.FC = () => {
   });
 
   const redirectUrl = location.state?.from?.pathname ?? "/";
+  authState.isAuth &&
+    authState.user &&
+    navigate(redirectUrl, { replace: true });
   React.useEffect(() => {
     if (isSuccess && userData) {
       if (!userData.success) {
@@ -52,11 +55,10 @@ const Login: React.FC = () => {
           ENotificationType.error,
           "Không thể đăng nhập tài khoản. Vui lòng thử lại!"
         );
-      } else dispatch(setAdmin(userData.data.user));
+      } else {
+        dispatch(setAdmin(userData.data.user));
+      }
     }
-    authState.isAuth &&
-      authState.user &&
-      navigate(redirectUrl, { replace: true });
   }, [navigate, userData]);
 
   const { mutate, isLoading: isLoadingLogin } = useMutation(login, {
