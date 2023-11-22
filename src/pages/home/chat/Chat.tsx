@@ -36,7 +36,7 @@ import AdminAvatar from "../../../assets/images/logo/admin.png";
 import { db } from "../../../utils/firebase.util";
 import { v4 as uuidv4 } from "uuid";
 import { formatTimeAgo, notify } from "../../../utils/helper.util";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getUser } from "../../../query";
 import { useAppDispatch, useAppSelector } from "../../../store";
@@ -48,14 +48,7 @@ import {
 } from "../../../store/chat/chat.slice";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import { clean } from "../../../store/common.action";
-
-const s3Client = new S3Client({
-  credentials: {
-    accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
-    secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
-  },
-  region: import.meta.env.VITE_AWS_REGION,
-});
+import { s3Client } from "../../../utils/s3.util";
 
 const imageMimeType = /image\/(png|jpg|jpeg|webp)/i;
 

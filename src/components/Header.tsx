@@ -1,14 +1,72 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import Logo from "../assets/images/logo/logo-icon.svg";
 import DarkModeSwitcher from "./DarkModeSwitcher";
-import DropdownMessage from "./DropdownMessage";
+// import DropdownMessage from "./DropdownMessage";
 import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
+import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { s3Client } from "../utils/s3.util";
+import { notify } from "../utils/helper.util";
+import { ENotificationType } from "../__types__";
+
+const imageMimeType = /image\/(png|jpg|jpeg|webp)/i;
+const bannerUrl = "banner/home-banner";
+const imgUrl = `${import.meta.env.VITE_AWS_CDN_CLOUDFONT}/${bannerUrl}`;
 
 const Header: React.FC<{
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }> = (props) => {
+  const [toggleChanged, setToggleChanged] = React.useState<boolean>(false);
+
+  // upload banner to S3
+  const handleUploadAppBanner = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (e.target.files) {
+      if (!e.target.files[0].type.match(imageMimeType))
+        return notify(
+          ENotificationType.error,
+          "Chỉ cho phép up ảnh định dạng .png, .jpg, .jpeg, .webp!",
+          "error"
+        );
+      // delete old banner
+      await deleteBannerS3();
+      // upload new banner
+      await uploadImageToS3(e.target.files[0]);
+    }
+  };
+
+  const deleteBannerS3 = async () => {
+    const params = new DeleteObjectCommand({
+      Bucket: import.meta.env.VITE_AWS_BUCKET_NAME,
+      Key: bannerUrl,
+    });
+    await s3Client.send(params);
+    try {
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const uploadImageToS3 = async (imgFile: File) => {
+    try {
+      const params = new PutObjectCommand({
+        Bucket: import.meta.env.VITE_AWS_BUCKET_NAME,
+        Key: bannerUrl,
+        Body: imgFile,
+      });
+      const s3Img = await s3Client.send(params);
+      if (s3Img.$metadata.httpStatusCode !== 200)
+        throw new Error("Upload ảnh không thành công, vui lòng thử lại!");
+      setToggleChanged(!toggleChanged);
+      // send message
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between py-4 px-4 shadow-2 md:px-6 2xl:px-11">
@@ -61,9 +119,26 @@ const Header: React.FC<{
           </Link>
         </div>
 
-        <div className="hidden sm:block">
-          <form>
-            {/* <div className="relative">
+        <div className="flex flex-col items-center space-y-1">
+          <label htmlFor="upload-banner">
+            <img
+              src={imgUrl}
+              className="w-24 cursor-pointer"
+              alt="app-banner"
+            />
+            <input
+              type="file"
+              onChange={handleUploadAppBanner}
+              id="upload-banner"
+              className="sr-only"
+            />
+          </label>
+          <p className="text-[9px] text-meta-1 italic">
+            * Click vào ảnh để upload banner cho app
+          </p>
+
+          {/* <form>
+            <div className="relative">
               <button className="absolute top-1/2 left-0 -translate-y-1/2">
                 <svg
                   className="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary"
@@ -93,8 +168,8 @@ const Header: React.FC<{
                 placeholder="Type to search..."
                 className="w-full bg-transparent pr-4 pl-9 focus:outline-none"
               />
-            </div> */}
-          </form>
+            </div>
+          </form> */}
         </div>
 
         <div className="flex items-center gap-3 2xsm:gap-7">
