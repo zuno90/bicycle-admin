@@ -17,6 +17,7 @@ export interface IProduct {
   images: string[];
   video: string;
   detail: string;
+  statusDisplay: boolean;
   status: keyof typeof EProductStatus;
   createAt: Date;
   updateAt: Date;

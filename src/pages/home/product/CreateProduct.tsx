@@ -71,9 +71,14 @@ const CreateProduct: React.FC = () => {
   const onCreatePost: SubmitHandler<any> = async (data) => {
     const { productVariants, ...others } = data;
     // handle video url
+
     let vidUrl = others.video;
-    if (vidUrl.includes("/watch?v="))
-      vidUrl = vidUrl.replace("/watch?v=", "/embed/");
+    console.log(vidUrl, 55656);
+    if (vidUrl.includes("/watch?v=")) {
+      const { query } = queryString.parseUrl(vidUrl);
+      vidUrl = youtubePrefix + query.v;
+    }
+
     const formD = new FormData();
     formD.append("name", others.name);
     formD.append("categoryId", others.categoryId);

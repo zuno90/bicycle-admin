@@ -19,7 +19,7 @@ const CreateVoucher: React.FC = () => {
     trigger,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<IVoucherInput>({
     defaultValues: {
       unit: EDiscountType.cash,
       detail: "Mã khuyến mãi cho khách hàng",
@@ -52,8 +52,6 @@ const CreateVoucher: React.FC = () => {
   });
 
   const onCreateVoucher: SubmitHandler<IVoucherInput> = async (data) => {
-    console.log("voucher inputs", data);
-
     mutate(data);
   };
 

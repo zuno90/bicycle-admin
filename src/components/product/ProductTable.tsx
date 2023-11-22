@@ -15,10 +15,11 @@ import {
 } from "../../__types__";
 import classNames from "classnames";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { removeProduct } from "../../mutation";
+import { removeProduct, updateProductByStatus } from "../../mutation";
 import { clean } from "../../store/common.action";
 import Modal from "../Modal";
 import { toggleModal } from "../../store/common/common.slice";
+import Switcher from "../Switcher";
 
 const ProductTable: React.FC<ITable> = ({ title }) => {
   const { search } = useLocation();
@@ -58,6 +59,27 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
           queryKey: ["products", { page, limit, status }],
         });
         notify(ENotificationType.success, "Xoá sản phẩm thành công!");
+      }
+    },
+  });
+
+  // update status
+  const { mutate: updateStatusMutate } = useMutation(updateProductByStatus, {
+    onSuccess: (res) => {
+      if (!res.success)
+        notify(
+          ENotificationType.error,
+          "Xảy ra lỗi! Không thể cập nhật trạng thái sản phẩm!"
+        );
+      else {
+        queryClient.invalidateQueries({
+          queryKey: ["products", { page, limit, status }],
+        });
+        dispatch(clean());
+        notify(
+          ENotificationType.success,
+          "Cập nhật trạng thái sản phẩm thành công!"
+        );
       }
     },
   });
@@ -149,7 +171,8 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
         </div>
       </div>
       <div className="flex flex-col">
-        <div className="grid grid-cols-8 border-stroke py-4 dark:border-strokedark sm:grid-cols-8">
+        <div className="grid grid-cols-9 border-stroke py-4 dark:border-strokedark sm:grid-cols-9">
+          <div className="col-span-1"></div>
           <div className="col-span-1">
             <h5 className="text-sm font-bold xsm:text-base">Mã</h5>
           </div>
@@ -175,8 +198,15 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
           data.products.map((product: IProduct) => (
             <div
               key={product.id}
-              className="grid grid-cols-8 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-8"
+              className="grid grid-cols-9 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-9"
             >
+              <div className="col-span-1 flex items-center">
+                <Switcher
+                  id={product.id}
+                  isEnabled={product.statusDisplay}
+                  action={() => updateStatusMutate(product.id)}
+                />
+              </div>
               <Link
                 to={`/product/${product.id}`}
                 className="col-span-1 flex items-center"
@@ -209,7 +239,6 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
 
               <div className="col-span-1 flex flex-col items-center justify-center gap-2">
                 <p className="text-xs text-black dark:text-white">
-                  <span className="underline">đ</span>
                   <span>
                     {formatNumber(
                       Math.min(
@@ -222,6 +251,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
                         ...product.productItem.map((j: IProductItem) => j.price)
                       )
                     )}
+                    <span className="underline">đ</span>
                   </span>
                 </p>
               </div>

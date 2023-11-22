@@ -160,10 +160,10 @@ const OrderDetail: React.FC = () => {
                 {order.quantity}
               </td>
               <td colSpan={1} className="py-3.5 text-xs text-center table-cell">
-                đ{formatNumber(order.price)}
+                {formatNumber(order.price)}đ
               </td>
               <td colSpan={1} className="py-3.5 text-xs text-right table-cell">
-                đ{formatNumber(order.totalPrice)}
+                {formatNumber(order.totalPrice)}đ
               </td>
             </tr>
           ))}
@@ -178,7 +178,7 @@ const OrderDetail: React.FC = () => {
               Tổng cộng
             </th>
             <td colSpan={10} className="pt-3.5 text-sm text-right font-bold">
-              đ{formatNumber(data.totalPrice)}
+              {formatNumber(data.totalPrice)}đ
             </td>
           </tr>
           <tr>
@@ -190,7 +190,7 @@ const OrderDetail: React.FC = () => {
               Vận chuyển
             </th>
             <td colSpan={10} className="pt-3.5 text-sm font-bold text-right">
-              đ{formatNumber(data.priceDelivery)}
+              {formatNumber(data.priceDelivery)}đ
             </td>
           </tr>
           <tr>
@@ -205,7 +205,7 @@ const OrderDetail: React.FC = () => {
               colSpan={10}
               className="pt-3.5 text-sm text-meta-1 text-right font-bold"
             >
-              -đ{formatNumber(data.pricePromotion)}
+              -{formatNumber(data.pricePromotion)}đ
             </td>
           </tr>
           <tr>
@@ -220,7 +220,7 @@ const OrderDetail: React.FC = () => {
               colSpan={10}
               className="pt-3.5 text-sm text-meta-1 text-right font-bold"
             >
-              đ{formatNumber(data.finalPrice)}
+              {formatNumber(data.finalPrice)}đ
             </td>
           </tr>
         </tfoot>

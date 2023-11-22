@@ -25,10 +25,12 @@ export interface IVoucher {
 }
 
 export interface IVoucherInput {
-  name: string;
-  discount: number;
+  title: string;
+  detail: string;
+  unit: string;
+  code: string;
+  value: number;
+  quantity: number;
   startDate: Date;
   endDate: Date;
-  code: string;
-  quantity: number;
 }

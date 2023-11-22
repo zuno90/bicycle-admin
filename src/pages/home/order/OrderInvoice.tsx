@@ -152,13 +152,13 @@ const OrderInvoice: React.FC = () => {
                       colSpan={2}
                       className="py-3.5 text-xs text-center table-cell"
                     >
-                      đ{formatNumber(orderProd.price)}
+                      {formatNumber(orderProd.price)}đ
                     </td>
                     <td
                       colSpan={2}
                       className="py-3.5 text-xs text-center table-cell"
                     >
-                      đ{formatNumber(orderProd.totalPrice)}
+                      {formatNumber(orderProd.totalPrice)}đ
                     </td>
                   </tr>
                 ))}
@@ -193,7 +193,7 @@ const OrderInvoice: React.FC = () => {
                   colSpan={2}
                   className="py-3.5 text-sm font-light text-center"
                 >
-                  đ{formatNumber(data?.totalPrice)}
+                  {formatNumber(data?.totalPrice)}đ
                 </td>
               </tr>
               <tr className="border-b">
@@ -209,7 +209,7 @@ const OrderInvoice: React.FC = () => {
                   colSpan={2}
                   className="py-3.5 text-sm text-center font-light"
                 >
-                  đ{formatNumber(data?.priceDelivery)}
+                  {formatNumber(data?.priceDelivery)}đ
                 </td>
               </tr>
               <tr className="border-b">
@@ -225,7 +225,7 @@ const OrderInvoice: React.FC = () => {
                   colSpan={2}
                   className="py-3.5 text-sm text-center text-meta-1 font-light"
                 >
-                  đ{formatNumber(data?.pricePromotion)}
+                  {formatNumber(data?.pricePromotion)}đ
                 </td>
               </tr>
               <tr>
@@ -241,7 +241,7 @@ const OrderInvoice: React.FC = () => {
                   colSpan={2}
                   className="py-3.5 text-sm text-center font-light"
                 >
-                  đ{formatNumber(data?.finalPrice)}
+                  {formatNumber(data?.finalPrice)}đ
                 </td>
               </tr>
             </tfoot>

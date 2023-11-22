@@ -75,13 +75,13 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
     <div className="flex flex-col gap-4">
       <p>Vui lòng xác nhận số tiền nhận được tại đây</p>
       <div className="py-8 bg-gray text-2xl font-semibold rounded-lg">
-        đ{" "}
         {formatNumber(
           data &&
             data.payments?.filter(
               (p: ITransaction) => p.id === commonState.modalId
             )[0].amount
         )}
+        đ
       </div>
     </div>
   );
@@ -264,7 +264,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
               </div>
               <div className="col-span-1 flex justify-center items-center">
                 <p className="text-xs text-center text-black dark:text-white">
-                  đ{formatNumber(transaction.amount)}
+                  {formatNumber(transaction.amount)}đ
                 </p>
               </div>
               <div className="col-span-1 flex justify-center items-center">

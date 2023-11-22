@@ -241,8 +241,8 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
 
               <div className="p-2.5 xl:p-5">
                 <p className="text-xs text-center">
-                  <span className="underline">đ</span>
                   {formatNumber(order.finalPrice)}
+                  <span className="underline">đ</span>
                 </p>
               </div>
 

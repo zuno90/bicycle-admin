@@ -24,7 +24,8 @@ const Card: React.FC<TCard> = ({ title, data }) => {
 
       <div className="mt-8 flex flex-col justify-between space-y-2">
         <h4 className="text-title-md font-bold text-black dark:text-white">
-          <span className="underline">đ</span> {formatNumber(data.value)}
+          {formatNumber(data.value)}
+          <span className="underline">đ</span>
         </h4>
         <p className="flex items-center gap-1 text-sm font-medium">
           <svg

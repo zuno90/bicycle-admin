@@ -147,8 +147,10 @@ const ProductDetail: React.FC = () => {
     const { productVariants, ...others } = data;
     // handle video url
     let vidUrl = others.video;
-    if (vidUrl.includes("/watch?v="))
-      vidUrl = vidUrl.replace("/watch?v=", "/embed/");
+    if (vidUrl.includes("/watch?v=")) {
+      const { query } = queryString.parseUrl(vidUrl);
+      vidUrl = youtubePrefix + query.v;
+    }
 
     const formD = new FormData();
     formD.append("name", others.name);

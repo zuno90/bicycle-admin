@@ -33,7 +33,7 @@ const UserDetail: React.FC = () => {
               alt="user-info-img"
             />
             <p className="text-black dark:text-white">Số dư</p>
-            <p className="text-meta-1 font-bold">đ{formatNumber(data.coin)}</p>
+            <p className="text-meta-1 font-bold">{formatNumber(data.coin)}đ</p>
           </div>
 
           <div className="w-full flex flex-col justify-between bg-white dark:bg-form-strokedark p-4 gap-8 leading-normal">

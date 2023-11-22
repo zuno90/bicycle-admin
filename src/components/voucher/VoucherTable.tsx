@@ -232,8 +232,8 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
 
               <div className="col-span-1 flex items-center">
                 <p className="text-xs text-black dark:text-white">
-                  <span className="underline">đ</span>
                   <span>{formatNumber(voucher.value)}</span>
+                  <span className="underline">đ</span>
                 </p>
               </div>
 

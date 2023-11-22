@@ -96,7 +96,7 @@ const UserTable: React.FC<ITable> = ({ title }) => {
 
               <div className="col-span-1 flex justify-end items-center">
                 <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
-                  đ{formatNumber(user.coin)}
+                  {formatNumber(user.coin)}đ
                 </p>
               </div>
             </div>
