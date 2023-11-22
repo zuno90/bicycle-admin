@@ -5,20 +5,29 @@ import DarkModeSwitcher from "./DarkModeSwitcher";
 // import DropdownMessage from "./DropdownMessage";
 import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
-import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  ListObjectsCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
 import { s3Client } from "../utils/s3.util";
 import { notify } from "../utils/helper.util";
 import { ENotificationType } from "../__types__";
 
 const imageMimeType = /image\/(png|jpg|jpeg|webp)/i;
 const bannerUrl = "banner/home-banner";
-const imgUrl = `${import.meta.env.VITE_AWS_CDN_CLOUDFONT}/${bannerUrl}`;
 
 const Header: React.FC<{
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }> = (props) => {
-  const [toggleChanged, setToggleChanged] = React.useState<boolean>(false);
+  const [imgKey, setImgKey] = React.useState<string>("");
+
+  React.useEffect(() => {
+    getBannerS3();
+  }, []);
 
   // upload banner to S3
   const handleUploadAppBanner = async (
@@ -38,13 +47,29 @@ const Header: React.FC<{
     }
   };
 
-  const deleteBannerS3 = async () => {
-    const params = new DeleteObjectCommand({
-      Bucket: import.meta.env.VITE_AWS_BUCKET_NAME,
-      Key: bannerUrl,
-    });
-    await s3Client.send(params);
+  const getBannerS3 = async () => {
     try {
+      const getObjParams = new ListObjectsV2Command({
+        Bucket: import.meta.env.VITE_AWS_BUCKET_NAME,
+        Prefix: "banner",
+      });
+      const bannerList = await s3Client.send(getObjParams);
+      if (!bannerList || !bannerList.Contents)
+        throw Error("Can not find image object!");
+      const bannerKey = bannerList.Contents[1].Key as string;
+      setImgKey(bannerKey);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteBannerS3 = async () => {
+    try {
+      const params = new DeleteObjectCommand({
+        Bucket: import.meta.env.VITE_AWS_BUCKET_NAME,
+        Key: imgKey,
+      });
+      await s3Client.send(params);
     } catch (error) {
       console.error(error);
     }
@@ -52,15 +77,16 @@ const Header: React.FC<{
 
   const uploadImageToS3 = async (imgFile: File) => {
     try {
+      const genFilename = "banner/" + new Date().getTime() + imgFile.name;
       const params = new PutObjectCommand({
         Bucket: import.meta.env.VITE_AWS_BUCKET_NAME,
-        Key: bannerUrl,
+        Key: genFilename,
         Body: imgFile,
       });
       const s3Img = await s3Client.send(params);
       if (s3Img.$metadata.httpStatusCode !== 200)
         throw new Error("Upload ảnh không thành công, vui lòng thử lại!");
-      setToggleChanged(!toggleChanged);
+      setImgKey(genFilename);
       // send message
     } catch (error) {
       console.error(error);
@@ -122,7 +148,9 @@ const Header: React.FC<{
         <div className="flex flex-col items-center space-y-1">
           <label htmlFor="upload-banner">
             <img
-              src={imgUrl}
+              src={
+                imgKey && `${import.meta.env.VITE_AWS_CDN_CLOUDFONT}/${imgKey}`
+              }
               className="w-24 cursor-pointer"
               alt="app-banner"
             />
