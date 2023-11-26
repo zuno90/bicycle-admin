@@ -107,7 +107,7 @@ const DropdownUser: React.FC = () => {
         onFocus={() => setDropdownOpen(true)}
         onBlur={() => setDropdownOpen(false)}
         className={classNames(
-          "absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark",
+          "absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm bg-white border border-stroke dark:border-strokedark dark:bg-boxdark",
           { block: dropdownOpen === true, hidden: dropdownOpen === false }
         )}
       >

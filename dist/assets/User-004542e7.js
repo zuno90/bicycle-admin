@@ -1,0 +1,2 @@
+import{R as e,_ as s,j as r,L as a}from"./index-4d5fe437.js";const o=e.lazy(()=>s(()=>import("./UserTable-f3b9207f.js"),["assets/UserTable-f3b9207f.js","assets/index-4d5fe437.js","assets/index-5389d8bf.css","assets/base-78ecd2d9.js","assets/user.query-0e89aa58.js","assets/user-d57577eb.js","assets/Pagination-d7a0e32e.js"])),d=()=>r.jsx("section",{className:`rounded-sm  bg-white
+ border border-stroke dark:border-strokedark dark:bg-boxdark`,children:r.jsx(e.Suspense,{fallback:r.jsx(a,{}),children:r.jsx(o,{title:"Quản lý người dùng"})})});export{d as default};

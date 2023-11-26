@@ -98,7 +98,7 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
   if (isLoading) return <Loader />;
   return (
     <>
-      <div className="space-y-10 mb-6">
+      <div className="space-y-10 mb-4 p-5">
         <div className="w-full inline-flex items-center justify-between">
           <h4 className="text-xl font-semibold text-black dark:text-white">
             {title}
@@ -127,7 +127,7 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
         </div>
       </div>
 
-      <div className="rounded-sm bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+      <div className="rounded-sm dark:border-strokedark dark:bg-boxdark">
         <div className="max-w-full overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
@@ -141,7 +141,7 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
                 <th className="py-4 px-4 font-medium text-black dark:text-white">
                   Danh mục phụ
                 </th>
-                <th className="py-4 pl-4 font-medium text-black dark:text-white">
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
                   Hành động
                 </th>
               </tr>
@@ -182,7 +182,7 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
                       </div>
                     </td>
 
-                    <td className="border-b border-[#eee] py-5 pl-4 dark:border-strokedark">
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       <div className="flex justify-center items-center space-x-3.5">
                         <button
                           type="button"

@@ -5,7 +5,7 @@ type TCard = { title: string; data?: any };
 
 const Card: React.FC<TCard> = ({ title, data }) => {
   return (
-    <div className="rounded-sm border border-stroke bg-white py-6 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="rounded-sm border border-stroke bg-white py-6 px-7.5 dark:border-strokedark dark:bg-boxdark">
       <div className="flex items-center justify-between">
         <p>{title}</p>
         <p className="inline-flex items-center space-x-2">

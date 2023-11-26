@@ -102,7 +102,7 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
   if (isLoading) return <Loader />;
   return (
     <>
-      <div className="space-y-10 mb-4">
+      <div className="space-y-10 mb-4 p-5">
         <div className="w-full inline-flex items-center justify-between">
           <h4 className="text-xl font-semibold text-black dark:text-white">
             {title}
@@ -201,86 +201,83 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
         </div>
       </div>
 
-      <div className="flex flex-col">
-        <div className="grid grid-cols-6 rounded-sm dark:bg-meta-4 sm:grid-cols-6 border-stroke">
-          <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm font-bold xsm:text-base">ID</h5>
-          </div>
-          <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm text-center font-bold xsm:text-base">
-              Ngày
-            </h5>
-          </div>
-          <div className="col-span-2 p-2.5 xl:p-5">
-            <h5 className="text-sm font-bold xsm:text-base">Tên đơn hàng</h5>
-          </div>
-          <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm text-center font-bold xsm:text-base">
-              Giá trị
-            </h5>
-          </div>
-          <div className="p-2.5 xl:p-5">
-            <h5 className="text-sm text-right font-bold xsm:text-base">
-              Trạng thái
-            </h5>
-          </div>
+      <div className="rounded-sm dark:border-strokedark dark:bg-boxdark">
+        <div className="max-w-full overflow-x-auto">
+          <table className="w-full table-auto">
+            <thead>
+              <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  ID
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Ngày
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Tên đơn hàng
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Giá trị
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Trạng thái
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.orders.length > 0 &&
+                data.orders.map((order: IOrder) => (
+                  <tr key={order.id}>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <Link to={`/order/${order.id}`} className="p-2.5 xl:p-5">
+                        <p className="text-xs text-meta-5 underline truncate">
+                          {order.codeOrder}
+                        </p>
+                      </Link>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p className="text-xs text-center">
+                        {new Date(order.updateAt).toLocaleDateString("en-GB")}
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p className="text-xs truncate">{order.name}</p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p className="text-xs text-center">
+                        {formatNumber(order.finalPrice)}
+                        <span className="underline">đ</span>
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p
+                        className={classNames("text-xs text-right", {
+                          "text-primary":
+                            EOrderStatus[order.status] === EOrderStatus.pending,
+                          "text-warning":
+                            EOrderStatus[order.status] ===
+                            EOrderStatus.transported,
+                          "text-success":
+                            EOrderStatus[order.status] === EOrderStatus.success,
+                          "text-danger":
+                            EOrderStatus[order.status] ===
+                            EOrderStatus.canceled,
+                        })}
+                      >
+                        {EOrderStatus[order.status]}
+                      </p>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
-
-        {data.orders.length > 0 &&
-          data.orders.map((order: IOrder) => (
-            <div
-              key={order.id}
-              className="grid grid-cols-6 border-t border-stroke dark:border-strokedark sm:grid-cols-6"
-            >
-              <Link to={`/order/${order.id}`} className="p-2.5 xl:p-5">
-                <p className="text-xs text-meta-5 underline truncate">
-                  {order.codeOrder}
-                </p>
-              </Link>
-
-              <div className="p-2.5 xl:p-5">
-                <p className="text-xs text-center">
-                  {new Date(order.updateAt).toLocaleDateString("en-GB")}
-                </p>
-              </div>
-
-              <div className="col-span-2 p-2.5 xl:p-5">
-                <p className="text-xs truncate">{order.name}</p>
-              </div>
-
-              <div className="p-2.5 xl:p-5">
-                <p className="text-xs text-center">
-                  {formatNumber(order.finalPrice)}
-                  <span className="underline">đ</span>
-                </p>
-              </div>
-
-              <div className="p-2.5 xl:p-5">
-                <p
-                  className={classNames("text-xs text-right", {
-                    "text-primary":
-                      EOrderStatus[order.status] === EOrderStatus.pending,
-                    "text-warning":
-                      EOrderStatus[order.status] === EOrderStatus.transported,
-                    "text-success":
-                      EOrderStatus[order.status] === EOrderStatus.success,
-                    "text-danger":
-                      EOrderStatus[order.status] === EOrderStatus.canceled,
-                  })}
-                >
-                  {EOrderStatus[order.status]}
-                </p>
-              </div>
-            </div>
-          ))}
-
-        {dataTotal > 0 && (
-          <div className="flex justify-center items-center my-4">
-            <Pagination page={page} limit={limit} total={dataTotal} />
-          </div>
-        )}
       </div>
 
+      {dataTotal > 0 && (
+        <div className="flex justify-center items-center my-4">
+          <Pagination page={page} limit={limit} total={dataTotal} />
+        </div>
+      )}
       {commonState.isOpenModal && (
         <Modal
           title="Xuất đơn hàng"

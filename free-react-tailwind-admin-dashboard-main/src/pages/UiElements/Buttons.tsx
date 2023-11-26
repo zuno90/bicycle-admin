@@ -8,7 +8,8 @@ const Buttons = () => {
       <Breadcrumb pageName="Buttons" />
 
       {/* <!-- Normal Button Items --> */}
-      <div className="mb-10 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="mb-10 rounded-sm  bg-white
+ border border-stroke dark:border-strokedark dark:bg-boxdark">
         <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
           <h3 className="font-medium text-black dark:text-white">
             Normal Button
@@ -109,7 +110,8 @@ const Buttons = () => {
       </div>
 
       {/* <!-- Button With Icon Items --> */}
-      <div className="mb-10 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="mb-10 rounded-sm  bg-white
+ border border-stroke dark:border-strokedark dark:bg-boxdark">
         <div className="border-b border-stroke px-7 py-4 dark:border-strokedark">
           <h3 className="font-medium text-black dark:text-white">
             Button With Icon

@@ -21,7 +21,10 @@ const Order: React.FC = () => {
         <Card title="Khách hàng" data={data.customer} />
         <Card title="Đơn hàng" data={data.order} />
       </section>
-      <section className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+      <section
+        className="rounded-sm  bg-white
+ border border-stroke dark:border-strokedark dark:bg-boxdark"
+      >
         <React.Suspense fallback={<Loader />}>
           <OrderTable title="Đơn hàng" />
         </React.Suspense>

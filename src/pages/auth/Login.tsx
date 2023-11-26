@@ -97,7 +97,10 @@ const Login: React.FC = () => {
   if (isLoadingLogin || isFetchingUser) return <Loader />;
   return (
     <section className="w-full h-screen flex justify-center items-center bg-gray-200">
-      <div className="w-[80%] sm:w-[50%] lg:max-w-[40%] rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div
+        className="w-[80%] sm:w-[50%] lg:max-w-[40%] rounded-sm  bg-white
+ border border-stroke dark:border-strokedark dark:bg-boxdark"
+      >
         <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
           <h3 className="font-medium text-center text-black dark:text-white">
             BICYCLE - Dashboard

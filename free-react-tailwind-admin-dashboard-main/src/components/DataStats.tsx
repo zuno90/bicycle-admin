@@ -1,6 +1,6 @@
 const DataStats = () => {
   return (
-    <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 dark:border-strokedark dark:bg-boxdark">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4 xl:gap-0">
         <div className="flex items-center justify-center gap-2 border-b border-stroke pb-5 dark:border-strokedark xl:border-b-0 xl:border-r xl:pb-0">
           <div>
