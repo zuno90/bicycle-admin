@@ -126,44 +126,48 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
           <button
             onClick={() => handleChangeStatus("all")}
             type="button"
             className={classNames(
-              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
               { "bg-[#FBE69E]": !queryParams.get("status") }
             )}
           >
-            Tất cả ({data.totalOrderStatus.all})
+            <span className="m-auto">Tất cả ({data.totalOrderStatus.all})</span>
           </button>
           <button
             onClick={() => handleChangeStatus("waiting_payment")}
             type="button"
             className={classNames(
-              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
               {
                 "bg-[#FBE69E]": queryParams.get("status") === "waiting_payment",
               }
             )}
           >
-            Chờ thanh toán ({data.totalOrderStatus.waiting_payment})
+            <span className="m-auto">
+              Chờ thanh toán ({data.totalOrderStatus.waiting_payment})
+            </span>
           </button>
           <button
             onClick={() => handleChangeStatus("pending")}
             type="button"
             className={classNames(
-              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
               { "bg-[#FBE69E]": queryParams.get("status") === "pending" }
             )}
           >
-            Đang xử lý ({data.totalOrderStatus.pending})
+            <span className="m-auto">
+              Đang xử lý ({data.totalOrderStatus.pending})
+            </span>
           </button>
           <button
             onClick={() => handleChangeStatus("transported")}
             type="button"
             className={classNames(
-              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
               { "bg-[#FBE69E]": queryParams.get("status") === "transported" }
             )}
           >
@@ -173,21 +177,26 @@ const HomeTable: React.FC<ITable> = ({ title }) => {
             onClick={() => handleChangeStatus("success")}
             type="button"
             className={classNames(
-              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
               { "bg-[#FBE69E]": queryParams.get("status") === "success" }
             )}
           >
-            Đã giao hàng ({data.totalOrderStatus.success})
+            <span className="m-auto">
+              Đã giao hàng ({data.totalOrderStatus.success})
+            </span>
           </button>
           <button
             onClick={() => handleChangeStatus("canceled")}
             type="button"
             className={classNames(
-              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2",
+              "text-black bg-[#F3F3F3] hover:bg-[#FFC700]/90 focus:ring-2 focus:outline-none focus:ring-[#FFC700]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55",
               { "bg-[#FBE69E]": queryParams.get("status") === "canceled" }
             )}
           >
-            Đã huỷ ({data.totalOrderStatus.canceled})
+            <span className="m-auto">
+              {" "}
+              Đã huỷ ({data.totalOrderStatus.canceled})
+            </span>
           </button>
         </div>
       </div>

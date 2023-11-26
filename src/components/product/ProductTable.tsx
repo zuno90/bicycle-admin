@@ -137,7 +137,7 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
           </div>
         </div>
 
-        <div className="w-full flex items-center gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button
             onClick={() => handleChangeStatus("all")}
             type="button"
@@ -146,7 +146,9 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": !queryParams.get("status") }
             )}
           >
-            Tất cả ({data.totalStatusProduct.all})
+            <span className="m-auto">
+              Tất cả ({data.totalStatusProduct.all})
+            </span>
           </button>
           <button
             onClick={() => handleChangeStatus("active")}
@@ -156,7 +158,9 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": queryParams.get("status") === "active" }
             )}
           >
-            Đang hoạt động ({data.totalStatusProduct.active})
+            <span className="m-auto">
+              Đang hoạt động ({data.totalStatusProduct.active})
+            </span>
           </button>
           <button
             onClick={() => handleChangeStatus("inactive")}
@@ -166,7 +170,9 @@ const ProductTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": queryParams.get("status") === "inactive" }
             )}
           >
-            Đang ẩn ({data.totalStatusProduct.inactive})
+            <span className="m-auto">
+              Đang ẩn ({data.totalStatusProduct.inactive})
+            </span>
           </button>
         </div>
       </div>

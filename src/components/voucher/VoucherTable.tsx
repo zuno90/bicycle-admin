@@ -139,7 +139,7 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <button
             type="button"
             onClick={() => handleChangeStatus("all")}
@@ -148,7 +148,9 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": !queryParams.get("status") }
             )}
           >
-            Tất cả ({data.totalVoucherStatus.all})
+            <span className="m-auto">
+              Tất cả ({data.totalVoucherStatus.all})
+            </span>
           </button>
           <button
             onClick={() => handleChangeStatus("upcoming")}
@@ -158,7 +160,9 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": queryParams.get("status") === "upcoming" }
             )}
           >
-            Sắp diễn ra ({data.totalVoucherStatus.upcoming})
+            <span className="m-auto">
+              Sắp diễn ra ({data.totalVoucherStatus.upcoming})
+            </span>
           </button>
           <button
             onClick={() => handleChangeStatus("ongoing")}
@@ -168,7 +172,9 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": queryParams.get("status") === "ongoing" }
             )}
           >
-            Đang hoạt động ({data.totalVoucherStatus.ongoing})
+            <span className="m-auto">
+              Đang hoạt động ({data.totalVoucherStatus.ongoing})
+            </span>
           </button>
           <button
             onClick={() => handleChangeStatus("inactive")}
@@ -178,7 +184,9 @@ const VoucherTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": queryParams.get("status") === "inactive" }
             )}
           >
-            Ngừng hoạt động ({data.totalVoucherStatus.inactive})
+            <span className="m-auto">
+              Ngừng hoạt động ({data.totalVoucherStatus.inactive})
+            </span>
           </button>
         </div>
       </div>

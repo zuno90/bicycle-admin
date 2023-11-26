@@ -534,7 +534,7 @@ const Chat: React.FC = () => {
         </MainContainer>
       </div>
 
-      <div className="absolute right-0 bottom-10 z-10">
+      <div className="absolute right-0 bottom-1/4 z-10">
         <button
           type="button"
           className="flex justify-center items-center box-border rounded-full bg-meta-6 opacity-50 h-8 w-8"

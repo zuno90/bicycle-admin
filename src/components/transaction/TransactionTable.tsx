@@ -140,7 +140,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
             {title}
           </h4>
         </div>
-        <div className="inline-flex items-center gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <button
             onClick={() => handleChangeStatus("all")}
             type="button"
@@ -149,7 +149,9 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": !queryParams.get("status") }
             )}
           >
-            Tất cả ({data.totalStatusPayment.all})
+            <span className="m-auto">
+              Tất cả ({data.totalStatusPayment.all})
+            </span>
           </button>
           <button
             onClick={() => handleChangeStatus("pending")}
@@ -159,7 +161,9 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": queryParams.get("status") === "pending" }
             )}
           >
-            Chờ xử lý ({data.totalStatusPayment.pending})
+            <span className="m-auto">
+              Chờ xử lý ({data.totalStatusPayment.pending})
+            </span>
           </button>
           <button
             onClick={() => handleChangeStatus("success")}
@@ -169,7 +173,9 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": queryParams.get("status") === "success" }
             )}
           >
-            Đã xác nhận ({data.totalStatusPayment.success})
+            <span className="m-auto">
+              Đã xác nhận ({data.totalStatusPayment.success})
+            </span>
           </button>
           <button
             onClick={() => handleChangeStatus("canceled")}
@@ -179,7 +185,9 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
               { "bg-[#FBE69E]": queryParams.get("status") === "canceled" }
             )}
           >
-            Đã huỷ ({data.totalStatusPayment.canceled})
+            <span className="m-auto">
+              Đã huỷ ({data.totalStatusPayment.canceled})
+            </span>
           </button>
         </div>
       </div>
