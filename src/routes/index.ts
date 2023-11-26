@@ -32,6 +32,7 @@ const CreateVoucher = React.lazy(
 const Chat = React.lazy(() => import("../pages/home/chat/Chat"));
 const User = React.lazy(() => import("../pages/home/user/User"));
 const UserDetail = React.lazy(() => import("../pages/home/user/UserDetail"));
+const Others = React.lazy(() => import("../pages/home/others/Others"));
 const Test = React.lazy(() => import("../pages/home/test/Test"));
 
 const dashboardRoutes = [
@@ -117,9 +118,9 @@ const dashboardRoutes = [
     element: UserDetail,
   },
   {
-    path: "/test",
-    title: "Test page",
-    element: Test,
+    path: "/others",
+    title: "Khác",
+    element: Others,
   },
 ];
 

@@ -26,6 +26,9 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
 
+  // user id inside modal
+  const [uid, setUid] = React.useState<number>(0);
+
   const queryParams = new URLSearchParams(search);
 
   const page = Number(queryParams.get("page")) || config.pagination.PAGE;
@@ -85,7 +88,6 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
       </div>
     </div>
   );
-
   const ModalFooter = () => (
     <>
       <button
@@ -107,7 +109,7 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
         className="inline-flex w-full justify-center rounded-md bg-[#FBE69E] text-black px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-[#FFC700] hover:bg-gray-50 sm:mt-0 sm:w-auto"
         onClick={() => {
           closeModal();
-          navigate("/chat?uid=2");
+          navigate(`/chat?uid=${uid}`);
         }}
       >
         Nhắn tin
@@ -182,146 +184,141 @@ const TransactionTable: React.FC<ITable> = ({ title }) => {
         </div>
       </div>
 
-      <div className="flex flex-col">
-        <div className="grid grid-cols-9 border-stroke py-4 dark:border-strokedark sm:grid-cols-9">
-          <div className="col-span-1">
-            <h5 className="text-sm font-bold xsm:text-base">ID</h5>
-          </div>
-          <div className="col-span-1">
-            <h5 className="text-sm text-center font-bold xsm:text-base">
-              Ngày
-            </h5>
-          </div>
-          <div className="col-span-1">
-            <h5 className="text-sm text-center font-bold xsm:text-base">Tên</h5>
-          </div>
-          <div className="col-span-1">
-            <h5 className="text-sm text-center font-bold xsm:text-base">
-              Số điện thoại
-            </h5>
-          </div>
-          <div className="col-span-2">
-            <h5 className="text-sm text-center font-bold xsm:text-base">
-              Nội dung
-            </h5>
-          </div>
-          <div className="col-span-1">
-            <h5 className="text-sm text-center font-bold xsm:text-base">
-              Số tiền
-            </h5>
-          </div>
-          <div className="col-span-1">
-            <h5 className="text-sm text-center font-bold xsm:text-base">
-              Trạng thái
-            </h5>
-          </div>
-          <div className="col-span-1 text-center">
-            <h5 className="text-sm text-center font-bold xsm:text-base">
-              Hành động
-            </h5>
-          </div>
+      <div className="rounded-sm bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+        <div className="max-w-full overflow-x-auto">
+          <table className="w-full table-auto">
+            <thead>
+              <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  ID
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Ngày
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Tên
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Số điện thoại
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Nội dung
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Số tiền
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Trạng thái
+                </th>
+                <th className="py-4 pl-4 font-medium text-black dark:text-white">
+                  Hành động
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {data.payments.length > 0 &&
+                data.payments.map((transaction: ITransaction) => (
+                  <tr key={transaction.id}>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <Link to={`/transaction/${transaction.id}`}>
+                        <p className="text-xs text-black dark:text-white">
+                          {transaction.paymentCode}
+                        </p>
+                      </Link>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden">
+                        {new Date(transaction.createAt).toLocaleDateString(
+                          "en-GB"
+                        )}
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p className="text-xs text-black dark:text-white">
+                        {transaction.user.name}
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p className="text-xs text-black dark:text-white">
+                        {transaction.user.phoneNumber}
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p className="text-xs text-black dark:text-white">
+                        {transaction.content}
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p className="text-xs text-center text-black dark:text-white">
+                        {formatNumber(transaction.amount)}đ
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p
+                        className={classNames(
+                          "text-xs text-center text-black dark:text-white",
+                          {
+                            "text-meta-1": transaction.status === "pending",
+                            "text-success": transaction.status === "success",
+                            "text-warning": transaction.status === "canceled",
+                          }
+                        )}
+                      >
+                        {ETransaction[transaction.status]}
+                      </p>
+                    </td>
+
+                    {transaction.status === "pending" && (
+                      <td className="border-b border-[#eee] py-5 pl-4 dark:border-strokedark">
+                        <div className="flex justify-center items-center">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setUid(transaction.userId);
+                              dispatch(
+                                toggleModal({
+                                  id: transaction.id,
+                                  isOpen: true,
+                                })
+                              );
+                            }}
+                          >
+                            <svg
+                              className="fill-current"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12M8.6,16.6L13.2,12L8.6,7.4L10,6L16,12L10,18L8.6,16.6Z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
-
-        {/* demo */}
-        {data.payments.length > 0 &&
-          data.payments.map((transaction: ITransaction) => (
-            <div
-              key={transaction.id}
-              className={classNames(
-                "grid grid-cols-9 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-9"
-              )}
-            >
-              <Link
-                to={`/transaction/${transaction.id}`}
-                className="col-span-1 flex items-center"
-              >
-                <p className="text-xs text-black dark:text-white">
-                  {transaction.paymentCode}
-                </p>
-              </Link>
-
-              <div className="col-span-1 flex justify-center items-center">
-                <p className="text-xs font-semibold text-center text-black dark:text-white text-ellipsis overflow-hidden">
-                  {new Date(transaction.createAt).toLocaleDateString("en-GB")}
-                </p>
-              </div>
-
-              <div className="col-span-1 flex justify-center items-center">
-                <p className="text-xs text-center text-black dark:text-white">
-                  {transaction.user.name}
-                </p>
-              </div>
-
-              <div className="col-span-1 flex justify-center items-center">
-                <p className="text-xs text-center text-black dark:text-white">
-                  {transaction.user.phoneNumber}
-                </p>
-              </div>
-              <div className="col-span-2 flex justify-center items-center">
-                <p className="text-xs text-left text-black dark:text-white">
-                  {transaction.content}
-                </p>
-              </div>
-              <div className="col-span-1 flex justify-center items-center">
-                <p className="text-xs text-center text-black dark:text-white">
-                  {formatNumber(transaction.amount)}đ
-                </p>
-              </div>
-              <div className="col-span-1 flex justify-center items-center">
-                <p
-                  className={classNames(
-                    "text-xs text-center text-black dark:text-white",
-                    {
-                      "text-meta-1": transaction.status === "pending",
-                      "text-success": transaction.status === "success",
-                      "text-warning": transaction.status === "canceled",
-                    }
-                  )}
-                >
-                  {ETransaction[transaction.status]}
-                </p>
-              </div>
-              {transaction.status === "pending" && (
-                <div className="col-span-1 flex justify-center items-center">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      dispatch(
-                        toggleModal({ id: transaction.id, isOpen: true })
-                      )
-                    }
-                  >
-                    <svg
-                      className="fill-current"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12M8.6,16.6L13.2,12L8.6,7.4L10,6L16,12L10,18L8.6,16.6Z" />
-                    </svg>
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
-
-        {dataTotal > 0 && (
-          <div className="flex justify-center items-center my-4">
-            <Pagination page={page} limit={limit} total={dataTotal} />
-          </div>
-        )}
-
-        {commonState.isOpenModal && (
-          <Modal
-            title="Xác nhận giao dịch"
-            body={<ModalBody />}
-            footer={<ModalFooter />}
-            close={closeModal}
-          />
-        )}
       </div>
+
+      {dataTotal > 0 && (
+        <div className="flex justify-center items-center my-4">
+          <Pagination page={page} limit={limit} total={dataTotal} />
+        </div>
+      )}
+
+      {commonState.isOpenModal && (
+        <Modal
+          title="Xác nhận giao dịch"
+          body={<ModalBody />}
+          footer={<ModalFooter />}
+          close={closeModal}
+        />
+      )}
     </>
   );
 };

@@ -126,152 +126,160 @@ const CategoryTable: React.FC<ITable> = ({ title }) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
-        <div className="grid grid-cols-7 border-stroke py-4 dark:border-strokedark sm:grid-cols-7">
-          <div className="col-span-1">
-            <h5 className="text-sm font-bold xsm:text-base">Hình ảnh</h5>
-          </div>
-          <div className="col-span-1">
-            <h5 className="text-sm font-bold xsm:text-base">Danh mục chính</h5>
-          </div>
-          <div className="col-span-4">
-            <h5 className="text-sm font-bold xsm:text-base">Danh mục phụ</h5>
-          </div>
-          <div className="col-span-1">
-            <h5 className="text-sm font-bold text-center xsm:text-base">
-              Hành động
-            </h5>
-          </div>
+
+      <div className="rounded-sm bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+        <div className="max-w-full overflow-x-auto">
+          <table className="w-full table-auto">
+            <thead>
+              <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Hình ảnh
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Danh mục chính
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Danh mục phụ
+                </th>
+                <th className="py-4 pl-4 font-medium text-black dark:text-white">
+                  Hành động
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.categories.length > 0 &&
+                data.categories.map((category: ICategory) => (
+                  <tr key={category.id}>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <img
+                        className="w-14 rounded-lg cursor-pointer"
+                        src={category.thumbnail}
+                        alt="category"
+                        onClick={() => navigate(`/category/${category.id}`)}
+                      />
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p
+                        onClick={() => navigate(`/category/${category.id}`)}
+                        className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden cursor-pointer"
+                      >
+                        {category.name}
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <div className="flex items-center gap-1 text-xs">
+                        {category.subCategories.map(
+                          (subCategory: ISubCategory) => (
+                            <button
+                              key={subCategory.id}
+                              type="button"
+                              className="bg-[#D7D7D7] px-2.5 py-1.5 rounded-full"
+                            >
+                              {subCategory.name}
+                            </button>
+                          )
+                        )}
+                      </div>
+                    </td>
+
+                    <td className="border-b border-[#eee] py-5 pl-4 dark:border-strokedark">
+                      <div className="flex justify-center items-center space-x-3.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setModalType("update");
+                            dispatch(
+                              toggleModal({ id: category.id, isOpen: true })
+                            );
+                          }}
+                          className="hover:text-primary"
+                        >
+                          <svg
+                            className="fill-current"
+                            width={24}
+                            height={24}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M5,3C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19H5V5H12V3H5M17.78,4C17.61,4 17.43,4.07 17.3,4.2L16.08,5.41L18.58,7.91L19.8,6.7C20.06,6.44 20.06,6 19.8,5.75L18.25,4.2C18.12,4.07 17.95,4 17.78,4M15.37,6.12L8,13.5V16H10.5L17.87,8.62L15.37,6.12Z" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setModalType("remove");
+                            dispatch(
+                              toggleModal({ id: category.id, isOpen: true })
+                            );
+                          }}
+                          className="hover:text-primary"
+                        >
+                          <svg
+                            className="fill-current"
+                            width={24}
+                            height={24}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
-
-        {data.categories.length > 0 &&
-          data.categories.map((category: ICategory) => (
-            <div
-              key={category.id}
-              className="grid grid-cols-7 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-7"
-            >
-              <div className="col-span-1 flex items-center gap-2">
-                <img
-                  className="w-14 rounded-lg cursor-pointer"
-                  src={category.thumbnail}
-                  alt="category"
-                  onClick={() => navigate(`/category/${category.id}`)}
-                />
-              </div>
-              <div className="col-span-1 flex flex-col gap-2 justify-center">
-                <p
-                  onClick={() => navigate(`/category/${category.id}`)}
-                  className="text-xs font-semibold text-black dark:text-white text-ellipsis overflow-hidden cursor-pointer"
-                >
-                  {category.name}
-                </p>
-              </div>
-              <div className="col-span-4 flex items-center">
-                <div className="text-xs text-left text-black dark:text-white inline-flex items-center space-x-2">
-                  {category.subCategories.map((subCategory: ISubCategory) => (
-                    <button
-                      key={subCategory.id}
-                      type="button"
-                      className="bg-[#D7D7D7] px-2.5 py-1.5 rounded-full"
-                    >
-                      {subCategory.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="col-span-1 inline-flex items-center justify-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setModalType("update");
-                    dispatch(toggleModal({ id: category.id, isOpen: true }));
-                  }}
-                  className="hover:text-primary"
-                >
-                  <svg
-                    className="fill-current"
-                    width={24}
-                    height={24}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M5,3C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19H5V5H12V3H5M17.78,4C17.61,4 17.43,4.07 17.3,4.2L16.08,5.41L18.58,7.91L19.8,6.7C20.06,6.44 20.06,6 19.8,5.75L18.25,4.2C18.12,4.07 17.95,4 17.78,4M15.37,6.12L8,13.5V16H10.5L17.87,8.62L15.37,6.12Z" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setModalType("remove");
-                    dispatch(toggleModal({ id: category.id, isOpen: true }));
-                  }}
-                  className="hover:text-primary"
-                >
-                  <svg
-                    className="fill-current"
-                    width={24}
-                    height={24}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          ))}
-
-        {dataTotal > 0 && (
-          <div className="flex justify-center items-center my-4">
-            <Pagination page={page} limit={limit} total={dataTotal} />
-          </div>
-        )}
-
-        {commonState.isOpenModal &&
-          modalType === "create" &&
-          commonState.modalId === 0 && (
-            <FormProvider {...methods}>
-              <Modal
-                title="Tạo danh mục chính"
-                body={
-                  <ModalBodyCreate
-                    close={closeModal}
-                    page={page}
-                    limit={limit}
-                  />
-                }
-                isForm
-              />
-            </FormProvider>
-          )}
-        {commonState.isOpenModal &&
-          modalType === "update" &&
-          commonState.modalId > 0 && (
-            <FormProvider {...methods}>
-              <Modal
-                title="Cập nhật danh mục"
-                body={
-                  <ModalBodyUpdate
-                    id={commonState.modalId}
-                    close={closeModal}
-                    page={page}
-                    limit={limit}
-                  />
-                }
-                isForm
-              />
-            </FormProvider>
-          )}
-        {commonState.isOpenModal &&
-          modalType === "remove" &&
-          commonState.modalId > 0 && (
-            <Modal
-              title="Xoá danh mục"
-              body={<ModalBody />}
-              footer={<ModalFooter />}
-              close={closeModal}
-            />
-          )}
       </div>
+
+      {dataTotal > 0 && (
+        <div className="flex justify-center items-center my-4">
+          <Pagination page={page} limit={limit} total={dataTotal} />
+        </div>
+      )}
+
+      {commonState.isOpenModal &&
+        modalType === "create" &&
+        commonState.modalId === 0 && (
+          <FormProvider {...methods}>
+            <Modal
+              title="Tạo danh mục chính"
+              body={
+                <ModalBodyCreate close={closeModal} page={page} limit={limit} />
+              }
+              isForm
+            />
+          </FormProvider>
+        )}
+      {commonState.isOpenModal &&
+        modalType === "update" &&
+        commonState.modalId > 0 && (
+          <FormProvider {...methods}>
+            <Modal
+              title="Cập nhật danh mục"
+              body={
+                <ModalBodyUpdate
+                  id={commonState.modalId}
+                  close={closeModal}
+                  page={page}
+                  limit={limit}
+                />
+              }
+              isForm
+            />
+          </FormProvider>
+        )}
+      {commonState.isOpenModal &&
+        modalType === "remove" &&
+        commonState.modalId > 0 && (
+          <Modal
+            title="Xoá danh mục"
+            body={<ModalBody />}
+            footer={<ModalFooter />}
+            close={closeModal}
+          />
+        )}
     </>
   );
 };

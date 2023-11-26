@@ -7,8 +7,13 @@
   font-family: Montserrat, sans-serif !important;
 }
 
-.cs-conversation.cs-conversation--active {
-  background-color: #fff7d9 !important;
+@media screen and (max-width: 768px) {
+  .cs-conversation-list .cs-conversation {
+    flex-direction: column !important;
+  }
+  .cs-conversation.cs-conversation--active {
+    background-color: #fff7d9 !important;
+  }
 }
 .cs-conversation__name,
 .cs-conversation__info {
@@ -51,4 +56,4 @@
   top: auto !important;
 }
 
-/* image upload css */
+/* sidebar left responsive */

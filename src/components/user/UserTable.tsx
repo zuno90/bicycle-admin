@@ -33,81 +33,87 @@ const UserTable: React.FC<ITable> = ({ title }) => {
           </h4>
         </div>
       </div>
-      <div className="flex flex-col">
-        <div className="grid grid-cols-6 border-stroke py-4 dark:border-strokedark sm:grid-cols-6">
-          <div className="col-span-1">
-            <h5 className="text-sm font-bold xsm:text-base">Avatar</h5>
-          </div>
-          <div className="col-span-1">
-            <h5 className="text-sm font-bold xsm:text-base">Ngày</h5>
-          </div>
-          <div className="col-span-1">
-            <h5 className="text-sm font-bold xsm:text-base">Tên</h5>
-          </div>
-          <div className="col-span-1">
-            <h5 className="text-sm font-bold xsm:text-base">Số điện thoại</h5>
-          </div>
-          <div className="col-span-1">
-            <h5 className="text-sm font-bold xsm:text-base">Địa chỉ</h5>
-          </div>
-          <div className="col-span-1 text-right">
-            <h5 className="text-sm font-bold xsm:text-base">Xu</h5>
-          </div>
+
+      <div className="rounded-sm bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+        <div className="max-w-full overflow-x-auto">
+          <table className="w-full table-auto">
+            <thead>
+              <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Avatar
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Ngày
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Tên
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Số điện thoại
+                </th>
+                <th className="py-4 px-4 font-medium text-black dark:text-white">
+                  Địa chỉ
+                </th>
+                <th className="py-4 pl-4 font-medium text-black dark:text-white">
+                  Xu
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.users.length > 0 &&
+                data.users.map((user: IUser) => (
+                  <tr key={user.id}>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <Link to={`/user/${user.id}`}>
+                        <img
+                          className="w-14 rounded-lg"
+                          src={UserAvatar}
+                          alt="user-img"
+                        />
+                      </Link>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p className="text-xs text-black dark:text-white">
+                        {new Date(user.createAt).toLocaleDateString("en-GB")}
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <Link to={`/user/${user.id}`}>
+                        <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
+                          {user.name}
+                        </p>
+                      </Link>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <Link to={`/user/${user.id}`}>
+                        <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
+                          {user.phoneNumber}
+                        </p>
+                      </Link>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
+                        {user.address} - {user.ward} - {user.district} -{" "}
+                        {user.city}
+                      </p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 pl-4 dark:border-strokedark">
+                      <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
+                        {formatNumber(user.coin)}đ
+                      </p>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
-
-        {data.users.length > 0 &&
-          data.users.map((user: IUser) => (
-            <div
-              key={user.id}
-              className="grid grid-cols-6 border-t border-stroke py-4 dark:border-strokedark sm:grid-cols-6"
-            >
-              <Link to={`/user/${user.id}`} className="w-14 rounded-md">
-                <img className="rounded-lg" src={UserAvatar} alt="user-img" />
-              </Link>
-              <div className="col-span-1 flex items-center">
-                <p className="text-xs text-black dark:text-white">
-                  {new Date(user.createAt).toLocaleDateString("en-GB")}
-                </p>
-              </div>
-
-              <Link
-                to={`/user/${user.id}`}
-                className="col-span-1 flex items-center"
-              >
-                <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
-                  {user.name}
-                </p>
-              </Link>
-
-              <Link
-                to={`/user/${user.id}`}
-                className="col-span-1 flex items-center"
-              >
-                <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
-                  {user.phoneNumber}
-                </p>
-              </Link>
-
-              <div className="col-span-1 flex items-center">
-                <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
-                  {user.address} - {user.ward} - {user.district} - {user.city}
-                </p>
-              </div>
-
-              <div className="col-span-1 flex justify-end items-center">
-                <p className="text-xs text-black dark:text-white text-ellipsis overflow-hidden">
-                  {formatNumber(user.coin)}đ
-                </p>
-              </div>
-            </div>
-          ))}
-
-        {dataTotal > 0 && (
-          <div className="flex justify-center items-center my-4">
-            <Pagination page={page} limit={limit} total={dataTotal} />
-          </div>
-        )}
       </div>
+
+      {dataTotal > 0 && (
+        <div className="flex justify-center items-center my-4">
+          <Pagination page={page} limit={limit} total={dataTotal} />
+        </div>
+      )}
     </>
   );
 };

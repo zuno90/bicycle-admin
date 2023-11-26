@@ -8,6 +8,7 @@ export enum ETransaction {
 export interface ITransaction {
   id: number;
   userId: number;
+  paymentCode: string;
   user: { name: string; phoneNumber: string };
   amount: number;
   content: string;

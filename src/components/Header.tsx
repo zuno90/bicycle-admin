@@ -5,94 +5,11 @@ import DarkModeSwitcher from "./DarkModeSwitcher";
 // import DropdownMessage from "./DropdownMessage";
 import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
-import {
-  DeleteObjectCommand,
-  GetObjectCommand,
-  ListObjectsCommand,
-  ListObjectsV2Command,
-  PutObjectCommand,
-} from "@aws-sdk/client-s3";
-import { s3Client } from "../utils/s3.util";
-import { notify } from "../utils/helper.util";
-import { ENotificationType } from "../__types__";
-
-const imageMimeType = /image\/(png|jpg|jpeg|webp)/i;
-const bannerUrl = "banner/home-banner";
 
 const Header: React.FC<{
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }> = (props) => {
-  const [imgKey, setImgKey] = React.useState<string>("");
-
-  React.useEffect(() => {
-    getBannerS3();
-  }, []);
-
-  // upload banner to S3
-  const handleUploadAppBanner = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (e.target.files) {
-      if (!e.target.files[0].type.match(imageMimeType))
-        return notify(
-          ENotificationType.error,
-          "Chỉ cho phép up ảnh định dạng .png, .jpg, .jpeg, .webp!",
-          "error"
-        );
-      // delete old banner
-      await deleteBannerS3();
-      // upload new banner
-      await uploadImageToS3(e.target.files[0]);
-    }
-  };
-
-  const getBannerS3 = async () => {
-    try {
-      const getObjParams = new ListObjectsV2Command({
-        Bucket: import.meta.env.VITE_AWS_BUCKET_NAME,
-        Prefix: "banner",
-      });
-      const bannerList = await s3Client.send(getObjParams);
-      if (!bannerList || !bannerList.Contents)
-        throw Error("Can not find image object!");
-      const bannerKey = bannerList.Contents[1].Key as string;
-      setImgKey(bannerKey);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const deleteBannerS3 = async () => {
-    try {
-      const params = new DeleteObjectCommand({
-        Bucket: import.meta.env.VITE_AWS_BUCKET_NAME,
-        Key: imgKey,
-      });
-      await s3Client.send(params);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const uploadImageToS3 = async (imgFile: File) => {
-    try {
-      const genFilename = "banner/" + new Date().getTime() + imgFile.name;
-      const params = new PutObjectCommand({
-        Bucket: import.meta.env.VITE_AWS_BUCKET_NAME,
-        Key: genFilename,
-        Body: imgFile,
-      });
-      const s3Img = await s3Client.send(params);
-      if (s3Img.$metadata.httpStatusCode !== 200)
-        throw new Error("Upload ảnh không thành công, vui lòng thử lại!");
-      setImgKey(genFilename);
-      // send message
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between py-4 px-4 shadow-2 md:px-6 2xl:px-11">
@@ -145,60 +62,39 @@ const Header: React.FC<{
           </Link>
         </div>
 
-        <div className="flex flex-col items-center space-y-1">
-          <label htmlFor="upload-banner">
-            <img
-              src={
-                imgKey && `${import.meta.env.VITE_AWS_CDN_CLOUDFONT}/${imgKey}`
-              }
-              className="w-24 cursor-pointer"
-              alt="app-banner"
-            />
+        <form>
+          {/* <div className="relative">
+            <button className="absolute top-1/2 left-0 -translate-y-1/2">
+              <svg
+                className="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z"
+                  fill=""
+                />
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z"
+                  fill=""
+                />
+              </svg>
+            </button>
+
             <input
-              type="file"
-              onChange={handleUploadAppBanner}
-              id="upload-banner"
-              className="sr-only"
+              type="text"
+              placeholder="Type to search..."
+              className="w-full bg-transparent pr-4 pl-9 focus:outline-none"
             />
-          </label>
-          <p className="text-[9px] text-meta-1 italic">
-            * Click vào ảnh để upload banner cho app
-          </p>
-
-          {/* <form>
-            <div className="relative">
-              <button className="absolute top-1/2 left-0 -translate-y-1/2">
-                <svg
-                  className="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z"
-                    fill=""
-                  />
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z"
-                    fill=""
-                  />
-                </svg>
-              </button>
-
-              <input
-                type="text"
-                placeholder="Type to search..."
-                className="w-full bg-transparent pr-4 pl-9 focus:outline-none"
-              />
-            </div>
-          </form> */}
-        </div>
+          </div> */}
+        </form>
 
         <div className="flex items-center gap-3 2xsm:gap-7">
           <ul className="flex items-center gap-2 2xsm:gap-4">

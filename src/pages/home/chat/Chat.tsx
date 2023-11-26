@@ -12,7 +12,6 @@ import {
   ConversationHeader,
   MessageModel,
   Loader,
-  ExpansionPanel,
 } from "@chatscope/chat-ui-kit-react";
 import {
   DocumentData,
@@ -49,6 +48,9 @@ import {
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import { clean } from "../../../store/common.action";
 import { s3Client } from "../../../utils/s3.util";
+import { toggleModal } from "../../../store/common/common.slice";
+import Modal from "../../../components/Modal";
+import classNames from "classnames";
 
 const imageMimeType = /image\/(png|jpg|jpeg|webp)/i;
 
@@ -58,8 +60,12 @@ const Chat: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const uid = searchParams.get("uid");
+  const commonState = useAppSelector((state) => state.common);
   const chatState = useAppSelector((state) => state.chat);
   const dispatch = useAppDispatch();
+
+  // toggle sidebar
+  const [isExpanded, setIsExpanded] = React.useState<boolean>(true);
 
   // State
   const [messages, setMessages] = React.useState<MessageModel[]>([]);
@@ -68,6 +74,43 @@ const Chat: React.FC = () => {
 
   // image preview
   const imgUploadRef = React.useRef(null); // image upload input
+  // toggle MODAL upload image
+  const closeModal = () => {
+    dispatch(handleImageUpload({ type: "remove" }));
+    dispatch(toggleModal({ isOpen: false }));
+  };
+  const ModalBody = () => (
+    <img className="object-fit" src={chatState.previewImg} />
+  );
+
+  const ModalFooter = () => (
+    <>
+      <button
+        type="button"
+        className="inline-flex w-full justify-center rounded-md bg-[#DDDDDD] text-black px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-[#B6B6B6] hover:bg-gray-50 sm:mt-0 sm:w-auto"
+        onClick={closeModal}
+      >
+        Huỷ
+      </button>
+      <button
+        type="button"
+        className="inline-flex w-full justify-center rounded-md bg-meta-3 text-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-[#B6B6B6] hover:bg-gray-50 sm:mt-0 sm:w-auto"
+        onClick={() => imgUploadRef.current?.click()}
+      >
+        Chọn ảnh khác
+      </button>
+      <button
+        type="button"
+        className="inline-flex w-full justify-center rounded-md bg-primary text-white px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+        onClick={async () => {
+          await uploadImageToS3(chatState.imageFile!);
+          closeModal();
+        }}
+      >
+        Gửi
+      </button>
+    </>
+  );
 
   const attachImage = (event: any) => {
     const file = event.target.files[0];
@@ -100,6 +143,7 @@ const Chat: React.FC = () => {
             const imgFile = new File([blobFile], file.name, {
               type: "image/jpeg",
             });
+            !commonState.isOpenModal && dispatch(toggleModal({ isOpen: true }));
             dispatch(
               handleImageUpload({
                 type: "show",
@@ -302,185 +346,217 @@ const Chat: React.FC = () => {
   };
 
   return (
-    <div className="relative h-[85vh]">
-      <MainContainer className="text-meta-1">
-        <Sidebar position="left" scrollable>
-          <ConversationList>
-            {chatState.userList.length > 0 &&
-              chatState.userList.map((user) => (
-                <Conversation
-                  key={user.user._id}
-                  name={user.user.name}
-                  info={user.lastMsg}
-                  unreadCnt={user.unreadMsg}
-                  active={chatState.currentUser?._id === user.user._id ?? false}
-                  onClick={async () => {
-                    if (chatState.currentUser?._id !== user.user._id) {
-                      dispatch(setLoading(true));
-                      setSearchParams((params) => {
-                        params.delete("uid");
-                        return params;
-                      });
-                      await Promise.all([
-                        getUserById(user.user._id),
-                        getMessages(user.user._id),
-                      ]);
-                      dispatch(handleImageUpload({ type: "remove" }));
-                      dispatch(setLoading(false));
-                    } else getUserById(user.user._id);
-                  }}
-                >
-                  <Avatar src={UserAvatar} />
-                </Conversation>
-              ))}
-          </ConversationList>
-        </Sidebar>
-        {!chatState.isLoading ? (
-          !chatState.currentUser ? (
-            <div className="w-full flex flex-col justify-center items-center space-y-4">
-              <div className="text-2xl">Bấm vào user để chat!</div>
-              <img
-                className="w-[40vw] object-cover"
-                src={ChatWelcome1}
-                alt="chat-welcome1"
-              />
-              <div className="text-xs italic">
-                Để thuận tiện, cần thao tác trên <b>Desktop</b> hoặc{" "}
-                <b>Tablet</b>.
-              </div>
-              <div className="text-xs italic">
-                * Phiên bản chat chỉ cho phép chat với User đã active trên app.
-              </div>
-            </div>
-          ) : (
-            <>
-              <ChatContainer>
-                <ConversationHeader>
-                  <Avatar
-                    className="cursor-pointer"
-                    src={UserAvatar}
-                    onClick={() =>
-                      navigate(`/user/${chatState.currentUser?._id}`)
-                    }
-                  />
-                  <ConversationHeader.Content
-                    userName={chatState.currentUser?.name}
-                    info={renderUserStatus()}
-                  />
-                </ConversationHeader>
-                <MessageList>
-                  {messages.length > 0 &&
-                    messages.map((msg, idx) => (
-                      <Message
-                        key={idx}
-                        model={{
-                          type: msg.type,
-                          sender: msg.sender,
-                          message: msg.message,
-                          sentTime: msg.sentTime?.toString(),
-                          direction: msg.direction,
-                          position: msg.position,
-                        }}
-                      >
-                        {msg.type === "image" && (
-                          <Message.ImageContent
-                            width={120}
-                            src={msg.message}
-                            alt="image-content"
-                          />
-                        )}
-                        <Avatar
-                          src={
-                            msg.direction === "incoming"
-                              ? UserAvatar
-                              : AdminAvatar
-                          }
-                          onClick={() =>
-                            msg.direction === "incoming" &&
-                            console.log("go to user profile")
-                          }
-                        />
-                        <Message.Footer
-                          sentTime={msg.sentTime
-                            ?.toDate()
-                            .toLocaleString("en-US", { hour12: false })}
-                        />
-                      </Message>
-                    ))}
-                  {/* image preview */}
-                </MessageList>
+    <>
+      <div className="relative h-[85vh]">
+        <MainContainer>
+          {isExpanded && (
+            <Sidebar position="left" scrollable>
+              <ConversationList>
+                {chatState.userList.length > 0 &&
+                  chatState.userList.map((user) => (
+                    <Conversation
+                      key={user.user._id}
+                      name={user.user.name}
+                      info={user.lastMsg}
+                      unreadCnt={user.unreadMsg}
+                      active={
+                        chatState.currentUser?._id === user.user._id ?? false
+                      }
+                      onClick={async () => {
+                        if (chatState.currentUser?._id !== user.user._id) {
+                          dispatch(setLoading(true));
+                          setSearchParams((params) => {
+                            params.delete("uid");
+                            return params;
+                          });
+                          await Promise.all([
+                            getUserById(user.user._id),
+                            getMessages(user.user._id),
+                          ]);
+                          dispatch(handleImageUpload({ type: "remove" }));
+                          dispatch(setLoading(false));
+                        } else getUserById(user.user._id);
+                      }}
+                    >
+                      <Avatar src={UserAvatar} />
+                    </Conversation>
+                  ))}
+              </ConversationList>
+            </Sidebar>
+          )}
 
-                <MessageInput
-                  placeholder="Nhập tin nhắn..."
-                  autoFocus
-                  onAttachClick={() => imgUploadRef.current?.click()}
-                  onSend={(_, text) => sendMessage(text)}
+          {!chatState.isLoading ? (
+            !chatState.currentUser ? (
+              <div className="w-full px-4 flex flex-col justify-center items-center space-y-4">
+                <div className="text-2xl">Bấm vào user để chat!</div>
+                <img
+                  className="w-[40vw] object-cover"
+                  src={ChatWelcome1}
+                  alt="chat-welcome1"
                 />
-              </ChatContainer>
-              <Sidebar position="right">
-                <ExpansionPanel title="Ảnh Upload" open={true}>
-                  {chatState.previewImg && chatState.imageFile ? (
-                    <section className="w-full flex flex-col justify-center items-center space-y-4">
-                      <img className="object-fit" src={chatState.previewImg} />
-                      <div className="w-full flex flex-col items-center space-y-2">
-                        <button
-                          onClick={() => uploadImageToS3(chatState.imageFile!)}
-                          type="button"
-                          className="w-full text-white bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none focus:ring-[#1da1f2]/50 font-medium rounded-full text-sm px-5 py-2.5 text-center inline-flex justify-center items-center dark:focus:ring-[#1da1f2]/55"
+                <div className="text-xs italic">
+                  Để thuận tiện, cần thao tác trên <b>Desktop</b> hoặc{" "}
+                  <b>Tablet</b>.
+                </div>
+                <div className="text-xs italic">
+                  * Phiên bản chat chỉ cho phép chat với User đã active trên
+                  app.
+                </div>
+              </div>
+            ) : (
+              <>
+                <ChatContainer>
+                  <ConversationHeader>
+                    <Avatar
+                      className="cursor-pointer"
+                      src={UserAvatar}
+                      onClick={() =>
+                        navigate(`/user/${chatState.currentUser?._id}`)
+                      }
+                    />
+                    <ConversationHeader.Content
+                      userName={chatState.currentUser?.name}
+                      info={renderUserStatus()}
+                    />
+                  </ConversationHeader>
+                  <MessageList>
+                    {messages.length > 0 &&
+                      messages.map((msg, idx) => (
+                        <Message
+                          key={idx}
+                          model={{
+                            type: msg.type,
+                            sender: msg.sender,
+                            message: msg.message,
+                            sentTime: msg.sentTime?.toString(),
+                            direction: msg.direction,
+                            position: msg.position,
+                          }}
                         >
-                          <svg
-                            className="w-6 h-6 mr-2"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M8,7.71V11.05L15.14,12L8,12.95V16.29L18,12L8,7.71Z" />
-                          </svg>
-                          Gửi
-                        </button>
-                        <button
-                          onClick={() =>
-                            dispatch(handleImageUpload({ type: "remove" }))
-                          }
-                          type="button"
-                          className="w-full text-white bg-[#ff592f] hover:bg-[#f14e4e] focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-full text-sm px-5 py-2.5 text-center inline-flex justify-center items-center dark:focus:ring-[#3b5998]/55"
-                        >
-                          <svg
-                            className="w-6 h-6 mr-2"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z" />
-                          </svg>
-                          Xoá
-                        </button>
-                      </div>
-                    </section>
-                  ) : (
-                    <p className="text-center">Chưa có ảnh được chọn</p>
-                  )}
-                </ExpansionPanel>
-              </Sidebar>
-              {/* input file */}
+                          {msg.type === "image" && (
+                            <Message.ImageContent
+                              width={120}
+                              src={msg.message}
+                              alt="image-content"
+                            />
+                          )}
+                          <Avatar
+                            src={
+                              msg.direction === "incoming"
+                                ? UserAvatar
+                                : AdminAvatar
+                            }
+                            onClick={() =>
+                              msg.direction === "incoming" &&
+                              console.log("go to user profile")
+                            }
+                          />
+                          <Message.Footer
+                            sentTime={msg.sentTime
+                              ?.toDate()
+                              .toLocaleString("en-US", { hour12: false })}
+                          />
+                        </Message>
+                      ))}
+                    {/* image preview */}
+                  </MessageList>
 
-              <input
-                ref={imgUploadRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                id="imgupload"
-                onChange={attachImage}
-              />
-            </>
-          )
-        ) : (
-          <div className="w-full flex flex-col justify-center items-center">
-            <Loader />
-          </div>
-        )}
-      </MainContainer>
-    </div>
+                  <MessageInput
+                    placeholder="Nhập tin nhắn..."
+                    autoFocus
+                    onAttachClick={() => imgUploadRef.current?.click()}
+                    onSend={(_, text) => sendMessage(text)}
+                  />
+                </ChatContainer>
+
+                {/* <Sidebar position="right">
+            <ExpansionPanel title="Ảnh Upload" open={true}>
+              {chatState.previewImg && chatState.imageFile ? (
+                <section className="w-full flex flex-col justify-center items-center space-y-4">
+                  <img className="object-fit" src={chatState.previewImg} />
+                  <div className="w-full flex flex-col items-center space-y-2">
+                    <button
+                      onClick={() => uploadImageToS3(chatState.imageFile!)}
+                      type="button"
+                      className="w-full text-white bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none focus:ring-[#1da1f2]/50 font-medium rounded-full text-sm px-5 py-2.5 text-center inline-flex justify-center items-center dark:focus:ring-[#1da1f2]/55"
+                    >
+                      <svg
+                        className="w-6 h-6 mr-2"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M8,7.71V11.05L15.14,12L8,12.95V16.29L18,12L8,7.71Z" />
+                      </svg>
+                      Gửi
+                    </button>
+                    <button
+                      onClick={() =>
+                        dispatch(handleImageUpload({ type: "remove" }))
+                      }
+                      type="button"
+                      className="w-full text-white bg-[#ff592f] hover:bg-[#f14e4e] focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-full text-sm px-5 py-2.5 text-center inline-flex justify-center items-center dark:focus:ring-[#3b5998]/55"
+                    >
+                      <svg
+                        className="w-6 h-6 mr-2"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z" />
+                      </svg>
+                      Xoá
+                    </button>
+                  </div>
+                </section>
+              ) : (
+                <p className="text-center">Chưa có ảnh được chọn</p>
+              )}
+            </ExpansionPanel>
+          </Sidebar> */}
+
+                {/* input file */}
+                <input
+                  ref={imgUploadRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  id="imgupload"
+                  onChange={attachImage}
+                />
+              </>
+            )
+          ) : (
+            <div className="w-full flex flex-col justify-center items-center">
+              <Loader />
+            </div>
+          )}
+        </MainContainer>
+      </div>
+
+      <div className="absolute right-0 bottom-10 z-10">
+        <button
+          type="button"
+          className="flex justify-center items-center box-border rounded-full bg-meta-6 opacity-50 h-8 w-8"
+        >
+          <svg
+            className="w-6 h-6"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            <path
+              fill="#ffffff"
+              d="M10,21V19H6.41L10.91,14.5L9.5,13.09L5,17.59V14H3V21H10M14.5,10.91L19,6.41V10H21V3H14V5H17.59L13.09,9.5L14.5,10.91Z"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {commonState.isOpenModal && chatState.previewImg && (
+        <Modal title="" body={<ModalBody />} footer={<ModalFooter />} />
+      )}
+    </>
   );
 };
 

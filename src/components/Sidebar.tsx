@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import Logo from "../assets/images/logo/logo.svg";
 import SidebarLinkGroup from "./SidebarLinkGroup";
+import classNames from "classnames";
 
 type SidebarProps = {
   sidebarOpen: boolean;
@@ -23,6 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   // close on click outside
   React.useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
+      setSidebarOpen(false);
       if (!sidebar.current || !trigger.current) return;
       if (
         !sidebarOpen ||
@@ -30,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
         trigger.current.contains(target)
       )
         return;
-      setSidebarOpen(false);
+      // setSidebarOpen(false);
     };
     document.addEventListener("click", clickHandler);
     return () => document.removeEventListener("click", clickHandler);
@@ -38,9 +40,10 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   // close if the esc key is pressed
   React.useEffect(() => {
-    const keyHandler = ({ keyCode }: KeyboardEvent) => {
-      if (!sidebarOpen || keyCode !== 27) return;
+    const keyHandler = ({ key }: KeyboardEvent) => {
       setSidebarOpen(false);
+      if (!sidebarOpen || key !== "Escape") return;
+      // setSidebarOpen(false);
     };
     document.addEventListener("keydown", keyHandler);
     return () => document.removeEventListener("keydown", keyHandler);
@@ -56,9 +59,10 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
+      className={classNames(
+        "absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0",
+        { "translate-x-0": sidebarOpen, "-translate-x-full": !sidebarOpen }
+      )}
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
@@ -290,33 +294,26 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             </li>
             {/* <!-- Menu Item user --> */}
 
-            {/* <li>
+            <li>
               <NavLink
-                to="/test"
+                to="/others"
                 className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                  pathname === "/test" && "bg-graydark dark:bg-meta-4"
+                  pathname === "/others" && "bg-graydark dark:bg-meta-4"
                 }`}
               >
                 <svg
                   className="fill-current"
                   width="18"
                   height="18"
-                  viewBox="0 0 18 18"
+                  viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path
-                    d="M9.0002 7.79065C11.0814 7.79065 12.7689 6.1594 12.7689 4.1344C12.7689 2.1094 11.0814 0.478149 9.0002 0.478149C6.91895 0.478149 5.23145 2.1094 5.23145 4.1344C5.23145 6.1594 6.91895 7.79065 9.0002 7.79065ZM9.0002 1.7719C10.3783 1.7719 11.5033 2.84065 11.5033 4.16252C11.5033 5.4844 10.3783 6.55315 9.0002 6.55315C7.62207 6.55315 6.49707 5.4844 6.49707 4.16252C6.49707 2.84065 7.62207 1.7719 9.0002 1.7719Z"
-                    fill=""
-                  />
-                  <path
-                    d="M10.8283 9.05627H7.17207C4.16269 9.05627 1.71582 11.5313 1.71582 14.5406V16.875C1.71582 17.2125 1.99707 17.5219 2.3627 17.5219C2.72832 17.5219 3.00957 17.2407 3.00957 16.875V14.5406C3.00957 12.2344 4.89394 10.3219 7.22832 10.3219H10.8564C13.1627 10.3219 15.0752 12.2063 15.0752 14.5406V16.875C15.0752 17.2125 15.3564 17.5219 15.7221 17.5219C16.0877 17.5219 16.3689 17.2407 16.3689 16.875V14.5406C16.2846 11.5313 13.8377 9.05627 10.8283 9.05627Z"
-                    fill=""
-                  />
+                  <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,10.5A1.5,1.5 0 0,1 13.5,12A1.5,1.5 0 0,1 12,13.5A1.5,1.5 0 0,1 10.5,12A1.5,1.5 0 0,1 12,10.5M7.5,10.5A1.5,1.5 0 0,1 9,12A1.5,1.5 0 0,1 7.5,13.5A1.5,1.5 0 0,1 6,12A1.5,1.5 0 0,1 7.5,10.5M16.5,10.5A1.5,1.5 0 0,1 18,12A1.5,1.5 0 0,1 16.5,13.5A1.5,1.5 0 0,1 15,12A1.5,1.5 0 0,1 16.5,10.5Z" />
                 </svg>
-                TTTEEESSSTTT
+                Khác
               </NavLink>
-            </li> */}
+            </li>
           </ul>
         </nav>
         {/* <!-- Sidebar Menu --> */}

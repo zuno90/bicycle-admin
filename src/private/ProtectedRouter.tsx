@@ -4,6 +4,7 @@ import { useAppSelector } from "../store";
 
 const ProtectedRouter: React.FC = () => {
   const location = useLocation();
+  // const commonState = useAppSelector((state) => state.common);
   const authState = useAppSelector((state) => state.auth);
 
   return !authState.isAuth && !authState.user ? (
