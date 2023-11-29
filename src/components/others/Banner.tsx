@@ -29,7 +29,7 @@ const Banner = () => {
           "error"
         );
       // delete old banner
-      await deleteBannerS3();
+      // await deleteBannerS3();
       // upload new banner
       await uploadImageToS3(e.target.files[0]);
     }
@@ -47,6 +47,7 @@ const Banner = () => {
       const bannerKey = bannerList.Contents[1].Key as string;
       setImgKey(bannerKey);
     } catch (error) {
+      setImgKey("");
       console.error(error);
     }
   };

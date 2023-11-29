@@ -1,0 +1,2 @@
+import{R as r,_ as a,j as e,L as s}from"./index-02f4ac53.js";const t=r.lazy(()=>a(()=>import("./SubCategoryTable-0946498f.js"),["assets/SubCategoryTable-0946498f.js","assets/index-02f4ac53.js","assets/index-5389d8bf.css","assets/base-b4bf6111.js","assets/category.query-b9fb8094.js","assets/index.esm-23a6fb82.js","assets/Modal-6c7f5fbc.js"])),d=()=>e.jsx("section",{className:`rounded-sm  bg-white
+ border border-stroke dark:border-strokedark dark:bg-boxdark`,children:e.jsx(r.Suspense,{fallback:e.jsx(s,{}),children:e.jsx(t,{title:"Danh mục"})})});export{d as default};

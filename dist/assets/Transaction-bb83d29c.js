@@ -1,0 +1,2 @@
+import{R as a,_ as e,j as r,L as s}from"./index-02f4ac53.js";const o=a.lazy(()=>e(()=>import("./TransactionTable-2bc6068f.js"),["assets/TransactionTable-2bc6068f.js","assets/index-02f4ac53.js","assets/index-5389d8bf.css","assets/Pagination-b15937fc.js","assets/Modal-6c7f5fbc.js","assets/base-b4bf6111.js"])),d=()=>r.jsx("section",{className:`rounded-sm  bg-white
+ border border-stroke dark:border-strokedark dark:bg-boxdark`,children:r.jsx(a.Suspense,{fallback:r.jsx(s,{}),children:r.jsx(o,{title:"Giao dịch"})})});export{d as default};
