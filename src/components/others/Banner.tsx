@@ -44,7 +44,8 @@ const Banner = () => {
       const bannerList = await s3Client.send(getObjParams);
       if (!bannerList || !bannerList.Contents)
         throw Error("Can not find image object!");
-      const bannerKey = bannerList.Contents[1].Key as string;
+      const bannerKey = bannerList.Contents[bannerList.Contents.length - 1]
+        .Key as string;
       setImgKey(bannerKey);
     } catch (error) {
       setImgKey("");
